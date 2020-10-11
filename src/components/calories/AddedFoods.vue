@@ -37,8 +37,8 @@
               class="form-control"
               step="0.5"
               placeholder="Amount"
-              v-model="item.CHANGED_QUANTITY"
-              @keyup.enter="onChange({item, index})"
+              v-model="quantity"
+              @keyup.enter="onChanged({item, index, quantity})"
             />
             <div>✕ 100g</div>
             <button
@@ -46,7 +46,7 @@
               @click="onChange({item, index})"
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
             >Change</button>
-            <button class="btn btn-success" @click="onRemove({index})">Remove</button>
+            <button class="btn btn-success" @click="onRemoved({index})">Remove</button>
           </div>
         </div>
       </div>
@@ -114,36 +114,35 @@ svg {
 
 <script>
 import nutrientBox from "./nutrientBox.vue";
+import {mapGetters, mapState, mapActions} from 'vuex';
 
 export default {
-  props: ["addedItems", "totalForToday"],
   components: {
     appNutrientBox: nutrientBox
   },
   data() {
     return {
-      activeIndex: -1
+      activeIndex: -1,
+      quantity: "",
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["totalForToday"]),
+    ...mapState(["addedItems"]),
+    
+  },
   methods: {
+    ...mapActions(["onChanged", "onRemoved"]),
     startEdit({ index }) {
       if ((this.activeIndex == index)) {
         this.activeIndex = -1;
       } else {
+        this.quantity = "";
         this.activeIndex = index;
         setTimeout(() => {
           this.$refs.inputAmount[0].focus();
         }, 0);
       }
-    },
-    onChange({ item, index }) {
-      //tuki
-      item.CHANGED_QUANTITY = parseFloat(item.CHANGED_QUANTITY);
-      this.$emit("changed", { item, index });
-    },
-    onRemove({ index }) {
-      this.$emit("removed", { index });
     }
   }
 };

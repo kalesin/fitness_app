@@ -7,20 +7,15 @@
 
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <router-link to="/portfolio" activeClass="active" tag="li">
-            <a>Portfolio</a>
-          </router-link>
-          <router-link to="/stocks" activeClass="active" tag="li">
-            <a>Stocks</a>
-          </router-link>
+          
           <router-link to="/calories" activeClass="active" tag="li">
             <a>Calories</a>
           </router-link>
         </ul>
-        <strong class="navbar-text navbar-right">Funds: {{ funds | currency }}</strong>
+        <strong class="navbar-text navbar-right">Funds: {{}}</strong>
         <ul class="nav navbar-nav navbar-right">
           <li>
-            <a href="#" @click="endDay">End Day</a>
+            <a href="#" >End Day</a>
           </li>
           <li
             class="dropdown"
@@ -40,10 +35,10 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <a href="#" @click="saveData">Save Data</a>
+                <a href="#" >Save Data</a>
               </li>
               <li>
-                <a href="#" @click="loadData">Load Data</a>
+                <a href="#" >Load Data</a>
               </li>
             </ul>
           </li>
@@ -54,7 +49,6 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 
 export default {
   data() {
@@ -63,29 +57,8 @@ export default {
     };
   },
   computed: {
-    funds() {
-      return this.$store.getters.funds;
-    }
   },
   methods: {
-    ...mapActions({
-      randomizeStocks: 'randomizeStocks',
-      fetchData: 'loadData'
-    }),
-    endDay() {
-      this.randomizeStocks();
-    },
-    saveData() {
-      const data = {
-        funds: this.$store.getters.funds,
-        stockPortfolio: this.$store.getters.stockPortfolio,
-        stocks: this.$store.getters.stocks
-      };
-      this.$http.put('data.json', data);
-    },
-    loadData() {
-      this.fetchData();
-    }
   }
 };
 </script>
