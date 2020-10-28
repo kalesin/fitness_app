@@ -1,17 +1,16 @@
 <template>
   <div class="mainFoods">
     <div class="addList col-sm-6 col-md-4">
-      <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
+      <div class="panel panel-success" v-for="(item, index) in recipes" :key="index">
         <div class="panel-heading">
-          <h3 v-if="item.IS_PORTION === false" class="panel-title" style="text-transform: capitalize;">{{item.NAME}} ({{item.QUANTITY*100}}g)</h3>
-          <h3 v-else class="panel-title" style="text-transform: capitalize;">{{item.NAME}} ({{item.QUANTITY}} portions)</h3>
+          <h3 class="panel-title" style="text-transform: capitalize;">{{item.NAME}} (per portion)</h3>
         </div>
         <div class="panel-body">
-          <div style="display:flex; width:100%">
+          <div class="nutribox">
             <app-nutrient-box
-              :nutrientArray="item.CALCULATED_NUTRIENTS"
+              :nutrientArray="item.PORTION_NUTRIENTS"
               size="small"
-              type="normal"
+              type="small"
               style="flex-grow: 1"
             ></app-nutrient-box>
             <button @click="startEdit({index})">
@@ -38,47 +37,34 @@
               type="number"
               class="form-control"
               step="0.5"
-              placeholder="Amount"
-              v-model="item.CHANGED_QUANTITY"
-              @keyup.enter="onChanged({item, index})"
+              placeholder="Portions"
+              v-model="quantity"
+              @keyup.enter="addPortionOfRecipe({item, index})"
             />
-            <div>✕ 100g</div>
             <button
               class="btn btn-success"
-              @click="onChanged({item, index})"
-              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
-            >Change</button>
-            <button class="btn btn-success" @click="onRemoved({index})">Remove</button>
+              @click="
+              addPortionOfRecipe({item, index})
+              "
+              :disabled="parseFloat(quantity)<=0"
+            >Add</button>
+            <button class="btn btn-success" @click="removeRecipe({index})">Remove</button>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="total">
-      <div class="panel-heading">
-        <h3 class="panel-title">Total today:</h3>
-        <div class="pull-left">
-            <input
-              ref="inputAmount"
-              type="number"
-              class="form-control"
-              placeholder="Enter maintenance calories"
-              v-model="savedCalories"
-            />
-            <button
-              class="btn btn-success"
-              @click="setMaintenanceCalories(savedCalories)"
-              :disabled="parseFloat(savedCalories)<=0"
-            >Set</button>
-          </div>
-      </div>
-      <div class="panel-body">
-        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal"></app-nutrient-box>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.nutrientSubBox {
+  font-size: 11px;
+  margin-right: -1px;
+}
+.nutribox {
+  font-size: 11px;
+  margin-right: -1px;
+}
 .mainFoods {
   width: 100%;
   position: relative;
@@ -115,10 +101,9 @@
   align-items: center;
 }
 .btn {
-  width: 25%;
 }
 .form-control {
-  width: 30%;
+  width: 50%;
 }
 .panel {
   margin: 0;
@@ -130,7 +115,7 @@ svg {
 
 <script>
 import nutrientBox from "./nutrientBox.vue";
-import {mapGetters, mapState, mapActions} from 'vuex';
+import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
   components: {
@@ -139,19 +124,24 @@ export default {
   data() {
     return {
       activeIndex: -1,
-      quantity: "",
-      savedCalories: 0,
+      
     };
   },
   computed: {
-    ...mapGetters(["totalForToday"]),
-    ...mapState(["addedItems", "maintenanceCalories"]),
-    
+    ...mapState(["recipes", "recipeQuantity"]),
+    quantity: {
+        get() {
+          return this.$store.state.recipeQuantity;
+        },
+        set(value) {
+          this.$store.dispatch("setRecipeQuantity", value);
+        }
+      }
   },
   methods: {
-    ...mapActions(["onChanged", "onRemoved","setMaintenanceCalories"]),
+    ...mapActions(["addPortionOfRecipe", "removeRecipe", "setRecipeQuantity"]),
     startEdit({ index }) {
-      if ((this.activeIndex == index)) {
+      if (this.activeIndex == index) {
         this.activeIndex = -1;
       } else {
         this.quantity = "";

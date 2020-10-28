@@ -3,33 +3,25 @@
     <div class="search col-sm-6 col-md-4">
       <div class="searchbar panel panel-success">
         <div class="panel-heading">
-          <h3 class="panel-title">Search for the food you want to add!</h3>
+          <h3 class="panel-title">Search for the ingredients you want to add!</h3>
         </div>
         <div class="panel-body">
-          <div style="margin: 10px 0px;">
-            <div class="pull-left">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Search foods"
-                v-model="query"
-                @keyup.enter="
-                search"
-              />
-            </div>
-            <div class="pull-right">
-              <button class="btn btn-success" 
-              @click="
-              search">Search</button>
-            </div>
+          <div class="pull-left">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search foods"
+              v-model="query"
+              @keyup.enter="search"
+            />
           </div>
-          <div class="recipes-button">
-            <button class="btn btn-success" @click="openRecipes">Add from My Recipes</button>
+          <div class="pull-right">
+            <button class="btn btn-success" @click="searchFood">Search</button>
           </div>
         </div>
       </div>
 
-      <div v-if="responseData && !addingRecipe" class="item panel panel-success">
+      <div v-if="responseData" class="item panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" style="text-transform: capitalize;">{{nutrients.NAME}}(per 100g)</h3>
         </div>
@@ -61,39 +53,26 @@
               class="form-control"
               placeholder="X 100g"
               v-model="quantity"
-              @keyup.enter="addItem"
+              @keyup.enter="addItemRecipes"
             />
           </div>
           <div class="pull-right">
             <button
               class="btn btn-success"
-              @click="addItem"
+              @click="addItemRecipes"
               :disabled="parseFloat(quantity)<=0"
             >{{'Add'}}</button>
           </div>
         </div>
       </div>
-      <div v-if="!responseData && addingRecipe">
-        <app-recipes-display>
-        </app-recipes-display>
-      </div>
     </div>
-    <app-added-foods class="added-foods"></app-added-foods>
+    <app-added-recipes
+      class="added-foods"
+    ></app-added-recipes>
   </div>
 </template>
 
 <style scoped>
-.panel-body {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-.recipes-button {
-  margin: 10px 0px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
 .main {
   display: flex;
 }
@@ -126,36 +105,34 @@
 </style>
 
 <script>
-import AddedFoods from "./AddedFoods.vue";
-import RecipesDisplay from "./RecipesDisplay.vue"
+import AddedRecipes from "./AddedRecipes.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   components: {
-    appAddedFoods: AddedFoods,
-    appRecipesDisplay: RecipesDisplay
+    appAddedRecipes: AddedRecipes
   },
   computed: {
-    ...mapState(["responseData", "nutrients", "addingRecipe"]),
+    ...mapState(['responseData', 'nutrients']),
     query: {
-      get() {
-        return this.$store.state.query;
+      get () {
+        return this.$store.state.query
       },
-      set(value) {
-        this.$store.dispatch("setQuery", value);
+      set (value) {
+        this.$store.dispatch('setQuery', value)
       }
     },
     quantity: {
-      get() {
-        return this.$store.state.quantity;
+      get () {
+        return this.$store.state.quantity
       },
-      set(value) {
-        this.$store.dispatch("setQuantity", value);
+      set (value) {
+        this.$store.dispatch('setQuantity', value)
       }
     }
   },
   methods: {
-    ...mapActions(["searchFood", "addItem", "openRecipes", "closeRecipes"]),
+    ...mapActions(["searchFood", "addItemRecipes"]),
     search() {
       this.searchFood().then(response => {
         setTimeout(() => {

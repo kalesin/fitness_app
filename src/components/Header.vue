@@ -2,7 +2,7 @@
   <nav class="navbar navbar-default">
     <div class="container-fluid">
       <div class="navbar-header">
-        <router-link to="/" class="navbar-brand">Stock Trader</router-link>
+        <router-link to="/" class="navbar-brand">Fitness App</router-link>
       </div>
 
       <div class="collapse navbar-collapse">
@@ -10,6 +10,9 @@
           
           <router-link to="/calories" activeClass="active" tag="li">
             <a>Calories</a>
+          </router-link>
+          <router-link to="/recipes" activeClass="active" tag="li">
+            <a>My Recipes</a>
           </router-link>
         </ul>
         <strong class="navbar-text navbar-right">Funds: {{}}</strong>
