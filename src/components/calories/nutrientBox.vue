@@ -1,10 +1,13 @@
 <template>
   <div :class="{small: size === 'small', large: size ==='large'}">
-    <div v-if="size === 'large'" class="progressBar">
-      <div class="progressBarBackground" :style="styleObject"></div>
+    <div v-if="size === 'large' && total==='daily'" class="progressBar">
+      <div class="progressBarBackground" :style="daily"></div>
       <div class="progressBarText">{{nutrientArray[0]}} kcal</div>
-      
-
+      <hr />
+    </div>
+    <div v-if="size === 'large' && total==='recipe'" class="progressBar">
+      <div class="progressBarBackground" :style="recipe"></div>
+      <div class="progressBarText">{{nutrientArray[0]}} kcal</div>
       <hr />
     </div>
     <div v-if="type ==='normal'" class="nutrientBox">
@@ -58,17 +61,25 @@
 import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
-  props: ["nutrientArray", "size", "type"],
+  props: ["nutrientArray", "size", "type", "total"],
   data() {
     return {};
   },
   computed: {
-    ...mapState(["maintenanceCalories"]),
-    ...mapGetters(["totalForToday"]),
-    styleObject() {
+    ...mapState("other", ["maintenanceCalories"]),
+    ...mapGetters("searchAndAdd", ["totalForToday"]),
+    ...mapGetters("other", ["ingredientsTotal"]),
+    daily() {
       return {
         width: this.maintenanceCalories
           ? `${(this.totalForToday[0] / this.maintenanceCalories) * 100}%`
+          : "0%"
+      };
+    },
+    recipe() {
+      return {
+        width: this.maintenanceCalories
+          ? `${(this.ingredientsTotal[0] / this.maintenanceCalories) * 100}%`
           : "0%"
       };
     }
@@ -83,6 +94,7 @@ export default {
   height: 30px;
   top: 0;
   z-index: -1;
+  max-width: 100%;
 }
 .progressBarText {
   text-align: center;

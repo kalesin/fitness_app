@@ -46,7 +46,7 @@
             <button
               class="btn btn-success"
               @click="onChanged({item, index})"
-              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
+              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0 || item.CHANGED_QUANTITY === ''"
             >Change</button>
             <button class="btn btn-success" @click="onRemoved({index})">Remove</button>
           </div>
@@ -72,7 +72,7 @@
           </div>
       </div>
       <div class="panel-body">
-        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal"></app-nutrient-box>
+        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal" total="daily"></app-nutrient-box>
       </div>
     </div>
   </div>
@@ -144,12 +144,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["totalForToday"]),
-    ...mapState(["addedItems", "maintenanceCalories"]),
+    ...mapGetters("searchAndAdd", ["totalForToday"]),
+    ...mapState("searchAndAdd", ["addedItems"]),
+    ...mapState("other", ["maintenanceCalories"]),
     
   },
   methods: {
-    ...mapActions(["onChanged", "onRemoved","setMaintenanceCalories"]),
+    ...mapActions("searchAndAdd", ["onChanged", "onRemoved"]),
+    ...mapActions("other", ["setMaintenanceCalories"]),
     startEdit({ index }) {
       if ((this.activeIndex == index)) {
         this.activeIndex = -1;

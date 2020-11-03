@@ -68,13 +68,13 @@
             <button
               class="btn btn-success"
               @click="addItem"
-              :disabled="parseFloat(quantity)<=0"
+              :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
             >{{'Add'}}</button>
           </div>
         </div>
       </div>
-      <div v-if="!responseData && addingRecipe">
-        <app-recipes-display>
+      <div v-if="addingRecipe && !responseData">
+        <app-recipes-display type="add">
         </app-recipes-display>
       </div>
     </div>
@@ -136,26 +136,29 @@ export default {
     appRecipesDisplay: RecipesDisplay
   },
   computed: {
-    ...mapState(["responseData", "nutrients", "addingRecipe"]),
+    ...mapState("searchAndAdd", ["responseData", "nutrients"]),
+
+    ...mapState("other", ["addingRecipe"]),
     query: {
       get() {
-        return this.$store.state.query;
+        return this.$store.state.searchAndAdd.query;
       },
       set(value) {
-        this.$store.dispatch("setQuery", value);
+        this.$store.dispatch("searchAndAdd/setQuery", value);
       }
     },
     quantity: {
       get() {
-        return this.$store.state.quantity;
+        return this.$store.state.searchAndAdd.quantity;
       },
       set(value) {
-        this.$store.dispatch("setQuantity", value);
+        this.$store.dispatch("searchAndAdd/setQuantity", value);
       }
-    }
+    },
   },
   methods: {
-    ...mapActions(["searchFood", "addItem", "openRecipes", "closeRecipes"]),
+    ...mapActions("searchAndAdd", ["searchFood", "addItem"]),
+    ...mapActions("other", ["openRecipes", "closeRecipes"]),
     search() {
       this.searchFood().then(response => {
         setTimeout(() => {

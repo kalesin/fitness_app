@@ -16,7 +16,10 @@
             />
           </div>
           <div class="pull-right">
-            <button class="btn btn-success" @click="searchFood">Search</button>
+            <button class="btn btn-success" @click="search">Search</button>
+          </div>
+          <div class="recipes-button">
+            <button class="btn btn-success" @click="openRecipes2">Edit My Recipes</button>
           </div>
         </div>
       </div>
@@ -53,22 +56,30 @@
               class="form-control"
               placeholder="X 100g"
               v-model="quantity"
-              @keyup.enter="addItemRecipes"
+              @keyup.enter="addItem"
             />
           </div>
           <div class="pull-right">
             <button
               class="btn btn-success"
-              @click="addItemRecipes"
-              :disabled="parseFloat(quantity)<=0"
+              @click="addItem"
+              :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
             >{{'Add'}}</button>
           </div>
         </div>
       </div>
+      <div v-if="addingRecipe">
+        <app-recipes-display type="edit">
+        </app-recipes-display>
+      </div>
     </div>
     <app-added-recipes
       class="added-foods"
+      v-if="!editMode"
     ></app-added-recipes>
+    <app-edit-recipes
+    v-if="editMode">
+      </app-edit-recipes>
   </div>
 </template>
 
@@ -106,33 +117,39 @@
 
 <script>
 import AddedRecipes from "./AddedRecipes.vue";
+import EditRecipes from "./EditRecipes.vue";
+import RecipesDisplay from "../calories/RecipesDisplay.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   components: {
-    appAddedRecipes: AddedRecipes
+    appAddedRecipes: AddedRecipes,
+    appRecipesDisplay: RecipesDisplay,
+    appEditRecipes: EditRecipes
   },
   computed: {
-    ...mapState(['responseData', 'nutrients']),
+    ...mapState("searchAndAdd2", ['responseData', 'nutrients']),
+    ...mapState("other", ["addingRecipe", "editMode"]),
     query: {
       get () {
-        return this.$store.state.query
+        return this.$store.state.searchAndAdd2.query
       },
       set (value) {
-        this.$store.dispatch('setQuery', value)
+        this.$store.dispatch('searchAndAdd2/setQuery', value)
       }
     },
     quantity: {
       get () {
-        return this.$store.state.quantity
+        return this.$store.state.searchAndAdd2.quantity
       },
       set (value) {
-        this.$store.dispatch('setQuantity', value)
+        this.$store.dispatch('searchAndAdd2/setQuantity', value)
       }
     }
   },
   methods: {
-    ...mapActions(["searchFood", "addItemRecipes"]),
+    ...mapActions("searchAndAdd2", ["searchFood", "addItem"]),
+    ...mapActions("other", ["openRecipes2"]),
     search() {
       this.searchFood().then(response => {
         setTimeout(() => {

@@ -1,7 +1,68 @@
 <template>
   <div class="mainFoods">
+    <div class="total">
+      <div class="panel-heading">
+        <h3 class="panel-title">
+          Recipe name:
+          <div style="font-size: 30px">{{ recipes[editIndex].NAME }}</div>Number of Portions:
+          <div style="font-size: 30px">{{ recipes[editIndex].PORTIONS }}</div>
+        </h3>
+      </div>
+      <div class="recipeInput">
+        <input type="text" class="form-control" placeholder="Recipe name" v-model="recipesName" />
+        <button
+          class="btn btn-success"
+          @click=" 
+              changeRecipeName({editIndex, recipesName})
+              resetName()
+              "
+          :disabled="recipesName === ''"
+        >Change name</button>
+        <input
+          type="number"
+          class="form-control"
+          step="1"
+          placeholder="Portions"
+          v-model="recipesPortions"
+        />
+        <button
+          class="btn btn-success"
+          @click=" 
+              changeRecipePortions({editIndex, recipesPortions})
+              saveIngredients({editIndex, ingredientsTotal})
+              resetPortions()
+              "
+          :disabled="parseFloat(recipesPortions)<=0 || recipesPortions === ''"
+        >Change Portions</button>
+      </div>
+      <div class="panel-heading">
+        <h3 class="panel-title">Recipe total:</h3>
+      </div>
+      <div class="panel-body">
+        <app-nutrient-box
+          :nutrientArray="ingredientsTotal"
+          size="large"
+          type="normal"
+          total="recipe"
+        ></app-nutrient-box>
+      </div>
+      <div class="pull-right">
+        <button
+          class="btn-success btn recipe-btn"
+          @click="
+          saveIngredients({editIndex, ingredientsTotal})
+          resetInputs()
+          "
+        >Save Ingredients</button>
+      </div>
+    </div>
     <div class="addList col-sm-6 col-md-4">
-      <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
+      <!--  <div class="panel panel-success" v-for="(item, index) in recipes" :key="index"></div> -->
+      <div
+        class="panel panel-success"
+        v-for="(item, index) in recipes[editIndex].INGREDIENTS"
+        :key="index"
+      >
         <div class="panel-heading">
           <h3
             class="panel-title"
@@ -42,7 +103,9 @@
               step="0.5"
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
-              @keyup.enter="onChanged({item, index})"
+              @keyup.enter="
+              changeRecipeIngredient({item, index, editIndex})
+              "
             />
             <div>✕ 100g</div>
             <button
@@ -53,41 +116,6 @@
             <button class="btn btn-success" @click="onRemoved({index})">Remove</button>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="total">
-      <div class="panel-heading">
-        <h3 class="panel-title">Recipe total:</h3>
-      </div>
-      <div class="panel-body">
-        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal"></app-nutrient-box>
-      </div>
-      <div class="recipeInput">
-        <input
-          ref="inputAmount"
-          type="text"
-          class="form-control"
-          placeholder="Recipe name"
-          v-model="recipesName"
-        />
-        <input
-          ref="inputAmount"
-          type="number"
-          class="form-control"
-          step="1"
-          placeholder="Servings"
-          v-model="recipesPortions"
-        />
-        <button
-          class="btn btn-success"
-          @click=" 
-              nameRecipe({recipesName})
-              setPortions({recipesPortions})
-             addToRecipes({totalForToday, addedItems})
-             resetInputs()
-              "
-          :disabled="parseFloat(recipesPortions)<=0 || recipesName === ''"
-        >Add Recipe</button>
       </div>
     </div>
   </div>
@@ -134,11 +162,23 @@
   display: flex;
   align-items: center;
 }
+.pull-right {
+  margin: 10px auto;
+  justify-content: center;
+  width: 80%;
+  display: flex;
+  align-items: center;
+}
 .btn {
-  width: 25%;
+  width: 20%;
+
+  justify-content: center;
+}
+.recipe-btn {
+  width: 30%;
 }
 .form-control {
-  width: 30%;
+  width: 25%;
 }
 .panel {
   margin: 0;
@@ -161,23 +201,25 @@ export default {
       activeIndex: -1,
       quantity: "",
       recipesName: "",
-      recipesPortions: 0
+      recipesPortions: ""
     };
   },
   computed: {
     ...mapGetters("searchAndAdd2", ["totalForToday"]),
+    ...mapGetters("other", ["ingredientsTotal"]),
     ...mapState("searchAndAdd2", ["addedItems"]),
-    
+    ...mapState("other", ["recipes", "editIndex"])
   },
   methods: {
-    ...mapActions("searchAndAdd2", [
-      "onChanged",
-      "onRemoved",
-    ]),
+    ...mapActions("searchAndAdd2", ["onChanged", "onRemoved"]),
     ...mapActions("other", [
       "addToRecipes",
       "nameRecipe",
-      "setPortions"
+      "setPortions",
+      "changeRecipeName",
+      "changeRecipePortions",
+      "changeRecipeIngredient",
+      "saveIngredients"
     ]),
     startEdit({ index }) {
       if (this.activeIndex == index) {
@@ -193,6 +235,12 @@ export default {
     resetInputs() {
       this.recipesName = "";
       this.recipesPortions = 0;
+    },
+    resetPortions() {
+      this.recipesPortions = 0;
+    },
+    resetName() {
+      this.recipesName = "";
     }
   }
 };
