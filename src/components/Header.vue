@@ -14,6 +14,9 @@
           <router-link to="/recipes" activeClass="active" tag="li">
             <a>My Recipes</a>
           </router-link>
+          <router-link to="/calendar" activeClass="active" tag="li">
+            <a>Calorie Monthly Tracker</a>
+          </router-link>
         </ul>
         <strong class="navbar-text navbar-right">Funds: {{}}</strong>
         <ul class="nav navbar-nav navbar-right">

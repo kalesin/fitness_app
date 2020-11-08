@@ -3,8 +3,16 @@
     <div class="addList col-sm-6 col-md-4">
       <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
         <div class="panel-heading">
-          <h3 v-if="item.IS_PORTION === false" class="panel-title" style="text-transform: capitalize;">{{item.NAME}} ({{item.QUANTITY*100}}g)</h3>
-          <h3 v-else class="panel-title" style="text-transform: capitalize;">{{item.NAME}} ({{item.QUANTITY}} portions)</h3>
+          <h3
+            v-if="item.IS_PORTION === false"
+            class="panel-title"
+            style="text-transform: capitalize;"
+          >{{item.NAME}} ({{item.QUANTITY*100}}g)</h3>
+          <h3
+            v-else
+            class="panel-title"
+            style="text-transform: capitalize;"
+          >{{item.NAME}} ({{item.QUANTITY}} portions)</h3>
         </div>
         <div class="panel-body">
           <div style="display:flex; width:100%">
@@ -57,19 +65,24 @@
       <div class="panel-heading">
         <h3 class="panel-title">Total today:</h3>
         <div class="pull-left">
-            <input
-              ref="inputAmount"
-              type="number"
-              class="form-control"
-              placeholder="Enter maintenance calories"
-              v-model="savedCalories"
-            />
-            <button
-              class="btn btn-success"
-              @click="setMaintenanceCalories(savedCalories)"
-              :disabled="parseFloat(savedCalories)<=0"
-            >Set</button>
-          </div>
+          <input
+            ref="inputAmount"
+            type="number"
+            class="form-control"
+            placeholder="Enter maintenance calories"
+            v-model="savedCalories"
+          />
+          <button
+            class="btn btn-success"
+            @click="setMaintenanceCalories(savedCalories)"
+            :disabled="parseFloat(savedCalories)<=0"
+          >Set</button>
+          <button
+            class="btn btn-success"
+            @click="addDailyEntry({today, addedItems})"
+            :disabled="addedItems===[]"
+          >Save today</button>
+        </div>
       </div>
       <div class="panel-body">
         <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal" total="daily"></app-nutrient-box>
@@ -129,8 +142,9 @@ svg {
 </style>
 
 <script>
+import dayjs from "dayjs";
 import nutrientBox from "./nutrientBox.vue";
-import {mapGetters, mapState, mapActions} from 'vuex';
+import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
   components: {
@@ -140,20 +154,22 @@ export default {
     return {
       activeIndex: -1,
       quantity: "",
-      savedCalories: 0,
+      savedCalories: 0
     };
   },
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
     ...mapState("searchAndAdd", ["addedItems"]),
     ...mapState("other", ["maintenanceCalories"]),
-    
+    today() {
+      return dayjs().format("YYYY-MM-DD");
+    }
   },
   methods: {
     ...mapActions("searchAndAdd", ["onChanged", "onRemoved"]),
-    ...mapActions("other", ["setMaintenanceCalories"]),
+    ...mapActions("other", ["setMaintenanceCalories", "addDailyEntry"]),
     startEdit({ index }) {
-      if ((this.activeIndex == index)) {
+      if (this.activeIndex == index) {
         this.activeIndex = -1;
       } else {
         this.quantity = "";

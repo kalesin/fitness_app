@@ -55,5 +55,6 @@ body {
     transform: translateY(-30px);
     opacity: 0;
   }
-}
+} 
+
 </style>

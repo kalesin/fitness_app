@@ -13,7 +13,7 @@ const searchAndAdd = {
         nutrients: 0,
         nutrientsArray: [],
         addedItems: [],
-        ItemToAdd: []
+        itemToAdd: []
     }),
     mutations: {
         SET_SEARCH_RESPONSE(state, payload) {
@@ -35,7 +35,7 @@ const searchAndAdd = {
             ];
         },
         CREATE_ITEM_TO_ADD(state, value) {
-            state.ItemToAdd = {
+            state.itemToAdd = {
                 NAME: state.nutrients.NAME,
                 NUTRIENTS: state.nutrientsArray,
                 QUANTITY: parseFloat(state.quantity),
@@ -47,7 +47,7 @@ const searchAndAdd = {
             }
         },
         ITEM_TO_ADD_OBJECT(state, { object }) {
-            state.ItemToAdd = object;
+            state.itemToAdd = object;
 
         },
         RESET_RESPONSE(state, value) {
@@ -69,7 +69,7 @@ const searchAndAdd = {
             });
         }, */
         ADD_ITEM(state) {
-            state.addedItems.push(state.ItemToAdd);
+            state.addedItems.push(state.itemToAdd);
         },
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;

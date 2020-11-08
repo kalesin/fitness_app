@@ -18,9 +18,6 @@
           <div class="pull-right">
             <button class="btn btn-success" @click="search">Search</button>
           </div>
-          <div class="recipes-button">
-            <button class="btn btn-success" @click="openRecipes2">Edit My Recipes</button>
-          </div>
         </div>
       </div>
 
@@ -46,44 +43,76 @@
             {{nutrients.FIBER}} g
             <hr />
           </div>
-
-          <div class="pull-left">
-            Amount in multiples of 100g
-            <input
-              ref="inputAmount"
-              type="number"
-              step="0.5"
-              class="form-control"
-              placeholder="X 100g"
-              v-model="quantity"
-              @keyup.enter="addItem"
-            />
+          <div v-if="editIndex===-1">
+            <div class="pull-left">
+              Amount in multiples of 100g
+              <input
+                ref="inputAmount"
+                type="number"
+                step="0.5"
+                class="form-control"
+                placeholder="X 100g"
+                v-model="quantity"
+                @keyup.enter="addItem"
+              />
+            </div>
+            <div class="pull-right">
+              <button
+                class="btn btn-success"
+                @click="addItem"
+                :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
+              >{{'Add'}}</button>
+            </div>
           </div>
-          <div class="pull-right">
-            <button
-              class="btn btn-success"
-              @click="addItem"
-              :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
-            >{{'Add'}}</button>
+          <div v-else>
+            <div class="pull-left">
+              Amount in multiples of 100g
+              <input
+                ref="inputAmount"
+                type="number"
+                step="0.5"
+                class="form-control"
+                placeholder="X 100g"
+                v-model="quantity"
+                @keyup.enter="addIngredient({editIndex, itemToAdd})"
+              />
+            </div>
+            <div class="pull-right">
+              <button
+                class="btn btn-success"
+                @click="addIngredient({editIndex, itemToAdd})"
+                :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
+              >{{'Add'}}</button>
+            </div>
           </div>
         </div>
       </div>
-      <div v-if="addingRecipe">
-        <app-recipes-display type="edit">
-        </app-recipes-display>
-      </div>
     </div>
-    <app-added-recipes
-      class="added-foods"
-      v-if="!editMode"
-    ></app-added-recipes>
-    <app-edit-recipes
-    v-if="editMode">
-      </app-edit-recipes>
+    <div class="right-container">
+      <div class="recipes-button">
+        <button class="btn btn-success" v-if="!showRecipe" @click="
+        showRecipes(true)
+        ">Edit My Recipes</button>
+        <button class="btn btn-danger" v-else @click="
+        setEditIndex(-1)
+        showRecipes(false)
+        ">Cancel Editing</button>
+      </div>
+      <app-recipes-display type="edit" v-if="showRecipe"></app-recipes-display>
+      <app-edit-recipes v-if="!(editIndex===-1)"></app-edit-recipes>
+      <app-added-recipes class="added-foods" v-else></app-added-recipes>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.right-container {
+  width: 100%;
+}
+.recipes-button {
+  width: 100%;
+  margin: 0 0 10px;
+}
 .main {
   display: flex;
 }
@@ -91,7 +120,7 @@
   width: 30%;
 }
 .added-foods {
-  width: 70%;
+  width: 100%;
 }
 .text {
   font-size: 1em;
@@ -128,28 +157,28 @@ export default {
     appEditRecipes: EditRecipes
   },
   computed: {
-    ...mapState("searchAndAdd2", ['responseData', 'nutrients']),
-    ...mapState("other", ["addingRecipe", "editMode"]),
+    ...mapState("searchAndAdd2", ["responseData", "nutrients", "itemToAdd"]),
+    ...mapState("other", ["showRecipe", "editIndex", "recipes"]),
     query: {
-      get () {
-        return this.$store.state.searchAndAdd2.query
+      get() {
+        return this.$store.state.searchAndAdd2.query;
       },
-      set (value) {
-        this.$store.dispatch('searchAndAdd2/setQuery', value)
+      set(value) {
+        this.$store.dispatch("searchAndAdd2/setQuery", value);
       }
     },
     quantity: {
-      get () {
-        return this.$store.state.searchAndAdd2.quantity
+      get() {
+        return this.$store.state.searchAndAdd2.quantity;
       },
-      set (value) {
-        this.$store.dispatch('searchAndAdd2/setQuantity', value)
+      set(value) {
+        this.$store.dispatch("searchAndAdd2/setQuantity", value);
       }
     }
   },
   methods: {
     ...mapActions("searchAndAdd2", ["searchFood", "addItem"]),
-    ...mapActions("other", ["openRecipes2"]),
+    ...mapActions("other", ["showRecipes", "addIngredient", "setEditIndex"]),
     search() {
       this.searchFood().then(response => {
         setTimeout(() => {

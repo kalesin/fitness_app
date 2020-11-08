@@ -11,8 +11,6 @@
 <script>
 export default {
     computed: {
-        funds(){
-        }
     }
 }
 </script>
