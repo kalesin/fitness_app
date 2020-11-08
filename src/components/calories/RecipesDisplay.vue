@@ -50,12 +50,15 @@
             step="0.5"
             placeholder="Portions"
             v-model="quantity"
-            @keyup.enter="createAndAddItem({index})"
+            @keyup.enter="
+            createAndAddItem({index})
+            updateAddedItems()"
           />
           <button
             class="btn btn-success"
             @click="
               createAndAddItem({index})
+              updateAddedItems()
               "
             :disabled="parseFloat(quantity)<=0 || quantity === ''"
           >Add</button>
@@ -215,6 +218,12 @@ export default {
       this.addPortionOfRecipe(index);
       this.createItemToAddObject(this.itemToAdd);
       this.addItem();
+    },
+    updateAddedItems() {
+      const data = {
+        todaysItems: this.$store.state.searchAndAdd.addedItems,
+      };
+      this.$http.patch("data.json", data);
     }
   }
 };

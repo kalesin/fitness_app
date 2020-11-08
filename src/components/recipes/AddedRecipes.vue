@@ -42,15 +42,21 @@
               step="0.5"
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
-              @keyup.enter="onChanged({item, index})"
+              @keyup.enter="
+              onChanged({item, index})
+              updateRecipeItems()"
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
-              @click="onChanged({item, index})"
+              @click="
+              onChanged({item, index})
+              updateRecipeItems()"
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
             >Change</button>
-            <button class="btn btn-success" @click="onRemoved({index})">Remove</button>
+            <button class="btn btn-success" @click="
+            onRemoved({index})
+            updateRecipeItems()">Remove</button>
           </div>
         </div>
       </div>
@@ -193,6 +199,12 @@ export default {
     resetInputs() {
       this.recipesName = "";
       this.recipesPortions = 0;
+    },
+    updateRecipeItems() {
+      const data = {
+        currentRecipeItems: this.$store.state.searchAndAdd2.addedItems,
+      };
+      this.$http.patch("data.json", data);
     }
   }
 };

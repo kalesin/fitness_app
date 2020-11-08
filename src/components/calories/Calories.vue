@@ -18,8 +18,7 @@
               />
             </div>
             <div class="pull-right">
-              <button class="btn btn-success" 
-              @click="
+              <button class="btn btn-success" @click="
               search">Search</button>
             </div>
           </div>
@@ -61,21 +60,20 @@
               class="form-control"
               placeholder="X 100g"
               v-model="quantity"
-              @keyup.enter="addItem"
+              @keyup.enter="updateAddedItems()"
             />
           </div>
           <div class="pull-right">
             <button
               class="btn btn-success"
-              @click="addItem"
+              @click="updateAddedItems()"
               :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
             >{{'Add'}}</button>
           </div>
         </div>
       </div>
       <div v-if="addingRecipe && !responseData">
-        <app-recipes-display type="add">
-        </app-recipes-display>
+        <app-recipes-display type="add"></app-recipes-display>
       </div>
     </div>
     <app-added-foods class="added-foods"></app-added-foods>
@@ -127,10 +125,13 @@
 
 <script>
 import AddedFoods from "./AddedFoods.vue";
-import RecipesDisplay from "./RecipesDisplay.vue"
+import RecipesDisplay from "./RecipesDisplay.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
+  mounted() {
+    this.getData();
+  },
   components: {
     appAddedFoods: AddedFoods,
     appRecipesDisplay: RecipesDisplay
@@ -154,11 +155,12 @@ export default {
       set(value) {
         this.$store.dispatch("searchAndAdd/setQuantity", value);
       }
-    },
+    }
   },
   methods: {
     ...mapActions("searchAndAdd", ["searchFood", "addItem"]),
     ...mapActions("other", ["openRecipes", "closeRecipes"]),
+    ...mapActions("firebase", ["getData"]),
     search() {
       this.searchFood().then(response => {
         setTimeout(() => {
@@ -166,6 +168,13 @@ export default {
           this.$refs.inputAmount.focus();
         }, 0);
       });
+    },
+    updateAddedItems() {
+      this.addItem();
+      const data = {
+        todaysItems: this.$store.state.searchAndAdd.addedItems,
+      };
+      this.$http.patch("data.json", data);
     }
   }
 };

@@ -1,5 +1,6 @@
 
 import axios from 'axios';
+import Vue from 'vue';
 
 const searchAndAdd = {
     namespaced: true,
@@ -48,12 +49,11 @@ const searchAndAdd = {
         },
         ITEM_TO_ADD_OBJECT(state, { object }) {
             state.itemToAdd = object;
-
         },
         RESET_RESPONSE(state, value) {
             state.responseData = value;
         },
-        RESET_ADDED_ITEMS(state, value){
+        RESET_ADDED_ITEMS(state, value) {
             state.addedItems = value;
         },
 
@@ -83,6 +83,9 @@ const searchAndAdd = {
         SET_QUANTITY(state, value) {
             state.quantity = value;
         },
+        SET_ADDED_ITEMS(state, value) {
+            state.addedItems = value;
+        }
     },
     actions: {
         async searchFood({ state, getters, commit }, payload) {
@@ -94,7 +97,7 @@ const searchAndAdd = {
                     response => {
                         console.log(response);
                         commit("SET_SEARCH_RESPONSE", response)
-                        commit("other/SET_RECIPE_MODE", false, {root: true})
+                        commit("other/SET_RECIPE_MODE", false, { root: true })
 
 
                     }

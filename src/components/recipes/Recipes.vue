@@ -53,13 +53,17 @@
                 class="form-control"
                 placeholder="X 100g"
                 v-model="quantity"
-                @keyup.enter="addItem"
+                @keyup.enter="
+                addItem()
+                updateRecipeItems()"
               />
             </div>
             <div class="pull-right">
               <button
                 class="btn btn-success"
-                @click="addItem"
+                @click="
+                addItem()
+                updateRecipeItems()"
                 :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
               >{{'Add'}}</button>
             </div>
@@ -151,6 +155,9 @@ import RecipesDisplay from "../calories/RecipesDisplay.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
+  mounted() {
+    this.getData();
+  },
   components: {
     appAddedRecipes: AddedRecipes,
     appRecipesDisplay: RecipesDisplay,
@@ -179,6 +186,7 @@ export default {
   methods: {
     ...mapActions("searchAndAdd2", ["searchFood", "addItem"]),
     ...mapActions("other", ["showRecipes", "addIngredient", "setEditIndex"]),
+    ...mapActions("firebase", ["getData"]),
     search() {
       this.searchFood().then(response => {
         setTimeout(() => {
@@ -186,6 +194,12 @@ export default {
           this.$refs.inputAmount.focus();
         }, 0);
       });
+    },
+    updateRecipeItems() {
+      const data = {
+        currentRecipeItems: this.$store.state.searchAndAdd2.addedItems,
+      };
+      this.$http.patch("data.json", data);
     }
   }
 };

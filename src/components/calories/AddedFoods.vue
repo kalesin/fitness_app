@@ -48,15 +48,24 @@
               step="0.5"
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
-              @keyup.enter="onChanged({item, index})"
+              @keyup.enter="
+              onChanged({item, index})
+              updateAddedItems()"
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
-              @click="onChanged({item, index})"
+              @click="
+              onChanged({item, index})
+              updateAddedItems()"
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0 || item.CHANGED_QUANTITY === ''"
             >Change</button>
-            <button class="btn btn-success" @click="onRemoved({index})">Remove</button>
+            <button
+              class="btn btn-success"
+              @click="
+            onRemoved({index})
+            updateAddedItems()"
+            >Remove</button>
           </div>
         </div>
       </div>
@@ -74,7 +83,9 @@
           />
           <button
             class="btn btn-success"
-            @click="setMaintenanceCalories(savedCalories)"
+            @click="
+            setMaintenanceCalories(savedCalories)
+            updateUserMainCalories()"
             :disabled="parseFloat(savedCalories)<=0"
           >Set</button>
           <button
@@ -178,6 +189,20 @@ export default {
           this.$refs.inputAmount[0].focus();
         }, 0);
       }
+    },
+    updateAddedItems() {
+      const data = {
+        todaysItems: this.$store.state.searchAndAdd.addedItems
+      };
+      this.$http.patch("data.json", data);
+    },
+    updateUserMainCalories() {
+      const data = {
+        userData: {
+          maintenanceCalories: this.$store.state.other.maintenanceCalories
+        }
+      };
+      this.$http.patch("data.json", data);
     }
   }
 };

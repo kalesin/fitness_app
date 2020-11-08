@@ -1,3 +1,5 @@
+
+
 const other = {
     namespaced: true,
     state: () => ({
@@ -122,7 +124,7 @@ const other = {
 
     },
     actions: {
-
+        
         //recipes
         nameRecipe({ state, commit }, value) {
             commit("ADD_RECIPE_NAME", value)
