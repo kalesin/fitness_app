@@ -23,26 +23,27 @@ const other = {
     mutations: {
 
         //recipes
-        ADD_TO_RECIPES(state, { totalForToday, addedItems }) {
+        ADD_TO_RECIPES(state, { totalForToday, addedItems, recipesName, recipesPortions }) {
+
+            state.recipeName = recipesName;
+            state.recipePortions = recipesPortions;
 
             state.recipes.push({
-                NAME: state.recipeName.recipesName, //vrača objekt ker nisem hotel met property reaktivno v storu
+                NAME: state.recipeName, //vrača objekt ker nisem hotel met property reaktivno v storu
                 NUTRIENTS: totalForToday,
-                PORTIONS: state.recipePortions.recipesPortions,
+                PORTIONS: state.recipePortions,
                 PORTION_NUTRIENTS: totalForToday.map(
-                    x => Math.round(x / state.recipePortions.recipesPortions * 100) / 100
+                    x => Math.round(x / state.recipePortions * 100) / 100
                 ),
                 INGREDIENTS: addedItems
             })
             state.recipeName = "";
             state.recipePortions = 0;
-            console.log(state.recipes)
+
         },
         ADD_RECIPE_NAME(state, value) {
-            state.recipeName = value;
         },
         ADD_RECIPE_PORTIONS(state, value) {
-            state.recipePortions = value;
         },
         SWITCH_RECIPE_MODE(state) {
             state.addingRecipe = !state.addingRecipe;
@@ -107,7 +108,14 @@ const other = {
             state.ingredientsTemp.splice(index, 1);
         },
         SAVE_INGREDIENTS(state, payload) {
-            state.recipes[payload.editIndex].INGREDIENTS = state.ingredientsTemp;
+            if (!(payload.recipesName === "")) {
+            state.recipes[payload.editIndex].NAME = payload.recipesName;
+            }
+            if (!(payload.recipesPortions === "")) {
+            state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
+            }
+
+            state.recipes[payload.editIndex].INGREDIENTS = payload.ingredientsTemp;
             state.recipes[payload.editIndex].NUTRIENTS = payload.ingredientsTotal;
             state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.ingredientsTotal.map(
                 x => Math.round(x / state.recipes[payload.editIndex].PORTIONS * 100) / 100);
@@ -116,15 +124,21 @@ const other = {
             state.ingredientsTemp.push(payload.itemToAdd)
         },
         //daily entry list
-        ADD_DAILY_ENTRY(state, payload){
-            state.dailyEntries.push({date: payload.today, items: payload.addedItems})
+        SET_DAILY_ENTRIES(state, value) {
+            state.dailyEntries = value;
+        },
+        ADD_DAILY_ENTRY(state, payload) {
+            state.dailyEntries.push({ date: payload.today, items: payload.addedItems, total: payload.totalForToday})
+        },
+        SET_RECIPES(state, value) {
+            state.recipes = value;
         }
 
 
 
     },
     actions: {
-        
+
         //recipes
         nameRecipe({ state, commit }, value) {
             commit("ADD_RECIPE_NAME", value)
@@ -132,8 +146,8 @@ const other = {
         setPortions({ state, commit }, value) {
             commit("ADD_RECIPE_PORTIONS", value)
         },
-        addToRecipes({ state, commit }, { totalForToday, addedItems }) {
-            commit("ADD_TO_RECIPES", { totalForToday, addedItems })
+        addToRecipes({ state, commit }, { totalForToday, addedItems, recipesName, recipesPortions }) {
+            commit("ADD_TO_RECIPES", { totalForToday, addedItems, recipesName, recipesPortions })
             commit("searchAndAdd2/RESET_ADDED_ITEMS", [], { root: true })
         },
         openRecipes({ state, commit }) {
@@ -194,7 +208,7 @@ const other = {
         addDailyEntry({ state, commit }, payload) {
             commit("ADD_DAILY_ENTRY", payload)
         },
-        
+
     },
     getters: {
         ingredientsTotal(state) {

@@ -66,7 +66,7 @@
         <h3 class="panel-title">Recipe total:</h3>
       </div>
       <div class="panel-body">
-        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal"></app-nutrient-box>
+        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal" total="recipe"></app-nutrient-box>
       </div>
       <div class="recipeInput">
         <input
@@ -87,9 +87,9 @@
         <button
           class="btn btn-success"
           @click=" 
-              nameRecipe({recipesName})
-              setPortions({recipesPortions})
-             addToRecipes({totalForToday, addedItems})
+             addToRecipes({totalForToday, addedItems, recipesName, recipesPortions})
+             updateRecipeItems()
+             updateRecipes() 
              resetInputs()
               "
           :disabled="parseFloat(recipesPortions)<=0 || recipesName === ''"
@@ -173,6 +173,7 @@ export default {
   computed: {
     ...mapGetters("searchAndAdd2", ["totalForToday"]),
     ...mapState("searchAndAdd2", ["addedItems"]),
+    ...mapState("searchAndAdd2", ["addedItems"]),
     
   },
   methods: {
@@ -203,6 +204,12 @@ export default {
     updateRecipeItems() {
       const data = {
         currentRecipeItems: this.$store.state.searchAndAdd2.addedItems,
+      };
+      this.$http.patch("data.json", data);
+    },
+    updateRecipes(){
+       const data = {
+        recipes: this.$store.state.other.recipes
       };
       this.$http.patch("data.json", data);
     }

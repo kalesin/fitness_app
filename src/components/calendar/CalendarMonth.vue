@@ -1,7 +1,6 @@
 <template>
   <div class="calendar-month">
     <div class="calendar-month-header">
-
       <CalendarDateSelector
         :current-date="today"
         :selected-date="selectedDate"
@@ -9,14 +8,15 @@
       />
     </div>
 
-    <CalendarWeekdays/>
+    <CalendarWeekdays />
 
     <ol class="days-grid">
       <CalendarMonthDayItem
-        v-for="day in days"
+        v-for="day in compareCalendarToEntries"
         :key="day.date"
         :day="day"
         :is-today="day.date === today"
+        @selectDate="dateClicked = day.date"
       />
     </ol>
   </div>
@@ -29,11 +29,16 @@ import weekOfYear from "dayjs/plugin/weekOfYear";
 import CalendarMonthDayItem from "./CalendarMonthDayItem";
 import CalendarDateSelector from "./CalendarDateSelector";
 import CalendarWeekdays from "./CalendarWeekdays";
+import { mapGetters, mapState, mapActions } from "vuex";
 
 dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
 
 export default {
+  created() {
+    this.getData();
+  },
+
   name: "CalendarMonth",
 
   components: {
@@ -44,17 +49,31 @@ export default {
 
   data() {
     return {
-      selectedDate: dayjs()
+      selectedDate: dayjs(),
+      dateClicked: ""
     };
   },
 
   computed: {
+    ...mapState("other", ["dailyEntries"]),
     days() {
       return [
         ...this.previousMonthDays,
         ...this.currentMonthDays,
         ...this.nextMonthDays
       ];
+    },
+    compareCalendarToEntries() {
+      let same = this.days;
+      for (let i = 0; i < this.days.length; i++) {
+        for (let j = 0; j < this.dailyEntries.length; j++) {
+          if (this.days[i].date === this.dailyEntries[j].date) {
+            same[i].entryExists = true;
+            same[i].entry = this.dailyEntries[j];
+          }
+        }
+      }
+      return same;
     },
 
     today() {
@@ -140,6 +159,7 @@ export default {
   },
 
   methods: {
+    ...mapActions("firebase", ["getData"]),
     getWeekday(date) {
       return dayjs(date).weekday();
     },
@@ -158,7 +178,7 @@ export default {
   border: solid 1px var(--grey-300);
 
   font-weight: 100;
-  
+
   --grey-100: #e4e9f0;
   --grey-200: #cfd7e3;
   --grey-300: #b5c0cd;
@@ -213,6 +233,4 @@ li {
   margin: 0;
   list-style: none;
 }
-
-
 </style>

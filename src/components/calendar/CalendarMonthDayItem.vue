@@ -1,17 +1,26 @@
 <template>
   <li
-    class="calendar-day"
+    class="calendar-day progressBar"
     :class="{
       'calendar-day--not-current': !day.isCurrentMonth,
       'calendar-day--today': isToday
     }"
+    @click="selectDate()"
   >
     <span>{{ label }}</span>
+
+    <div v-if="day.entryExists" class="button-progressbar">
+      <div :style="daily" class="progressBarBackground">
+        <div class="progressBarText">{{day.entry.total[0]}}/{{maintenanceCalories}}</div>
+      </div>
+      <button class="btn btn-success">Edit</button>
+    </div>
   </li>
 </template>
 
 <script>
 import dayjs from "dayjs";
+import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
   name: "CalendarMonthDayItem",
@@ -30,25 +39,78 @@ export default {
     isToday: {
       type: Boolean,
       default: false
-    }
+    },
   },
-
   computed: {
+    ...mapState("other", ["dailyEntries", "maintenanceCalories"]),
     label() {
       return dayjs(this.day.date).format("D");
+    },
+    daily() {
+      return {
+        width:
+          this.maintenanceCalories && this.day.entry
+            ? `${(this.day.entry.total[0] / this.maintenanceCalories) * 100}%`
+            : "0%"
+      };
+    }
+  },
+  methods: {
+    selectDate() {
+      this.$emit("selectDate");
     }
   }
 };
 </script>
 
 <style scoped>
+.btn {
+  height: 25%;
+  width: 70%;
+  position: absolute;
+  top: 0;
+  font-size: 10px;
+  left: 20px;
+}
+.button-progressbar {
+  z-index: 2;
+  align-self: center;
+  width: 100%;
+}
+span {
+  z-index: 1;
+}
+
+.progressBarBackground {
+  position: absolute;
+  background-color: greenyellow;
+  height: 30px;
+  bottom: 0;
+  z-index: -1;
+  max-width: 100%;
+  height: 75%;
+  display: flex;
+}
+.progressBarText {
+  align-self: center;
+  z-index: 2;
+  width: 100%;
+  height: 50%;
+}
+.progressBar {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  position: relative;
+}
 .calendar-day {
+  display: flex;
   position: relative;
   min-height: 100px;
   font-size: 16px;
   background-color: #fff;
   color: var(--grey-800);
-  padding: 5px;
+  padding: 0 0 5px;
 }
 
 .calendar-day > span {
@@ -70,7 +132,6 @@ export default {
   padding-top: 4px;
   font-size: 20px;
   font-weight: 900;
-background-color: #00ffa0 
+  border: 2px solid orangered;
 }
-
 </style>

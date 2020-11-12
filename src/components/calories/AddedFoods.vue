@@ -90,7 +90,9 @@
           >Set</button>
           <button
             class="btn btn-success"
-            @click="addDailyEntry({today, addedItems})"
+            @click="
+            addDailyEntry({today, addedItems, totalForToday})
+            updateUserDailyEntry()"
             :disabled="addedItems===[]"
           >Save today</button>
         </div>
@@ -201,6 +203,12 @@ export default {
         userData: {
           maintenanceCalories: this.$store.state.other.maintenanceCalories
         }
+      };
+      this.$http.patch("data.json", data);
+    },
+    updateUserDailyEntry() {
+      const data = {
+        dailyEntries: this.$store.state.other.dailyEntries
       };
       this.$http.patch("data.json", data);
     }
