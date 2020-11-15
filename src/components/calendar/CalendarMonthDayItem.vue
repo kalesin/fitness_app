@@ -10,9 +10,9 @@
     <span>{{ label }}</span>
 
     <div v-if="day.entryExists" class="button-progressbar">
-      <div :style="daily" class="progressBarBackground">
-        <div class="progressBarText">{{day.entry.total[0]}}/{{maintenanceCalories}}</div>
-      </div>
+      <div :style="daily" class="progressBarBackground"></div>
+      <div class="progressBarBackground2"></div>
+      <div class="middiv"><div class="progressBarText">{{day.entry.total[0]}}/{{maintenanceCalories}}</div></div>
       <button class="btn btn-success">Edit</button>
     </div>
   </li>
@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
+  
   name: "CalendarMonthDayItem",
 
   props: {
@@ -39,7 +40,7 @@ export default {
     isToday: {
       type: Boolean,
       default: false
-    },
+    }
   },
   computed: {
     ...mapState("other", ["dailyEntries", "maintenanceCalories"]),
@@ -64,6 +65,15 @@ export default {
 </script>
 
 <style scoped>
+.middiv{
+  position: absolute;
+  height: 30px;
+  bottom: 0;
+  z-index: 0;
+  width: 100%;
+  height: 75%;
+  display: flex;
+}
 .btn {
   height: 25%;
   width: 70%;
@@ -91,11 +101,20 @@ span {
   height: 75%;
   display: flex;
 }
+.progressBarBackground2 {
+  position: absolute;
+  background-color: rgb(255, 47, 47);
+  height: 30px;
+  bottom: 0;
+  z-index: -2;
+  width: 100%;
+  height: 75%;
+  display: flex;
+}
 .progressBarText {
   align-self: center;
   z-index: 2;
   width: 100%;
-  height: 50%;
 }
 .progressBar {
   text-align: center;

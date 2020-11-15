@@ -1,24 +1,27 @@
 <template>
-  <div class="calendar-month">
-    <div class="calendar-month-header">
-      <CalendarDateSelector
-        :current-date="today"
-        :selected-date="selectedDate"
-        @dateSelected="selectDate"
-      />
+  <div>
+    <div v-if="editEntries===false" class="calendar-month">
+      <div class="calendar-month-header">
+        <CalendarDateSelector
+          :current-date="today"
+          :selected-date="selectedDate"
+          @dateSelected="selectDate"
+        />
+      </div>
+
+      <CalendarWeekdays />
+
+      <ol class="days-grid">
+        <CalendarMonthDayItem
+          v-for="day in compareCalendarToEntries"
+          :key="day.date"
+          :day="day"
+          :is-today="day.date === today"
+          @selectDate="dateToEdit(day)"
+        />
+      </ol>
     </div>
-
-    <CalendarWeekdays />
-
-    <ol class="days-grid">
-      <CalendarMonthDayItem
-        v-for="day in compareCalendarToEntries"
-        :key="day.date"
-        :day="day"
-        :is-today="day.date === today"
-        @selectDate="dateClicked = day.date"
-      />
-    </ol>
+    <EditEntries v-else :dateClicked="dateClicked"></EditEntries>
   </div>
 </template>
 
@@ -28,6 +31,7 @@ import weekday from "dayjs/plugin/weekday";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import CalendarMonthDayItem from "./CalendarMonthDayItem";
 import CalendarDateSelector from "./CalendarDateSelector";
+import EditEntries from "./EditEntries";
 import CalendarWeekdays from "./CalendarWeekdays";
 import { mapGetters, mapState, mapActions } from "vuex";
 
@@ -35,7 +39,7 @@ dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
 
 export default {
-  created() {
+  mounted() {
     this.getData();
   },
 
@@ -44,18 +48,20 @@ export default {
   components: {
     CalendarMonthDayItem,
     CalendarDateSelector,
-    CalendarWeekdays
+    CalendarWeekdays,
+    EditEntries
   },
 
   data() {
     return {
       selectedDate: dayjs(),
-      dateClicked: ""
+      dateClicked: "",
+      editEntries: false
     };
   },
 
   computed: {
-    ...mapState("other", ["dailyEntries"]),
+    ...mapState("other", ["dailyEntries", "maintenanceCalories", "entryEditIndex"]),
     days() {
       return [
         ...this.previousMonthDays,
@@ -68,8 +74,11 @@ export default {
       for (let i = 0; i < this.days.length; i++) {
         for (let j = 0; j < this.dailyEntries.length; j++) {
           if (this.days[i].date === this.dailyEntries[j].date) {
-            same[i].entryExists = true;
-            same[i].entry = this.dailyEntries[j];
+            same[i] = {
+              ...same[i],
+              entryExists: true,
+              entry: this.dailyEntries[j]
+            };
           }
         }
       }
@@ -160,12 +169,22 @@ export default {
 
   methods: {
     ...mapActions("firebase", ["getData"]),
+    ...mapActions("other", ["setEntryEditIndex"]),
     getWeekday(date) {
       return dayjs(date).weekday();
     },
 
     selectDate(newSelectedDate) {
       this.selectedDate = newSelectedDate;
+    },
+    dateToEdit(day) {
+      this.dateClicked = day.date;
+      for (let i = 0; i < this.dailyEntries.length; i++) {
+        if (this.dailyEntries[i].date === this.dateClicked) {
+          this.editEntries = true;
+          this.setEntryEditIndex(i);
+        }
+      }
     }
   }
 };

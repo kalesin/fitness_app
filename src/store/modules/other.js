@@ -17,7 +17,9 @@ const other = {
         ingrEditIndex: -1,
         showRecipe: false,
         ingredientsTemp: [],
-        dailyEntries: []
+        dailyEntries: [],
+        entryEditIndex: -1,
+        addedItemsTemp: []
 
     }),
     mutations: {
@@ -109,10 +111,10 @@ const other = {
         },
         SAVE_INGREDIENTS(state, payload) {
             if (!(payload.recipesName === "")) {
-            state.recipes[payload.editIndex].NAME = payload.recipesName;
+                state.recipes[payload.editIndex].NAME = payload.recipesName;
             }
             if (!(payload.recipesPortions === "")) {
-            state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
+                state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
             }
 
             state.recipes[payload.editIndex].INGREDIENTS = payload.ingredientsTemp;
@@ -128,14 +130,27 @@ const other = {
             state.dailyEntries = value;
         },
         ADD_DAILY_ENTRY(state, payload) {
-            state.dailyEntries.push({ date: payload.today, items: payload.addedItems, total: payload.totalForToday})
+            state.dailyEntries.push({ date: payload.today, items: payload.addedItems, total: payload.totalForToday })
         },
         SET_RECIPES(state, value) {
             state.recipes = value;
-        }
-
-
-
+        },
+        SET_ENTRY_EDIT_INDEX(state, value) {
+            state.entryEditIndex = value;
+        },
+        DELETE_ENTRY(state, payload) {
+            state.dailyEntries.splice(payload.entryEditIndex, 1);
+        },
+        CREATE_ADDEDITEMS_TEMP(state, index) {
+            state.addedItemsTemp = JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].items));
+        },
+        REMOVE_ADDEDITEM(state, index) {
+            state.addedItemsTemp.splice(index, 1);
+        },
+        SAVE_ADDEDITEMS(state, payload) {
+            state.dailyEntries[state.entryEditIndex].items = payload.addedItems;
+            state.dailyEntries[state.entryEditIndex].total = payload.totalForToday;
+        },
     },
     actions: {
 
@@ -208,6 +223,19 @@ const other = {
         addDailyEntry({ state, commit }, payload) {
             commit("ADD_DAILY_ENTRY", payload)
         },
+        setEntryEditIndex({ state, commit }, payload) {
+            commit("SET_ENTRY_EDIT_INDEX", payload)
+        },
+        deleteEntry({ state, commit }, payload) {
+            commit("DELETE_ENTRY", payload)
+        },
+        createAddedItemsTemp({ state, commit }, index) {
+            commit("CREATE_ADDEDITEMS_TEMP", index)
+        },
+        saveAddedItems({ state, commit }, payload) {
+            commit("SAVE_ADDEDITEMS", payload)
+        }
+
 
     },
     getters: {

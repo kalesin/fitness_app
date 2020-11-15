@@ -20,7 +20,7 @@ const firebase = {
                         const todaysItems = data.todaysItems ? data.todaysItems : [];
                         const recipes = data.recipes ? data.recipes : [];
                         const mainCalories = data.userData.maintenanceCalories ? data.userData.maintenanceCalories : 0;
-                        const dailyEntries = data.dailyEntries ? data.dailyEntries : [];
+                        const dailyEntries = data.userData.dailyEntries ? data.userData.dailyEntries : [];
 
                         commit('searchAndAdd/SET_ADDED_ITEMS', todaysItems, { root: true })
                         commit('searchAndAdd2/SET_ADDED_ITEMS', currentRecipeItems, { root: true })

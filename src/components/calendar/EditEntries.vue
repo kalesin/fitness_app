@@ -1,68 +1,72 @@
 <template>
   <div class="mainFoods">
+    <div class="searchbar panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">Search for the ingredients you want to add!</h3>
+      </div>
+      <div class="search">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search foods"
+          v-model="query"
+          @keyup.enter="search"
+        />
+
+        <button class="btn btn-success" @click="search">Search</button>
+      </div>
+    </div>
     <div class="total">
       <div class="panel-heading details-delete">
         <h3 class="panel-title">
-          Recipe name:
-          <div style="font-size: 30px">{{ recipes[editIndex].NAME }}</div>Number of Portions:
-          <div style="font-size: 30px">{{ recipes[editIndex].PORTIONS }}</div>
+          <div style="font-size: 30px">Date: {{ dailyEntries[entryEditIndex].date }}</div>
         </h3>
         <div class="pull-right2">
           <button
             class="btn-danger btn recipe-btn"
             @click="
-          removeRecipe(editIndex)
-          setEditIndex(-1)
-          updateRecipes()
+          deleteEntry(entryEditIndex)
+          setEntryEditIndex(-1)
           "
-          >Delete Recipe</button>
+          >Delete Entry</button>
         </div>
-      </div>
-      <div class="recipeInput">
-        <input type="text" class="form-control" placeholder="Recipe name" v-model="recipesName" />
-        <input
-          type="number"
-          class="form-control"
-          step="1"
-          placeholder="Portions"
-          v-model="recipesPortions"
-        />
       </div>
 
       <div class="panel-body">
         <app-nutrient-box
-          :nutrientArray="ingredientsTotal"
+          :nutrientArray="totalForToday"
           size="large"
           type="normal"
-          total="recipe"
+          total="addedItems"
         ></app-nutrient-box>
       </div>
       <div class="pull-right">
         <button
           class="btn-success btn recipe-btn"
           @click="
-          saveIngredients({editIndex, ingredientsTotal, ingredientsTemp, recipesName, recipesPortions})
-          updateRecipes()
-          resetInputs()
+          saveAddedItems({entryEditIndex, addedItems, totalForToday})
+          updateUserDailyEntry()
           "
-          :disabled="parseFloat(recipesPortions)<=0 && recipesName===''"
+          :disabled="addedItems===[]"
         >Save Changes</button>
         <button
           class="btn-danger btn recipe-btn"
           @click="
-          createIngredientsTemp(editIndex)
-          updateRecipes()
-          resetInputs()
+          setAddedItems(dailyEntries[entryEditIndex].items)
           "
         >Discard Changes</button>
       </div>
       <div class="panel-heading ingredients">
-        <h3 class="panel-title">Ingredients:</h3>
+        <h3 class="panel-title">Foods eaten:</h3>
       </div>
     </div>
     <div class="addList col-sm-6 col-md-4">
       <!--  <div class="panel panel-success" v-for="(item, index) in recipes" :key="index"></div> -->
-      <div class="panel panel-success" v-for="(item, index) in ingredientsTemp" :key="index">
+      <div
+        class="panel panel-success"
+        v-for="(item, index) in addedItems"
+        :key="index"
+      >
         <div class="panel-heading">
           <h3
             class="panel-title"
@@ -104,21 +108,21 @@
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
               @keyup.enter="
-              changeRecipeIngredient({item, index})
+              onChanged({item, index})
               "
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
               @click="
-              changeRecipeIngredient({item, index})
+              onChanged({item, index})
               "
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
             >Change</button>
             <button
               class="btn btn-success"
               @click="
-            removeIngredient(index)
+            onRemoved({index})
             "
             >Remove</button>
           </div>
@@ -127,6 +131,68 @@
     </div>
   </div>
 </template>
+
+<script>
+import nutrientBox from "../calories/nutrientBox.vue";
+import { mapGetters, mapState, mapActions } from "vuex";
+
+export default {
+  created() {
+    this.setAddedItems(this.dailyEntries[this.entryEditIndex].items);
+  },
+  props: ["dateClicked"],
+  components: {
+    appNutrientBox: nutrientBox
+  },
+  data() {
+    return {
+      activeIndex: -1,
+      quantity: ""
+    };
+  },
+  computed: {
+    ...mapGetters("searchAndAdd3", ["totalForToday"]),
+    ...mapGetters("other", ["addedItemsTotal"]),
+    ...mapState("searchAndAdd3", ["addedItems", "query"]),
+    ...mapState("other", ["ingredientsTemp", "dailyEntries", "entryEditIndex", "addedItemsTemp", "maintenanceCalories"])
+  },
+  methods: {
+    ...mapActions("searchAndAdd3", [
+      "onChanged",
+      "onRemoved",
+      "searchFood",
+      "addItem",
+      "setAddedItems"
+    ]),
+    ...mapActions("other", ["createAddedItemsTemp", "saveAddedItems"]),
+    startEdit({ index }) {
+      if (this.activeIndex === index) {
+        this.activeIndex = -1;
+      } else {
+        this.quantity = "";
+        this.activeIndex = index;
+        setTimeout(() => {
+          this.$refs.inputAmount[0].focus();
+        }, 0);
+      }
+    },
+    search() {
+      this.searchFood().then(response => {
+        setTimeout(() => {
+          console.log("a");
+          this.$refs.inputAmount.focus();
+        }, 0);
+      });
+    },
+    updateUserDailyEntry() {
+      const userData = {
+        dailyEntries: this.$store.state.other.dailyEntries
+      };
+      this.$http.patch("data/userData.json", userData);
+    }
+  }
+};
+</script>
 
 <style scoped>
 .details-delete {
@@ -179,6 +245,13 @@
 .panel-heading {
   background-color: #dff0d8;
 }
+.search {
+  margin: 10px 0;
+  justify-content: space-around;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
 .pull-left {
   margin: 10px 0px;
   justify-content: space-between;
@@ -211,76 +284,3 @@ svg {
   width: 20px;
 }
 </style>
-
-<script>
-import nutrientBox from "../calories/nutrientBox.vue";
-import { mapGetters, mapState, mapActions } from "vuex";
-
-export default {
-  components: {
-    appNutrientBox: nutrientBox
-  },
-  data() {
-    return {
-      activeIndex: -1,
-      quantity: "",
-      recipesName: "",
-      recipesPortions: ""
-    };
-  },
-  computed: {
-    ...mapGetters("searchAndAdd2", ["totalForToday"]),
-    ...mapGetters("other", ["ingredientsTotal"]),
-    ...mapState("searchAndAdd2", ["addedItems"]),
-    ...mapState("other", [
-      "recipes",
-      "editIndex",
-      "showRecipe",
-      "ingredientsTemp"
-    ])
-  },
-  methods: {
-    ...mapActions("searchAndAdd2", ["onChanged", "onRemoved"]),
-    ...mapActions("other", [
-      "addToRecipes",
-      "nameRecipe",
-      "setPortions",
-      "changeRecipeName",
-      "changeRecipePortions",
-      "changeRecipeIngredient",
-      "saveIngredients",
-      "removeRecipe",
-      "setEditIndex",
-      "removeIngredient",
-      "createIngredientsTemp"
-    ]),
-    startEdit({ index }) {
-      if (this.activeIndex === index) {
-        this.activeIndex = -1;
-      } else {
-        this.quantity = "";
-        this.activeIndex = index;
-        setTimeout(() => {
-          this.$refs.inputAmount[0].focus();
-        }, 0);
-      }
-    },
-    resetInputs() {
-      this.recipesName = "";
-      this.recipesPortions = "";
-    },
-    resetPortions() {
-      this.recipesPortions = 0;
-    },
-    resetName() {
-      this.recipesName = "";
-    },
-    updateRecipes() {
-      const data = {
-        recipes: this.$store.state.other.recipes
-      };
-      this.$http.patch("data.json", data);
-    }
-  }
-};
-</script>

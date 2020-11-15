@@ -83,8 +83,8 @@ const searchAndAdd = {
         SET_QUANTITY(state, value) {
             state.quantity = value;
         },
-        SET_ADDED_ITEMS(state, value) {
-            state.addedItems = value;
+        SET_ADDED_ITEMS(state, payload) {
+            state.addedItems = JSON.parse(JSON.stringify(payload));
         }
     },
     actions: {
@@ -131,6 +131,9 @@ const searchAndAdd = {
 
             commit("CREATE_ITEM_TO_ADD", false)
         },
+        setAddedItems({ state, commit }, payload) {
+            commit("SET_ADDED_ITEMS", payload)
+        }
     },
     getters: {
         totalForToday(state) {

@@ -11,6 +11,7 @@ export default new Vuex.Store({
     modules: {
         searchAndAdd: searchAndAdd,
         searchAndAdd2: searchAndAdd,
+        searchAndAdd3: searchAndAdd,
         other: other,
         firebase: firebase,
 

@@ -207,10 +207,10 @@ export default {
       this.$http.patch("data.json", data);
     },
     updateUserDailyEntry() {
-      const data = {
+      const userData = {
         dailyEntries: this.$store.state.other.dailyEntries
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/userData.json", userData);
     }
   }
 };
