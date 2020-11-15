@@ -31,17 +31,17 @@
 
       <div class="panel-body">
         <app-nutrient-box
-          :nutrientArray="ingredientsTotal"
+          :nutrientArray="totalForToday"
           size="large"
           type="normal"
-          total="recipe"
+          total="editRecipe"
         ></app-nutrient-box>
       </div>
       <div class="pull-right">
         <button
           class="btn-success btn recipe-btn"
           @click="
-          saveIngredients({editIndex, ingredientsTotal, ingredientsTemp, recipesName, recipesPortions})
+          saveIngredients({editIndex, totalForToday, addedItems, recipesName, recipesPortions})
           updateRecipes()
           resetInputs()
           "
@@ -50,7 +50,7 @@
         <button
           class="btn-danger btn recipe-btn"
           @click="
-          createIngredientsTemp(editIndex)
+          setAddedItems(recipes[editIndex].INGREDIENTS)
           updateRecipes()
           resetInputs()
           "
@@ -62,7 +62,7 @@
     </div>
     <div class="addList col-sm-6 col-md-4">
       <!--  <div class="panel panel-success" v-for="(item, index) in recipes" :key="index"></div> -->
-      <div class="panel panel-success" v-for="(item, index) in ingredientsTemp" :key="index">
+      <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
         <div class="panel-heading">
           <h3
             class="panel-title"
@@ -104,21 +104,21 @@
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
               @keyup.enter="
-              changeRecipeIngredient({item, index})
+              onChanged({item, index})
               "
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
               @click="
-              changeRecipeIngredient({item, index})
+              onChanged({item, index})
               "
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
             >Change</button>
             <button
               class="btn btn-success"
               @click="
-            removeIngredient(index)
+            onRemoved({item, index})
             "
             >Remove</button>
           </div>
@@ -229,9 +229,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("searchAndAdd2", ["totalForToday"]),
+    ...mapGetters("searchAndAdd4", ["totalForToday"]),
     ...mapGetters("other", ["ingredientsTotal"]),
-    ...mapState("searchAndAdd2", ["addedItems"]),
+    ...mapState("searchAndAdd4", ["addedItems"]),
     ...mapState("other", [
       "recipes",
       "editIndex",
@@ -240,7 +240,7 @@ export default {
     ])
   },
   methods: {
-    ...mapActions("searchAndAdd2", ["onChanged", "onRemoved"]),
+    ...mapActions("searchAndAdd4", ["onChanged", "onRemoved", "setAddedItems"]),
     ...mapActions("other", [
       "addToRecipes",
       "nameRecipe",

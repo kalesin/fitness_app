@@ -47,8 +47,8 @@ const searchAndAdd = {
                 IS_PORTION: value
             }
         },
-        ITEM_TO_ADD_OBJECT(state, { object }) {
-            state.itemToAdd = object;
+        ITEM_TO_ADD(state, value) {
+            state.itemToAdd = value;
         },
         RESET_RESPONSE(state, value) {
             state.responseData = value;
@@ -56,18 +56,6 @@ const searchAndAdd = {
         RESET_ADDED_ITEMS(state, value) {
             state.addedItems = value;
         },
-
-        /* ADD_ITEM(state) {
-            state.addedItems.push({
-                NAME: state.nutrients.NAME,
-                NUTRIENTS: state.nutrientsArray,
-                QUANTITY: parseFloat(state.quantity),
-                CALCULATED_NUTRIENTS: state.nutrientsArray.map(
-                    x => Math.round(x * state.quantity * 100) / 100
-                ),
-                IS_PORTION: false
-            });
-        }, */
         ADD_ITEM(state) {
             state.addedItems.push(state.itemToAdd);
         },

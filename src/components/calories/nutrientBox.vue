@@ -15,6 +15,11 @@
       <div class="progressBarText">{{nutrientArray[0]}} kcal</div>
       <hr />
     </div>
+     <div v-if="size === 'large' && total==='editRecipe'" class="progressBar">
+      <div class="progressBarBackground" :style="editRecipe"></div>
+      <div class="progressBarText">{{nutrientArray[0]}} kcal</div>
+      <hr />
+    </div>
     <div v-if="type ==='normal'" class="nutrientBox">
       <div v-if="size === 'small'" class="nutrientSubBox">
         <div class="nutrientType"></div>
@@ -73,7 +78,9 @@ export default {
   computed: {
     ...mapState("other", ["maintenanceCalories"]),
     ...mapGetters("searchAndAdd", ["totalForToday"]),
+    ...mapGetters("searchAndAdd2", {ingredientsTotal: "totalForToday"}),
     ...mapGetters("searchAndAdd3", {addedItemsTotal: "totalForToday"}),
+    ...mapGetters("searchAndAdd4", {editRecipeTotal: "totalForToday"}),
     ...mapGetters("other", ["ingredientsTotal"]),
     daily() {
       return {
@@ -93,6 +100,13 @@ export default {
       return {
         width: this.maintenanceCalories
           ? `${(this.addedItemsTotal[0] / this.maintenanceCalories) * 100}%`
+          : "0%"
+      };
+    },
+    editRecipe(){
+      return {
+        width: this.maintenanceCalories
+          ? `${(this.editRecipeTotal[0] / this.maintenanceCalories) * 100}%`
           : "0%"
       };
     }

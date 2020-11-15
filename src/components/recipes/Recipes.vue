@@ -20,7 +20,6 @@
           </div>
         </div>
       </div>
-
       <div v-if="responseData" class="item panel panel-success">
         <div class="panel-heading">
           <h3 class="panel-title" style="text-transform: capitalize;">{{nutrients.NAME}}(per 100g)</h3>
@@ -43,6 +42,7 @@
             {{nutrients.FIBER}} g
             <hr />
           </div>
+
           <div v-if="editIndex===-1">
             <div class="pull-left">
               Amount in multiples of 100g
@@ -68,6 +68,7 @@
               >{{'Add'}}</button>
             </div>
           </div>
+
           <div v-else>
             <div class="pull-left">
               Amount in multiples of 100g
@@ -78,19 +79,25 @@
                 class="form-control"
                 placeholder="X 100g"
                 v-model="quantity"
-                @keyup.enter="addIngredient({editIndex, itemToAdd})"
+                @keyup.enter="
+                createItemToAdd4(itemToAdd)
+                addItem4()"
               />
             </div>
             <div class="pull-right">
               <button
                 class="btn btn-success"
-                @click="addIngredient({editIndex, itemToAdd})"
+                @click="
+                createItemToAdd4(itemToAdd)
+                addItem4()"
                 :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
               >{{'Add'}}</button>
             </div>
           </div>
+
         </div>
       </div>
+
     </div>
     <div class="right-container">
       <div class="recipes-button">
@@ -165,6 +172,7 @@ export default {
   },
   computed: {
     ...mapState("searchAndAdd2", ["responseData", "nutrients", "itemToAdd"]),
+    ...mapState("searchAndAdd4", {itemToAdd4: "itemToAdd"}),
     ...mapState("other", ["showRecipe", "editIndex", "recipes"]),
     query: {
       get() {
@@ -181,10 +189,11 @@ export default {
       set(value) {
         this.$store.dispatch("searchAndAdd2/setQuantity", value);
       }
-    }
+    },
   },
   methods: {
     ...mapActions("searchAndAdd2", ["searchFood", "addItem"]),
+    ...mapActions("searchAndAdd4", {addItem4: "addItem"}),
     ...mapActions("other", ["showRecipes", "addIngredient", "setEditIndex"]),
     ...mapActions("firebase", ["getData"]),
     search() {
@@ -195,13 +204,20 @@ export default {
         }, 0);
       });
     },
+    focus(){
+this.$refs.inputAmount.focus();
+    },
     updateRecipeItems() {
       const data = {
         currentRecipeItems: this.$store.state.searchAndAdd2.addedItems,
       };
       this.$http.patch("data.json", data);
+    },
+    createItemToAdd4(value){
+      this.$store.commit("searchAndAdd4/ITEM_TO_ADD", value)
     }
-  }
+  },
+ 
 };
 </script>
 

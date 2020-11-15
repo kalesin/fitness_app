@@ -117,9 +117,9 @@ const other = {
                 state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
             }
 
-            state.recipes[payload.editIndex].INGREDIENTS = payload.ingredientsTemp;
-            state.recipes[payload.editIndex].NUTRIENTS = payload.ingredientsTotal;
-            state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.ingredientsTotal.map(
+            state.recipes[payload.editIndex].INGREDIENTS = payload.addedItems;
+            state.recipes[payload.editIndex].NUTRIENTS = payload.totalForToday;
+            state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.totalForToday.map(
                 x => Math.round(x / state.recipes[payload.editIndex].PORTIONS * 100) / 100);
         },
         ADD_INGREDIENT(state, payload) {

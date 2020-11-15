@@ -75,7 +75,6 @@
         <h3 class="panel-title">Total today:</h3>
         <div class="pull-left">
           <input
-            ref="inputAmount"
             type="number"
             class="form-control"
             placeholder="Enter maintenance calories"

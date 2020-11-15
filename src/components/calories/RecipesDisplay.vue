@@ -1,8 +1,8 @@
 <template>
   <div class="col-sm-6 col-md-4" :class="{edit: type === 'edit', addList: type ==='add'}">
     <div class="panel-heading">
-        <h3 class="panel-title"> My Recipes:</h3>
-      </div>
+      <h3 class="panel-title">My Recipes:</h3>
+    </div>
     <div class="panel panel-success" v-for="(item, index) in recipes" :key="index">
       <div class="panel-heading">
         <h3
@@ -75,13 +75,21 @@
             style="flex-grow: 1;"
           ></app-nutrient-box>
           <p style="margin: 0 10px; flex-grow: 1">{{item.PORTIONS}} Portions</p>
-          <button v-if="!(editIndex===index)" class="btn btn-success edit-btn" @click="
+          <button
+            v-if="!(editIndex===index)"
+            class="btn btn-success edit-btn"
+            @click="
           setEditIndex(index)
-          createIngredientsTemp(editIndex)
-          ">Edit</button>
-          <button v-if="editIndex===index" class="btn btn-danger edit-btn" @click="
+        setAddedItems(recipes[editIndex].INGREDIENTS)
+          "
+          >Edit</button>
+          <button
+            v-if="editIndex===index"
+            class="btn btn-danger edit-btn"
+            @click="
           setEditIndex(-1)
-          ">Cancel</button>
+          "
+          >Cancel</button>
         </div>
       </div>
     </div>
@@ -203,6 +211,7 @@ export default {
       "createIngredientsTemp"
     ]),
     ...mapActions("searchAndAdd", ["addItem"]),
+    ...mapActions("searchAndAdd4", ["setAddedItems"]),
     startEdit({ index }) {
       if (this.activeIndex == index) {
         this.activeIndex = -1;
@@ -221,7 +230,7 @@ export default {
     },
     updateAddedItems() {
       const data = {
-        todaysItems: this.$store.state.searchAndAdd.addedItems,
+        todaysItems: this.$store.state.searchAndAdd.addedItems
       };
       this.$http.patch("data.json", data);
     }
