@@ -39,7 +39,7 @@ export default {
 
     isToday: {
       type: Boolean,
-      default: false
+      default: false 
     }
   },
   computed: {

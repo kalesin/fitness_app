@@ -10,11 +10,12 @@ const searchAndAdd = {
         api_url: "https://api.edamam.com/api/food-database/v2/parser?",
         query: "",
         responseData: 0,
-        quantity: "",
+        quantity: 1,
         nutrients: 0,
         nutrientsArray: [],
         addedItems: [],
-        itemToAdd: []
+        itemToAdd: [],
+        doneAddingItem: false,
     }),
     mutations: {
         SET_SEARCH_RESPONSE(state, payload) {
@@ -39,10 +40,10 @@ const searchAndAdd = {
             state.itemToAdd = {
                 NAME: state.nutrients.NAME,
                 NUTRIENTS: state.nutrientsArray,
-                QUANTITY: parseFloat(state.quantity),
-                CHANGED_QUANTITY: 0,
+                QUANTITY: 1,
+                CHANGED_QUANTITY: "",
                 CALCULATED_NUTRIENTS: state.nutrientsArray.map(
-                    x => Math.round(x * state.quantity * 100) / 100
+                    x => Math.round(x * 1 * 100) / 100
                 ),
                 IS_PORTION: value
             }
@@ -59,6 +60,9 @@ const searchAndAdd = {
         ADD_ITEM(state) {
             state.addedItems.push(state.itemToAdd);
         },
+        ADD_ITEM_VALUE(state, payload) {
+            state.addedItems.push(payload);
+        },
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
         },
@@ -73,6 +77,9 @@ const searchAndAdd = {
         },
         SET_ADDED_ITEMS(state, payload) {
             state.addedItems = JSON.parse(JSON.stringify(payload));
+        },
+        SET_DONE_ADDING_ITEM(state, value) {
+            state.doneAddingItem = value;
         }
     },
     actions: {
@@ -83,11 +90,9 @@ const searchAndAdd = {
                 )
                 .then(
                     response => {
-                        console.log(response);
                         commit("SET_SEARCH_RESPONSE", response)
-                        commit("other/SET_RECIPE_MODE", false, { root: true })
-
-
+                        commit("CREATE_ITEM_TO_ADD", false)
+                        commit("ADD_ITEM")
                     }
                 ).catch(function (error) {
                     console.log(error);
@@ -97,16 +102,18 @@ const searchAndAdd = {
             commit("ADD_ITEM")
             commit("SET_QUANTITY", "")
         },
+        addItemValue({ state, commit }, payload) {
+            commit("ADD_ITEM_VALUE", payload)
+        },
         onChanged({ state, commit }, { item, index }) {
             item.QUANTITY = parseFloat(item.CHANGED_QUANTITY);
-            item.CHANGED_QUANTITY = 0;
+            item.CHANGED_QUANTITY = "";
 
             item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
                 x => Math.round(x * item.QUANTITY * 100) / 100
             );
             commit("CHANGE_ITEM", { item, index })
 
-            console.log(state.quantity);
         },
         onRemoved({ state, commit }, { index }) {
             commit("REMOVE_ITEM", { index })
@@ -121,6 +128,9 @@ const searchAndAdd = {
         },
         setAddedItems({ state, commit }, payload) {
             commit("SET_ADDED_ITEMS", payload)
+        },
+        setDoneAddingItem({ state, commit }, value) {
+            commit("SET_DONE_ADDING_ITEM", value)
         }
     },
     getters: {
@@ -133,7 +143,6 @@ const searchAndAdd = {
                 }
                 totalNutrient[j] = Math.round(totalNutrient[j] * 100) / 100;
             }
-            console.log(totalNutrient);
             return totalNutrient;
         },
     }

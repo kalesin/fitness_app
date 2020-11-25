@@ -6,100 +6,64 @@
           <h3 class="panel-title">Search for the food you want to add!</h3>
         </div>
         <div class="panel-body">
-          <div style="margin: 10px 0px;">
-            <div class="pull-left">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Search foods"
-                v-model="query"
-                @keyup.enter="
-                search"
-              />
-            </div>
-            <div class="pull-right">
-              <button class="btn btn-success" @click="
-              search">Search</button>
-            </div>
-          </div>
-          <div class="recipes-button">
-            <button class="btn btn-success" @click="openRecipes">Add from My Recipes</button>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="responseData && !addingRecipe" class="item panel panel-success">
-        <div class="panel-heading">
-          <h3 class="panel-title" style="text-transform: capitalize;">{{nutrients.NAME}}(per 100g)</h3>
-        </div>
-        <div class="panel-body">
-          <div class="text">
-            <div class="nutrientType">Energy:</div>
-            {{nutrients.ENERGY}} kcal
-            <hr />
-            <div class="nutrientType">Protein:</div>
-            {{nutrients.PROTEIN}} g
-            <hr />
-            <div class="nutrientType">Carbohydrates:</div>
-            {{nutrients.CARB}} g
-            <hr />
-            <div class="nutrientType">Fats:</div>
-            {{nutrients.FAT}} g
-            <hr />
-            <div class="nutrientType">Fiber:</div>
-            {{nutrients.FIBER}} g
-            <hr />
-          </div>
-
           <div class="pull-left">
-            Amount in multiples of 100g
             <input
-              ref="inputAmount"
-              type="number"
-              step="0.5"
+              type="text"
               class="form-control"
-              placeholder="X 100g"
-              v-model="quantity"
-              @keyup.enter="updateAddedItems()"
+              placeholder="Search foods"
+              ref="search"
+              v-model="query"
+              @keyup.enter="
+                allInOne();
+                setDoneAddingItem(true); 
+                "
             />
           </div>
           <div class="pull-right">
             <button
               class="btn btn-success"
-              @click="updateAddedItems()"
-              :disabled="parseFloat(quantity)<=0 || isNaN(parseFloat(quantity))"
-            >{{'Add'}}</button>
+              @click="
+              allInOne();
+              setDoneAddingItem(true);
+              "
+            >Search</button>
+            <button class="btn btn-success" @click="openRecipes">Add from My Recipes</button>
           </div>
         </div>
       </div>
-      <div v-if="addingRecipe && !responseData">
+      <div v-if="addingRecipe">
         <app-recipes-display type="add"></app-recipes-display>
       </div>
+      <app-added-foods class="added-foods"></app-added-foods>
     </div>
-    <app-added-foods class="added-foods"></app-added-foods>
   </div>
 </template>
 
 <style scoped>
 .panel-body {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
 }
-.recipes-button {
+.pull-right {
   margin: 10px 0px;
   display: flex;
-  justify-content: center;
+  width: 100%;
+  justify-content: space-around;
+}
+.pull-left {
+  margin: 10px 0px;
+  font-size: 12px;
   width: 100%;
 }
 .main {
   display: flex;
 }
 .search {
-  width: 30%;
+  width: 100%;
 }
 .added-foods {
-  width: 70%;
+  width: 100%;
 }
 .text {
   font-size: 1em;
@@ -108,18 +72,9 @@
   display: inline-block;
   width: 150px;
 }
-.pull-left {
-  font-size: 12px;
-}
-.searchbar {
-}
-.item {
-}
-.danger {
-  border: 1px solid red;
-}
-.pull-left {
-  width: 55%;
+
+.btn-succes {
+  margin: 10px;
 }
 </style>
 
@@ -131,13 +86,14 @@ import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   mounted() {
     this.getData();
+    this.$refs.search.focus();
   },
   components: {
     appAddedFoods: AddedFoods,
     appRecipesDisplay: RecipesDisplay
   },
   computed: {
-    ...mapState("searchAndAdd", ["responseData", "nutrients"]),
+    ...mapState("searchAndAdd", ["responseData", "nutrients", "addedItems"]),
 
     ...mapState("other", ["addingRecipe"]),
     query: {
@@ -158,24 +114,23 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["searchFood", "addItem"]),
+    ...mapActions("searchAndAdd", [
+      "searchFood",
+      "addItem",
+      "setDoneAddingItem"
+    ]),
     ...mapActions("other", ["openRecipes", "closeRecipes"]),
     ...mapActions("firebase", ["getData"]),
-    search() {
-      this.searchFood().then(response => {
-        setTimeout(() => {
-          console.log("a");
-          this.$refs.inputAmount.focus();
-        }, 0);
-      });
-    },
     updateAddedItems() {
-      this.addItem();
       const data = {
-        todaysItems: this.$store.state.searchAndAdd.addedItems,
+        todaysItems: this.$store.state.searchAndAdd.addedItems
       };
+      console.log(data);
       this.$http.patch("data.json", data);
-    }
+    },
+    allInOne() {
+      this.searchFood().then(this.updateAddedItems);
+    },
   }
 };
 </script>

@@ -19,7 +19,10 @@ const other = {
         ingredientsTemp: [],
         dailyEntries: [],
         entryEditIndex: -1,
-        addedItemsTemp: []
+        addedItemsTemp: [],
+        //calendar
+        dailyEntryTemp: {},
+        editEntries: false,
 
     }),
     mutations: {
@@ -64,14 +67,13 @@ const other = {
             state.itemToAdd = {
                 NAME: state.recipes[index].NAME,
                 NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS,
-                QUANTITY: parseFloat(state.recipeQuantity),
-                CHANGED_QUANTITY: 0,
+                QUANTITY: 1,
+                CHANGED_QUANTITY: "",
                 CALCULATED_NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS.map(
-                    x => Math.round(x * state.recipeQuantity * 100) / 100
+                    x => Math.round(x * 100) / 100
                 ),
                 IS_PORTION: true
             };
-
         },
         REMOVE_RECIPES(state, { index }) {
             state.recipes.splice(index, 1);
@@ -138,8 +140,8 @@ const other = {
         SET_ENTRY_EDIT_INDEX(state, value) {
             state.entryEditIndex = value;
         },
-        DELETE_ENTRY(state, payload) {
-            state.dailyEntries.splice(payload.entryEditIndex, 1);
+        DELETE_ENTRY(state, value) {
+            state.dailyEntries.splice(value, 1);
         },
         CREATE_ADDEDITEMS_TEMP(state, index) {
             state.addedItemsTemp = JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].items));
@@ -151,6 +153,13 @@ const other = {
             state.dailyEntries[state.entryEditIndex].items = payload.addedItems;
             state.dailyEntries[state.entryEditIndex].total = payload.totalForToday;
         },
+        //calendar
+        SET_DAILY_ENTRY_TEMP(state, payload) {
+            state.dailyEntries.push({ date: payload, items: [], total: [0,0,0,0,0] })
+        },
+        SET_EDIT_ENTRIES(state, value) {
+            state.editEntries = value;
+        }
     },
     actions: {
 
@@ -226,16 +235,23 @@ const other = {
         setEntryEditIndex({ state, commit }, payload) {
             commit("SET_ENTRY_EDIT_INDEX", payload)
         },
-        deleteEntry({ state, commit }, payload) {
-            commit("DELETE_ENTRY", payload)
+        deleteEntry({ state, commit }, value) {
+            commit("DELETE_ENTRY", value)
         },
         createAddedItemsTemp({ state, commit }, index) {
             commit("CREATE_ADDEDITEMS_TEMP", index)
         },
         saveAddedItems({ state, commit }, payload) {
             commit("SAVE_ADDEDITEMS", payload)
+        },
+        //calendar
+        setDailyEntryTemp( {state, commit}, payload) {
+            commit("SET_DAILY_ENTRY_TEMP", payload)
+        },
+        setEditEntries( {state, commit}, value) {
+            commit("SET_EDIT_ENTRIES", value)
         }
-
+        
 
     },
     getters: {

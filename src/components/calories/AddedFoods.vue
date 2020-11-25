@@ -22,7 +22,7 @@
               type="normal"
               style="flex-grow: 1"
             ></app-nutrient-box>
-            <button @click="startEdit({index})">
+            <button @click="startEdit(index)">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 50 50"
@@ -166,12 +166,23 @@ export default {
     return {
       activeIndex: -1,
       quantity: "",
-      savedCalories: 0
+      savedCalories: 0,
+
     };
+  },
+  watch: {
+    addedItems: {
+      handler() {
+        if(this.doneAddingItem){
+          this.startEdit(this.addedItems.length - 1);
+        }
+        
+      }
+    }
   },
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapState("searchAndAdd", ["addedItems"]),
+    ...mapState("searchAndAdd", ["addedItems", "doneAddingItem"]),
     ...mapState("other", ["maintenanceCalories"]),
     today() {
       return dayjs().format("YYYY-MM-DD");
@@ -180,7 +191,7 @@ export default {
   methods: {
     ...mapActions("searchAndAdd", ["onChanged", "onRemoved"]),
     ...mapActions("other", ["setMaintenanceCalories", "addDailyEntry"]),
-    startEdit({ index }) {
+    startEdit(index) {
       if (this.activeIndex == index) {
         this.activeIndex = -1;
       } else {

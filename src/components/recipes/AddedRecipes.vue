@@ -16,7 +16,7 @@
               type="normal"
               style="flex-grow: 1"
             ></app-nutrient-box>
-            <button @click="startEdit({index})">
+            <button @click="startEdit(index)">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 50 50"
@@ -70,14 +70,12 @@
       </div>
       <div class="recipeInput">
         <input
-          ref="inputAmount"
           type="text"
           class="form-control"
           placeholder="Recipe name"
           v-model="recipesName"
         />
         <input
-          ref="inputAmount"
           type="number"
           class="form-control"
           step="1"
@@ -159,6 +157,16 @@ import nutrientBox from "../calories/nutrientBox.vue";
 import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
+  watch: {
+    addedItems: {
+      handler() {
+        if(this.doneAddingItem){
+          this.startEdit(this.addedItems.length - 1);
+        }
+        
+      }
+    }
+  },
   components: {
     appNutrientBox: nutrientBox
   },
@@ -172,8 +180,7 @@ export default {
   },
   computed: {
     ...mapGetters("searchAndAdd2", ["totalForToday"]),
-    ...mapState("searchAndAdd2", ["addedItems"]),
-    ...mapState("searchAndAdd2", ["addedItems"]),
+    ...mapState("searchAndAdd2", ["addedItems", "doneAddingItem"]),
     
   },
   methods: {
@@ -186,7 +193,7 @@ export default {
       "nameRecipe",
       "setPortions"
     ]),
-    startEdit({ index }) {
+    startEdit( index ) {
       if (this.activeIndex == index) {
         this.activeIndex = -1;
       } else {

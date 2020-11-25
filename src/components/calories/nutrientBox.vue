@@ -81,7 +81,6 @@ export default {
     ...mapGetters("searchAndAdd2", {ingredientsTotal: "totalForToday"}),
     ...mapGetters("searchAndAdd3", {addedItemsTotal: "totalForToday"}),
     ...mapGetters("searchAndAdd4", {editRecipeTotal: "totalForToday"}),
-    ...mapGetters("other", ["ingredientsTotal"]),
     daily() {
       return {
         width: this.maintenanceCalories
@@ -90,6 +89,7 @@ export default {
       };
     },
     recipe() {
+      console.log(this.ingredientsTotal)
       return {
         width: this.maintenanceCalories
           ? `${(this.ingredientsTotal[0] / this.maintenanceCalories) * 100}%`

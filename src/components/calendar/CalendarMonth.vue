@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="editEntries===false" class="calendar-month">
+    <div v-if="entryEditIndex===-1" class="calendar-month">
       <div class="calendar-month-header">
         <CalendarDateSelector
           :current-date="today"
@@ -55,13 +55,17 @@ export default {
   data() {
     return {
       selectedDate: dayjs(),
-      dateClicked: "",
-      editEntries: false
+      dateClicked: ""
     };
   },
 
   computed: {
-    ...mapState("other", ["dailyEntries", "maintenanceCalories", "entryEditIndex"]),
+    ...mapState("other", [
+      "dailyEntries",
+      "maintenanceCalories",
+      "entryEditIndex",
+      "editEntries"
+    ]),
     days() {
       return [
         ...this.previousMonthDays,
@@ -169,7 +173,11 @@ export default {
 
   methods: {
     ...mapActions("firebase", ["getData"]),
-    ...mapActions("other", ["setEntryEditIndex"]),
+    ...mapActions("other", [
+      "setEntryEditIndex",
+      "setDailyEntryTemp",
+      "setEditEntries"
+    ]),
     getWeekday(date) {
       return dayjs(date).weekday();
     },
@@ -178,12 +186,20 @@ export default {
       this.selectedDate = newSelectedDate;
     },
     dateToEdit(day) {
-      this.dateClicked = day.date;
+      this.setEditEntries(true);
+      let exists = false;
+      let idx = 0;
       for (let i = 0; i < this.dailyEntries.length; i++) {
-        if (this.dailyEntries[i].date === this.dateClicked) {
-          this.editEntries = true;
-          this.setEntryEditIndex(i);
+        if (this.dailyEntries[i].date === day.date) {
+          exists=true;
+          idx=i;
         }
+      }
+      if (exists) {
+        this.setEntryEditIndex(idx);
+      } else {
+        this.setDailyEntryTemp(day.date);
+        this.setEntryEditIndex(this.dailyEntries.length-1);
       }
     }
   }
