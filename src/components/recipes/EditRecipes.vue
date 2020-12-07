@@ -247,7 +247,8 @@ export default {
       "editIndex",
       "showRecipe",
       "ingredientsTemp"
-    ])
+    ]),
+    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
   },
   methods: {
     ...mapActions("searchAndAdd4", ["onChanged", "onRemoved", "setAddedItems"]),
@@ -289,7 +290,7 @@ export default {
       const data = {
         recipes: this.$store.state.other.recipes
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     }
   }
 };

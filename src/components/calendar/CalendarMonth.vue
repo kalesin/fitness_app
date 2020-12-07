@@ -58,6 +58,14 @@ export default {
       dateClicked: ""
     };
   },
+  watch: {
+entryEditIndex: {
+  handler(){
+    console.log("bababoey")
+    this.compareCalendarToEntries;
+  }
+}
+  },
 
   computed: {
     ...mapState("other", [
@@ -73,8 +81,15 @@ export default {
         ...this.nextMonthDays
       ];
     },
+    daysInUnix() {
+      let unix = JSON.parse(JSON.stringify(this.days));
+      for (let i = 0; i < unix.length; i++) {
+        unix[i].dateUnix = new Date(unix[i].date.split("-").join(".")).getTime()/1000
+      }
+      return unix;
+    },
     compareCalendarToEntries() {
-      let same = this.days;
+      let same = this.daysInUnix;
       for (let i = 0; i < this.days.length; i++) {
         for (let j = 0; j < this.dailyEntries.length; j++) {
           if (this.days[i].date === this.dailyEntries[j].date) {
@@ -90,7 +105,7 @@ export default {
     },
 
     today() {
-      return dayjs().format("YYYY-MM-DD");
+      return dayjs().format("YYYY-MM-DD")
     },
 
     month() {
@@ -191,15 +206,15 @@ export default {
       let idx = 0;
       for (let i = 0; i < this.dailyEntries.length; i++) {
         if (this.dailyEntries[i].date === day.date) {
-          exists=true;
-          idx=i;
+          exists = true;
+          idx = i;
         }
       }
       if (exists) {
         this.setEntryEditIndex(idx);
       } else {
-        this.setDailyEntryTemp(day.date);
-        this.setEntryEditIndex(this.dailyEntries.length-1);
+        this.setDailyEntryTemp(day);
+        this.setEntryEditIndex(this.dailyEntries.length - 1);
       }
     }
   }

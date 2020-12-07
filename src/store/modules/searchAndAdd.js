@@ -15,7 +15,10 @@ const searchAndAdd = {
         nutrientsArray: [],
         addedItems: [],
         itemToAdd: [],
+        idx: -1,
         doneAddingItem: false,
+        responseCount: 0,
+        focus: true,
     }),
     mutations: {
         SET_SEARCH_RESPONSE(state, payload) {
@@ -35,6 +38,12 @@ const searchAndAdd = {
                 state.nutrients.FAT,
                 state.nutrients.FIBER
             ];
+        },
+        INCREMENT_RESPONSE_COUNT(state) {
+            state.responseCount++;
+        },
+       SET_FOCUS(state, value) {
+            state.focus = value;
         },
         CREATE_ITEM_TO_ADD(state, value) {
             state.itemToAdd = {
@@ -78,8 +87,15 @@ const searchAndAdd = {
         SET_ADDED_ITEMS(state, payload) {
             state.addedItems = JSON.parse(JSON.stringify(payload));
         },
+        SET_FOCUS_ADDED_ITEM(state, payload) {
+            state.focusAddedItem.exists = payload.exists;
+            state.focusAddedItem.index = payload.index;
+        },
         SET_DONE_ADDING_ITEM(state, value) {
             state.doneAddingItem = value;
+        },
+        SET_INDEX(state, value) {
+            state.idx = value
         }
     },
     actions: {
@@ -91,8 +107,23 @@ const searchAndAdd = {
                 .then(
                     response => {
                         commit("SET_SEARCH_RESPONSE", response)
-                        commit("CREATE_ITEM_TO_ADD", false)
-                        commit("ADD_ITEM")
+                        let exists = false;
+                        let index = -1;
+                        for (let i = 0; i < state.addedItems.length; i++) {
+                            if (state.addedItems[i].NAME === state.responseData.label) {
+                                exists = true;
+                                index = i;
+                            }
+                        }
+                        if (exists == true) {
+                            commit("SET_INDEX", index)
+                            commit("INCREMENT_RESPONSE_COUNT")
+                            commit("SET_FOCUS", true)
+                        } else {
+                            commit("CREATE_ITEM_TO_ADD", false)
+                            commit("ADD_ITEM")
+                        }
+
                     }
                 ).catch(function (error) {
                     console.log(error);
@@ -128,6 +159,9 @@ const searchAndAdd = {
         },
         setAddedItems({ state, commit }, payload) {
             commit("SET_ADDED_ITEMS", payload)
+        },
+        setFocus({ state, commit }, value) {
+            commit("SET_FOCUS", value)
         },
         setDoneAddingItem({ state, commit }, value) {
             commit("SET_DONE_ADDING_ITEM", value)

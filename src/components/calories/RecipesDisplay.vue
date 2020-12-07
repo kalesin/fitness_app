@@ -186,6 +186,7 @@ export default {
       "itemToAdd",
       "editIndex"
     ]),
+   ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
     quantity: {
       get() {
         return this.$store.state.other.recipeQuantity;
@@ -221,7 +222,7 @@ export default {
       const data = {
         todaysItems: this.$store.state.searchAndAdd.addedItems
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     }
   }
 };

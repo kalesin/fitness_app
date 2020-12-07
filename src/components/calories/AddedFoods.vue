@@ -1,6 +1,6 @@
 <template>
   <div class="mainFoods">
-    <div class="addList col-sm-6 col-md-4">
+    <div class="addList">
       <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
         <div class="panel-heading">
           <h3
@@ -48,6 +48,7 @@
               step="0.5"
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
+              @blur="setFocus(false)"
               @keyup.enter="
               onChanged({item, index})
               updateAddedItems()"
@@ -91,7 +92,9 @@
             class="btn btn-success"
             @click="
             addDailyEntry({today, addedItems, totalForToday})
-            updateUserDailyEntry()"
+            updateUserDailyEntry()
+            updateAddedItems()"
+            
             :disabled="addedItems===[]"
           >Save today</button>
         </div>
@@ -178,21 +181,30 @@ export default {
         }
         
       }
+    },
+    responseCount: {
+      handler() {
+        if (this.idx>-1) {
+          console.log("aaa");
+          this.startEdit(this.idx);
+        }
+      }
     }
   },
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapState("searchAndAdd", ["addedItems", "doneAddingItem"]),
+    ...mapState("searchAndAdd", ["addedItems", "doneAddingItem", "idx", "responseCount", "focus"]),
     ...mapState("other", ["maintenanceCalories"]),
+   ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
     today() {
       return dayjs().format("YYYY-MM-DD");
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved"]),
+    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", ["setMaintenanceCalories", "addDailyEntry"]),
     startEdit(index) {
-      if (this.activeIndex == index) {
+      if (this.activeIndex == index && !this.focus) {
         this.activeIndex = -1;
       } else {
         this.quantity = "";
@@ -206,7 +218,7 @@ export default {
       const data = {
         todaysItems: this.$store.state.searchAndAdd.addedItems
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     },
     updateUserMainCalories() {
       const data = {
@@ -214,13 +226,13 @@ export default {
           maintenanceCalories: this.$store.state.other.maintenanceCalories
         }
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     },
     updateUserDailyEntry() {
       const userData = {
         dailyEntries: this.$store.state.other.dailyEntries
       };
-      this.$http.patch("data/userData.json", userData);
+      this.$http.patch("data/"+`${this.userID}`+"/userData.json", userData);
     }
   }
 };

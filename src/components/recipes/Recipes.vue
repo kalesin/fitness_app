@@ -139,6 +139,7 @@ export default {
       doneAddingItem4: "doneAddingItem"
     }),
     ...mapState("other", ["showRecipe", "editIndex", "recipes"]),
+   ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
     query: {
       get() {
         return this.$store.state.searchAndAdd2.query;
@@ -173,7 +174,7 @@ export default {
       const data = {
         currentRecipeItems: this.$store.state.searchAndAdd2.addedItems
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     },
     allInOne() {
       this.searchFood().then(this.updateRecipeItems);

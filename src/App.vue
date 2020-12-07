@@ -1,31 +1,47 @@
 <template>
-  <div class="container">
+  <app-home v-if="!loggedIn"></app-home>
+  <v-app v-else>
+    <!-- <v-app-bar app>
+    </v-app-bar>-->
+
     <app-header></app-header>
-    <div class="row">
-      <div class="col-xs-12">
-        <transition name="slide" mode="out-in">
-          <router-view></router-view>
-        </transition>
-      </div>
-    </div>
-  </div>
+
+    <!-- Sizes your content based upon application components -->
+    <v-main>
+      <!-- Provides the application the proper gutter -->
+      <v-container fluid>
+        <!-- If using vue-router -->
+        <router-view></router-view>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
 import Header from "./components/Header.vue";
+import Home from "./components/Home.vue";
+
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
-  components: {
-    appHeader: Header
+  data() {
+    return {
+    };
   },
-  created() {
-  }
+  computed: {
+...mapState("firebase", ["password", "email", "loggedIn", "userData"]),
+  },
+  components: {
+    appHeader: Header,
+    appHome: Home
+  },
+  created() {}
 };
 </script>
 
 <style>
-body {
-  padding: 30px;
+.v-application--wrap.v-application--wrap {
+  flex-direction: row;
 }
 
 .slide-enter-active {
@@ -55,6 +71,5 @@ body {
     transform: translateY(-30px);
     opacity: 0;
   }
-} 
-
+}
 </style>

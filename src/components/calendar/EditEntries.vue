@@ -190,6 +190,7 @@ export default {
       "addedItemsTemp",
       "maintenanceCalories"
     ]),
+    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
     query: {
       get() {
         return this.$store.state.searchAndAdd3.query;
@@ -233,7 +234,7 @@ export default {
       const userData = {
         dailyEntries: this.$store.state.other.dailyEntries
       };
-      this.$http.patch("data/userData.json", userData);
+      this.$http.patch("data/"+`${this.userID}`+"/userData.json", userData);
     },
     checkIfDelete(entryEditIndex) {
       if (!this.dailyEntries[entryEditIndex].items.length) {

@@ -116,12 +116,13 @@ export default {
 
 <style scoped>
 .progressBarBackground {
-  position: absolute;
-  background-color: greenyellow;
-  height: 30px;
-  top: 0;
-  z-index: -1;
-  max-width: 100%;
+    position: absolute;
+    background-color: greenyellow;
+    height: 30px;
+    top: 1px;
+    left: 1px;
+    z-index: 0;
+    max-width: 100%;
 }
 .progressBarText {
   text-align: center;

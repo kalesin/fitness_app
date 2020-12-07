@@ -181,6 +181,7 @@ export default {
   computed: {
     ...mapGetters("searchAndAdd2", ["totalForToday"]),
     ...mapState("searchAndAdd2", ["addedItems", "doneAddingItem"]),
+    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
     
   },
   methods: {
@@ -212,13 +213,13 @@ export default {
       const data = {
         currentRecipeItems: this.$store.state.searchAndAdd2.addedItems,
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     },
     updateRecipes(){
        const data = {
         recipes: this.$store.state.other.recipes
       };
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/"+`${this.userID}`+".json", data);
     }
   }
 };

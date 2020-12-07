@@ -128,11 +128,14 @@ const other = {
             state.ingredientsTemp.push(payload.itemToAdd)
         },
         //daily entry list
+        SORT_DAILY_ENTRIES(state) {
+            state.dailyEntries.sort((a, b) => a.unix - b.unix)
+        },
         SET_DAILY_ENTRIES(state, value) {
             state.dailyEntries = value;
         },
         ADD_DAILY_ENTRY(state, payload) {
-            state.dailyEntries.push({ date: payload.today, items: payload.addedItems, total: payload.totalForToday })
+            state.dailyEntries.push({ date: payload.today, unix: new Date(payload.today.split("-").join(".")).getTime()/1000, items: payload.addedItems, total: payload.totalForToday })
         },
         SET_RECIPES(state, value) {
             state.recipes = value;
@@ -150,12 +153,12 @@ const other = {
             state.addedItemsTemp.splice(index, 1);
         },
         SAVE_ADDEDITEMS(state, payload) {
-            state.dailyEntries[state.entryEditIndex].items = payload.addedItems;
-            state.dailyEntries[state.entryEditIndex].total = payload.totalForToday;
+            state.dailyEntries[payload.entryEditIndex].items = payload.addedItems;
+            state.dailyEntries[payload.entryEditIndex].total = payload.totalForToday;
         },
         //calendar
         SET_DAILY_ENTRY_TEMP(state, payload) {
-            state.dailyEntries.push({ date: payload, items: [], total: [0,0,0,0,0] })
+            state.dailyEntryTemp = { date: payload.date, unix: payload.dateUnix, items: [], total: [0, 0, 0, 0, 0] };
         },
         SET_EDIT_ENTRIES(state, value) {
             state.editEntries = value;
@@ -231,27 +234,32 @@ const other = {
         //entries
         addDailyEntry({ state, commit }, payload) {
             commit("ADD_DAILY_ENTRY", payload)
+            commit("searchAndAdd/RESET_ADDED_ITEMS", [], { root: true })
+            commit("SORT_DAILY_ENTRIES")
         },
         setEntryEditIndex({ state, commit }, payload) {
             commit("SET_ENTRY_EDIT_INDEX", payload)
         },
         deleteEntry({ state, commit }, value) {
             commit("DELETE_ENTRY", value)
+            commit("SET_ENTRY_EDIT_INDEX", -1)
         },
         createAddedItemsTemp({ state, commit }, index) {
             commit("CREATE_ADDEDITEMS_TEMP", index)
         },
         saveAddedItems({ state, commit }, payload) {
             commit("SAVE_ADDEDITEMS", payload)
+            commit("SET_ENTRY_EDIT_INDEX", -1)
+            commit("SORT_DAILY_ENTRIES")
         },
         //calendar
-        setDailyEntryTemp( {state, commit}, payload) {
+        setDailyEntryTemp({ state, commit }, payload) {
             commit("SET_DAILY_ENTRY_TEMP", payload)
         },
-        setEditEntries( {state, commit}, value) {
+        setEditEntries({ state, commit }, value) {
             commit("SET_EDIT_ENTRIES", value)
         }
-        
+
 
     },
     getters: {

@@ -1,41 +1,39 @@
 <template>
-  <div class="main">
-    <div class="search col-sm-6 col-md-4">
-      <div class="searchbar panel panel-success">
-        <div class="panel-heading">
-          <h3 class="panel-title">Search for the food you want to add!</h3>
-        </div>
-        <div class="panel-body">
-          <div class="pull-left">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search foods"
-              ref="search"
-              v-model="query"
-              @keyup.enter="
+  <div class="search">
+    <div class="searchbar panel panel-success">
+      <div class="panel-heading">
+        <h3 class="panel-title">Search for the food you want to add!</h3>
+      </div>
+      <div class="panel-body">
+        <div class="pull-left">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search foods"
+            ref="search"
+            v-model="query"
+            @keyup.enter="
                 allInOne();
                 setDoneAddingItem(true); 
                 "
-            />
-          </div>
-          <div class="pull-right">
-            <button
-              class="btn btn-success"
-              @click="
+          />
+        </div>
+        <div class="pull-right">
+          <button
+            class="btn btn-success"
+            @click="
               allInOne();
               setDoneAddingItem(true);
               "
-            >Search</button>
-            <button class="btn btn-success" @click="openRecipes">Add from My Recipes</button>
-          </div>
+          >Search</button>
+          <button class="btn btn-success" @click="openRecipes">Add from My Recipes</button>
         </div>
       </div>
-      <div v-if="addingRecipe">
-        <app-recipes-display type="add"></app-recipes-display>
-      </div>
-      <app-added-foods class="added-foods"></app-added-foods>
     </div>
+    <div v-if="addingRecipe">
+      <app-recipes-display type="add"></app-recipes-display>
+    </div>
+    <app-added-foods class="added-foods"></app-added-foods>
   </div>
 </template>
 
@@ -93,9 +91,22 @@ export default {
     appRecipesDisplay: RecipesDisplay
   },
   computed: {
-    ...mapState("searchAndAdd", ["responseData", "nutrients", "addedItems"]),
+    ...mapState("searchAndAdd", [
+      "responseData",
+      "nutrients",
+      "addedItems",
+      "focusAddedItem",
+      "index"
+    ]),
 
     ...mapState("other", ["addingRecipe"]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ]),
     query: {
       get() {
         return this.$store.state.searchAndAdd.query;
@@ -117,6 +128,7 @@ export default {
     ...mapActions("searchAndAdd", [
       "searchFood",
       "addItem",
+      "setfocusAddedItem",
       "setDoneAddingItem"
     ]),
     ...mapActions("other", ["openRecipes", "closeRecipes"]),
@@ -126,11 +138,11 @@ export default {
         todaysItems: this.$store.state.searchAndAdd.addedItems
       };
       console.log(data);
-      this.$http.patch("data.json", data);
+      this.$http.patch("data/" + `${this.userID}` + ".json", data);
     },
     allInOne() {
       this.searchFood().then(this.updateAddedItems);
-    },
+    }
   }
 };
 </script>

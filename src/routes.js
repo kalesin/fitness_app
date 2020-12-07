@@ -5,7 +5,7 @@ import Recipes from './components/recipes/Recipes.vue'
 import Calendar from './components/calendar/CalendarMonth.vue'
 
 export const routes = [
-    { path: '/', component: Home},
+    { path: '/home', component: Home},
     { path : '/header', component: Header},
     { path: '/calories', component: Calories},
     { path: '/recipes', component: Recipes},
