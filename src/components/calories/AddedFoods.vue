@@ -88,15 +88,19 @@
             updateUserMainCalories()"
             :disabled="parseFloat(savedCalories)<=0"
           >Set</button>
+
           <button
+          v-if="entryTodayIndex==-1"
             class="btn btn-success"
             @click="
             addDailyEntry({today, addedItems, totalForToday})
             updateUserDailyEntry()
             updateAddedItems()"
-            
             :disabled="addedItems===[]"
           >Save today</button>
+
+          <v-btn v-else color="success" large @click.stop="showDialogue=true">Save today</v-btn>
+          <app-entry-dialogue :visible="showDialogue" @close="showDialogue=false"></app-entry-dialogue>
         </div>
       </div>
       <div class="panel-body">
@@ -161,31 +165,45 @@ import dayjs from "dayjs";
 import nutrientBox from "./nutrientBox.vue";
 import { mapGetters, mapState, mapActions } from "vuex";
 
+import EntryDialogue from "./EntryDialogue";
+
 export default {
+  mounted() {
+    let index = this.dailyEntries.findIndex((element)=>{element.date === this.today});
+      if (index!= -1) {
+        this.setEntryTodayIndex(index);
+      } else {
+        this.setEntryTodayIndex(-1);
+      }
+  },
   components: {
-    appNutrientBox: nutrientBox
+    appNutrientBox: nutrientBox,
+    appEntryDialogue: EntryDialogue
   },
   data() {
     return {
       activeIndex: -1,
       quantity: "",
       savedCalories: 0,
-
+      showDialogue: false
     };
   },
   watch: {
     addedItems: {
       handler() {
-        if(this.doneAddingItem){
+        if (this.doneAddingItem) {
           this.startEdit(this.addedItems.length - 1);
         }
-        
+        for (let i = 0; i < this.dailyEntries.length; i++) {
+      if (this.dailyEntries[i].date === this.today) {
+        this.setEntryTodayIndex(i);
+      }
+    }
       }
     },
     responseCount: {
       handler() {
-        if (this.idx>-1) {
-          console.log("aaa");
+        if (this.idx > -1) {
           this.startEdit(this.idx);
         }
       }
@@ -193,16 +211,33 @@ export default {
   },
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapState("searchAndAdd", ["addedItems", "doneAddingItem", "idx", "responseCount", "focus"]),
-    ...mapState("other", ["maintenanceCalories"]),
-   ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
+    ...mapState("searchAndAdd", [
+      "addedItems",
+      "doneAddingItem",
+      "idx",
+      "responseCount",
+      "focus"
+    ]),
+    ...mapState("other", ["maintenanceCalories", "dailyEntries", "entryTodayExists",
+        "entryTodayIndex"]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ]),
     today() {
       return dayjs().format("YYYY-MM-DD");
     }
   },
   methods: {
     ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
-    ...mapActions("other", ["setMaintenanceCalories", "addDailyEntry"]),
+    ...mapActions("other", [
+      "setMaintenanceCalories",
+      "addDailyEntry",
+      "setEntryTodayIndex"
+    ]),
     startEdit(index) {
       if (this.activeIndex == index && !this.focus) {
         this.activeIndex = -1;
@@ -218,7 +253,7 @@ export default {
       const data = {
         todaysItems: this.$store.state.searchAndAdd.addedItems
       };
-      this.$http.patch("data/"+`${this.userID}`+".json", data);
+      this.$http.patch("data/" + `${this.userID}` + ".json", data);
     },
     updateUserMainCalories() {
       const data = {
@@ -226,13 +261,13 @@ export default {
           maintenanceCalories: this.$store.state.other.maintenanceCalories
         }
       };
-      this.$http.patch("data/"+`${this.userID}`+".json", data);
+      this.$http.patch("data/" + `${this.userID}` + ".json", data);
     },
     updateUserDailyEntry() {
       const userData = {
         dailyEntries: this.$store.state.other.dailyEntries
       };
-      this.$http.patch("data/"+`${this.userID}`+"/userData.json", userData);
+      this.$http.patch("data/" + `${this.userID}` + "/userData.json", userData);
     }
   }
 };

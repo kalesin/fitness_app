@@ -60,7 +60,7 @@
         <h3 class="panel-title">Ingredients:</h3>
       </div>
     </div>
-    <div class="addList col-sm-6 col-md-4">
+    <div class="addList">
       <!--  <div class="panel panel-success" v-for="(item, index) in recipes" :key="index"></div> -->
       <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
         <div class="panel-heading">

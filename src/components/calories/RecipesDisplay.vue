@@ -29,6 +29,7 @@
               @click="
       addPortionOfRecipe(index);
       addItemValue(itemToAdd);
+      setDoneAddingItem(true);
             updateAddedItems()"
             >
               <svg
@@ -205,7 +206,7 @@ export default {
       "setEditIndex",
       "createIngredientsTemp"
     ]),
-    ...mapActions("searchAndAdd", ["addItem", "addItemValue"]),
+    ...mapActions("searchAndAdd", ["addItem", "addItemValue", "setDoneAddingItem"]),
     ...mapActions("searchAndAdd4", ["setAddedItems"]),
     startEdit({ index }) {
       if (this.activeIndex == index) {

@@ -1,13 +1,9 @@
 <template>
   <div>
     <div class="recipes-button">
-      <button
-        class="btn btn-danger"
-        @click="
-        checkIfDelete(entryEditIndex)
+      <button class="btn btn-danger" @click="
         setEntryEditIndex(-1)
-        "
-      >Cancel Editing</button>
+        ">Cancel Editing</button>
     </div>
     <div class="mainFoods">
       <div class="searchbar panel panel-success">
@@ -38,10 +34,12 @@
       <div class="total">
         <div class="panel-heading details-delete">
           <h3 class="panel-title">
-            <div style="font-size: 30px">Date: {{ dailyEntries[entryEditIndex].date }}</div>
+            <div v-if="entryEditIndex===-2" style="font-size: 30px">Date: {{ dailyEntryTemp.date }}</div>
+            <div v-else style="font-size: 30px">Date: {{ dailyEntries[entryEditIndex].date }}</div>
           </h3>
           <div class="pull-right2">
             <button
+              :disabled="entryEditIndex==-2"
               class="btn-danger btn recipe-btn"
               @click="
           deleteEntry(entryEditIndex)
@@ -64,7 +62,7 @@
           <button
             class="btn-success btn recipe-btn"
             @click="
-          saveAddedItems({entryEditIndex, addedItems, totalForToday})
+          saveAddedItems({addedItems, totalForToday})
           updateUserDailyEntry()
           "
             :disabled="addedItems===[]"
@@ -163,10 +161,16 @@ export default {
           this.startEdit(this.addedItems.length - 1);
         }
       }
+    },
+    responseCount: {
+      handler() {
+        if (this.idx > -1) {
+          this.startEdit(this.idx);
+        }
+      }
     }
   },
   mounted() {
-    this.setAddedItems(this.dailyEntries[this.entryEditIndex].items);
     this.$refs.search.focus();
   },
   props: ["dateClicked"],
@@ -182,15 +186,29 @@ export default {
   computed: {
     ...mapGetters("searchAndAdd3", ["totalForToday"]),
     ...mapGetters("other", ["addedItemsTotal"]),
-    ...mapState("searchAndAdd3", ["addedItems", "query", "doneAddingItem"]),
+    ...mapState("searchAndAdd3", [
+      "addedItems",
+      "query",
+      "doneAddingItem",
+      "idx",
+      "responseCount",
+      "focus"
+    ]),
     ...mapState("other", [
       "ingredientsTemp",
       "dailyEntries",
       "entryEditIndex",
       "addedItemsTemp",
-      "maintenanceCalories"
+      "maintenanceCalories",
+      "dailyEntryTemp"
     ]),
-    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ]),
     query: {
       get() {
         return this.$store.state.searchAndAdd3.query;
@@ -207,17 +225,19 @@ export default {
       "searchFood",
       "addItem",
       "setAddedItems",
-      "setDoneAddingItem"
+      "setDoneAddingItem",
+      "setFocus"
     ]),
     ...mapActions("other", [
       "createAddedItemsTemp",
       "saveAddedItems",
       "setEntryEditIndex",
       "setEditEntries",
-      "deleteEntry"
+      "deleteEntry",
+      "setDailyEntryTemp"
     ]),
     startEdit(index) {
-      if (this.activeIndex === index) {
+      if (this.activeIndex === index && !this.focus) {
         this.activeIndex = -1;
       } else {
         this.quantity = "";
@@ -234,12 +254,7 @@ export default {
       const userData = {
         dailyEntries: this.$store.state.other.dailyEntries
       };
-      this.$http.patch("data/"+`${this.userID}`+"/userData.json", userData);
-    },
-    checkIfDelete(entryEditIndex) {
-      if (!this.dailyEntries[entryEditIndex].items.length) {
-        this.deleteEntry(entryEditIndex);
-      }
+      this.$http.patch("data/" + `${this.userID}` + "/userData.json", userData);
     }
   }
 };

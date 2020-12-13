@@ -1,6 +1,6 @@
 <template>
   <div class="mainFoods">
-    <div class="addList col-sm-6 col-md-4">
+    <div class="addList">
       <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
         <div class="panel-heading">
           <h3
@@ -54,9 +54,12 @@
               updateRecipeItems()"
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
             >Change</button>
-            <button class="btn btn-success" @click="
+            <button
+              class="btn btn-success"
+              @click="
             onRemoved({index})
-            updateRecipeItems()">Remove</button>
+            updateRecipeItems()"
+            >Remove</button>
           </div>
         </div>
       </div>
@@ -69,12 +72,7 @@
         <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal" total="recipe"></app-nutrient-box>
       </div>
       <div class="recipeInput">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Recipe name"
-          v-model="recipesName"
-        />
+        <input type="text" class="form-control" placeholder="Recipe name" v-model="recipesName" />
         <input
           type="number"
           class="form-control"
@@ -160,10 +158,16 @@ export default {
   watch: {
     addedItems: {
       handler() {
-        if(this.doneAddingItem){
+        if (this.doneAddingItem) {
           this.startEdit(this.addedItems.length - 1);
         }
-        
+      }
+    },
+    responseCount: {
+      handler() {
+        if (this.idx > -1) {
+          this.startEdit(this.idx);
+        }
       }
     }
   },
@@ -180,22 +184,26 @@ export default {
   },
   computed: {
     ...mapGetters("searchAndAdd2", ["totalForToday"]),
-    ...mapState("searchAndAdd2", ["addedItems", "doneAddingItem"]),
-    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
-    
+    ...mapState("searchAndAdd2", [
+      "addedItems",
+      "doneAddingItem",
+      "idx",
+      "responseCount",
+      "focus"
+    ]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ])
   },
   methods: {
-    ...mapActions("searchAndAdd2", [
-      "onChanged",
-      "onRemoved",
-    ]),
-    ...mapActions("other", [
-      "addToRecipes",
-      "nameRecipe",
-      "setPortions"
-    ]),
-    startEdit( index ) {
-      if (this.activeIndex == index) {
+    ...mapActions("searchAndAdd2", ["onChanged", "onRemoved", "setFocus"]),
+    ...mapActions("other", ["addToRecipes", "nameRecipe", "setPortions"]),
+    startEdit(index) {
+      if (this.activeIndex == index && !this.focus) {
         this.activeIndex = -1;
       } else {
         this.quantity = "";
@@ -211,15 +219,15 @@ export default {
     },
     updateRecipeItems() {
       const data = {
-        currentRecipeItems: this.$store.state.searchAndAdd2.addedItems,
+        currentRecipeItems: this.$store.state.searchAndAdd2.addedItems
       };
-      this.$http.patch("data/"+`${this.userID}`+".json", data);
+      this.$http.patch("data/" + `${this.userID}` + ".json", data);
     },
-    updateRecipes(){
-       const data = {
+    updateRecipes() {
+      const data = {
         recipes: this.$store.state.other.recipes
       };
-      this.$http.patch("data/"+`${this.userID}`+".json", data);
+      this.$http.patch("data/" + `${this.userID}` + ".json", data);
     }
   }
 };

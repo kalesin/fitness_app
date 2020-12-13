@@ -1,6 +1,7 @@
 <template>
-    <div class="col-sm-6 col-md-4 main">
+
       <div class="right-container">
+        <app-recipes-display type="edit" v-if="showRecipe"></app-recipes-display>
         <div class="recipes-button">
           <button
             class="btn btn-success"
@@ -18,6 +19,7 @@
         "
           >Cancel Editing</button>
         </div>
+        
         <div class="searchbar panel panel-success">
           <div class="panel-heading">
             <h3 class="panel-title">Search for the ingredients you want to add!</h3>
@@ -66,11 +68,12 @@
             </div>
           </div>
         </div>
-      </div>
-      <app-recipes-display type="edit" v-if="showRecipe"></app-recipes-display>
+        
       <app-edit-recipes v-if="!(editIndex===-1)"></app-edit-recipes>
       <app-added-recipes class="added-foods" v-else></app-added-recipes>
-    </div>
+      </div>
+      
+    
 </template>
 
 <style scoped>
@@ -103,8 +106,8 @@
 }
 .item {
 }
-.danger {
-  border: 1px solid red;
+.btn-danger {
+  margin: 10px 0;
 }
 .pull-left {
   width: 55%;

@@ -42,7 +42,7 @@ const searchAndAdd = {
         INCREMENT_RESPONSE_COUNT(state) {
             state.responseCount++;
         },
-       SET_FOCUS(state, value) {
+        SET_FOCUS(state, value) {
             state.focus = value;
         },
         CREATE_ITEM_TO_ADD(state, value) {
@@ -134,7 +134,24 @@ const searchAndAdd = {
             commit("SET_QUANTITY", "")
         },
         addItemValue({ state, commit }, payload) {
-            commit("ADD_ITEM_VALUE", payload)
+            let exists = false;
+            let index = -1;
+            for (let i = 0; i < state.addedItems.length; i++) {
+                if (state.addedItems[i].NAME === payload.NAME) {
+                    exists = true;
+                    index = i;
+                }
+            }
+            if (exists == true) {
+                commit("SET_INDEX", index)
+                commit("INCREMENT_RESPONSE_COUNT")
+                commit("SET_FOCUS", true)
+            } else {
+                commit("ADD_ITEM_VALUE", payload)
+            }
+
+
+
         },
         onChanged({ state, commit }, { item, index }) {
             item.QUANTITY = parseFloat(item.CHANGED_QUANTITY);

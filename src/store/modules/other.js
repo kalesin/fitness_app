@@ -22,7 +22,11 @@ const other = {
         addedItemsTemp: [],
         //calendar
         dailyEntryTemp: {},
+        entryTodayIndex: -1,
+        replaceDialogue: false,
         editEntries: false,
+        daysUnix: [],
+        compareCalendar: [],
 
     }),
     mutations: {
@@ -135,7 +139,7 @@ const other = {
             state.dailyEntries = value;
         },
         ADD_DAILY_ENTRY(state, payload) {
-            state.dailyEntries.push({ date: payload.today, unix: new Date(payload.today.split("-").join(".")).getTime()/1000, items: payload.addedItems, total: payload.totalForToday })
+            state.dailyEntries.push({ date: payload.today, unix: new Date(payload.today.split("-").join(".")).getTime() / 1000, items: payload.addedItems, total: payload.totalForToday })
         },
         SET_RECIPES(state, value) {
             state.recipes = value;
@@ -153,8 +157,8 @@ const other = {
             state.addedItemsTemp.splice(index, 1);
         },
         SAVE_ADDEDITEMS(state, payload) {
-            state.dailyEntries[payload.entryEditIndex].items = payload.addedItems;
-            state.dailyEntries[payload.entryEditIndex].total = payload.totalForToday;
+            state.dailyEntryTemp.items = payload.addedItems;
+            state.dailyEntryTemp.total = payload.totalForToday;
         },
         //calendar
         SET_DAILY_ENTRY_TEMP(state, payload) {
@@ -162,6 +166,21 @@ const other = {
         },
         SET_EDIT_ENTRIES(state, value) {
             state.editEntries = value;
+        },
+        PUSH_TEMP_TO_ENTRIES(state) {
+            state.dailyEntries.push(state.dailyEntryTemp);
+        },
+        SET_COMPARE_CALENDAR(state, value) {
+            state.compareCalendar = value
+        },
+        SET_DAYS_UNIX(state, value) {
+            state.daysUnix = value
+        },
+        SET_ENTRY_TODAY_INDEX(state, value) {
+            state.entryTodayIndex = value;
+        },
+        OVERWRITE_ENTRY(state) {
+            state.dailyEntries.splice(state.entryTodayIndex, 1);
         }
     },
     actions: {
@@ -237,6 +256,13 @@ const other = {
             commit("searchAndAdd/RESET_ADDED_ITEMS", [], { root: true })
             commit("SORT_DAILY_ENTRIES")
         },
+        overwriteDailyEntry({ state, commit }, payload){
+            commit("OVERWRITE_ENTRY")
+
+            commit("ADD_DAILY_ENTRY", payload)
+            commit("searchAndAdd/RESET_ADDED_ITEMS", [], { root: true })
+            commit("SORT_DAILY_ENTRIES")
+        },
         setEntryEditIndex({ state, commit }, payload) {
             commit("SET_ENTRY_EDIT_INDEX", payload)
         },
@@ -249,6 +275,7 @@ const other = {
         },
         saveAddedItems({ state, commit }, payload) {
             commit("SAVE_ADDEDITEMS", payload)
+            commit("PUSH_TEMP_TO_ENTRIES")
             commit("SET_ENTRY_EDIT_INDEX", -1)
             commit("SORT_DAILY_ENTRIES")
         },
@@ -258,6 +285,12 @@ const other = {
         },
         setEditEntries({ state, commit }, value) {
             commit("SET_EDIT_ENTRIES", value)
+        },
+        setDaysUnix({ state, commit }, value) {
+            commit("SET_DAYS_UNIX", value)
+        },
+        setEntryTodayIndex({ state, commit }, value) {
+            commit("SET_ENTRY_TODAY_INDEX", value)
         }
 
 
@@ -277,6 +310,22 @@ const other = {
             }
             return ingredientTotal;
         },
+        compareCalendar(state) {
+            let same = state.daysUnix;
+            for (let i = 0; i < same.length; i++) {
+                for (let j = 0; j < state.dailyEntries.length; j++) {
+                    if (same[i].date === state.dailyEntries[j].date) {
+                        same[i] = {
+                            ...same[i],
+                            entryExists: true,
+                            entry: state.dailyEntries[j]
+                        };
+                    }
+                }
+            }
+            return same;
+
+        }
     }
 }
 export default other
