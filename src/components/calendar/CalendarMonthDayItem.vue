@@ -54,7 +54,7 @@ export default {
             ? `${(this.day.entry.total[0] / this.maintenanceCalories) * 100}%`
             : "0%"
       };
-    }
+    },
   },
   methods: {
     selectDate() {

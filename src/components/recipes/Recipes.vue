@@ -122,7 +122,6 @@ import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   mounted() {
-    this.getData();
     this.$refs.search.focus();
   },
   components: {

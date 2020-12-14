@@ -10,11 +10,17 @@ const searchAndAdd = {
         api_id: "8f153d95",
         api_url: "https://api.edamam.com/api/food-database/v2/parser?",
         query: "",
+        query2: "",
+        query3: "",
+        query4: "",
         responseData: 0,
-        quantity: 1,
+        quantity: "",
         nutrients: 0,
         nutrientsArray: [],
         addedItems: [],
+        addedItems2: [],
+        addedItems3: [],
+        addedItems4: [],
         itemToAdd: [],
         idx: -1,
         doneAddingItem: false,
@@ -51,7 +57,6 @@ const searchAndAdd = {
                 NAME: state.nutrients.NAME,
                 NUTRIENTS: state.nutrientsArray,
                 QUANTITY: 1,
-                CHANGED_QUANTITY: "",
                 CALCULATED_NUTRIENTS: state.nutrientsArray.map(
                     x => Math.round(x * 1 * 100) / 100
                 ),
@@ -165,11 +170,11 @@ const searchAndAdd = {
 
 
         },
-        onChanged({ state, commit }, { item, index, userID, moduleIndex }) {
+        onChanged({ state, commit }, { item, index, userID, moduleIndex, quantity }) {
 
-            if (parseFloat(item.CHANGED_QUANTITY) > 0 && item.CHANGED_QUANTITY != '') {
-                item.QUANTITY = parseFloat(item.CHANGED_QUANTITY);
-                item.CHANGED_QUANTITY = "";
+            if (parseFloat(quantity) > 0 && quantity != '') {
+                item.QUANTITY = parseFloat(quantity);
+                commit("SET_QUANTITY", "")
                 item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
                     x => Math.round(x * item.QUANTITY * 100) / 100
                 );

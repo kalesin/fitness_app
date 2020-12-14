@@ -97,19 +97,19 @@
               class="form-control"
               step="0.5"
               placeholder="Amount"
-              v-model="item.CHANGED_QUANTITY"
+              v-model="quantity"
               @blur="setFocus(false)"
               @keyup.enter="
-              onChanged({item, index, moduleIndex})
+              onChanged({item, index, moduleIndex, quantity})
               "
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
               @click="
-              onChanged({item, index})
+              onChanged({item, index, moduleIndex, quantity})
               "
-              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
+              :disabled="parseFloat(quantity)<=0"
             >Change</button>
             <button
               class="btn btn-success"
@@ -123,6 +123,128 @@
     </div>
   </div>
 </template>
+
+<script>
+import nutrientBox from "../calories/nutrientBox.vue";
+import { mapGetters, mapState, mapActions } from "vuex";
+
+export default {
+  watch: {
+    addedItems: {
+      handler() {
+        if (this.doneAddingItem) {
+          this.startEdit(this.addedItems.length - 1);
+        }
+      }
+    },
+    responseCount: {
+      handler() {
+        if (this.idx > -1) {
+          this.startEdit(this.idx);
+        }
+      }
+    }
+  },
+  components: {
+    appNutrientBox: nutrientBox
+  },
+  data() {
+    return {
+      activeIndex: -1,
+      moduleIndex: 4
+    };
+  },
+  computed: {
+    ...mapGetters("searchAndAdd4", ["totalForToday"]),
+    ...mapGetters("other", ["ingredientsTotal"]),
+    ...mapState("searchAndAdd4", [
+      "addedItems",
+      "doneAddingItem",
+      "idx",
+      "responseCount",
+      "focus"
+    ]),
+    ...mapState("other", [
+      "recipes",
+      "editIndex",
+      "showRecipe",
+      "ingredientsTemp"
+    ]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ]),
+    recipesPortions: {
+      get() {
+        return this.$store.state.other.recipesPortions;
+      },
+      set(value) {
+        this.$store.dispatch("other/setPortions", value);
+      }
+    },
+    recipesName: {
+      get() {
+        return this.$store.state.other.recipesName;
+      },
+      set(value) {
+        this.$store.dispatch("other/nameRecipe", value);
+      }
+    },
+    quantity: {
+      get() {
+        return this.$store.state.searchAndAdd4.quantity;
+      },
+      set(value) {
+        this.$store.dispatch("searchAndAdd4/setQuantity", value);
+      }
+    },
+    addedItemsAreSame() {
+      if (JSON.stringify(this.recipes[this.editIndex].INGREDIENTS) ==
+        JSON.stringify(this.addedItems)
+      ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  methods: {
+    ...mapActions("searchAndAdd4", [
+      "onChanged",
+      "onRemoved",
+      "setAddedItems",
+      "setFocus"
+    ]),
+    ...mapActions("other", [
+      "addToRecipes",
+      "nameRecipe",
+      "setPortions",
+      "changeRecipeName",
+      "changeRecipePortions",
+      "changeRecipeIngredient",
+      "saveIngredients",
+      "removeRecipe",
+      "setEditIndex",
+      "removeIngredient",
+      "createIngredientsTemp"
+    ]),
+    startEdit(index) {
+      if (this.activeIndex === index && !this.focus) {
+        this.activeIndex = -1;
+      } else {
+        this.quantity = "";
+        this.activeIndex = index;
+        setTimeout(() => {
+          this.$refs.inputAmount[0].focus();
+        }, 0);
+      }
+    }
+  }
+};
+</script>
 
 <style scoped>
 .details-delete {
@@ -207,123 +329,3 @@ svg {
   width: 20px;
 }
 </style>
-
-<script>
-import nutrientBox from "../calories/nutrientBox.vue";
-import { mapGetters, mapState, mapActions } from "vuex";
-
-export default {
-  watch: {
-    addedItems: {
-      handler() {
-        if (this.doneAddingItem) {
-          this.startEdit(this.addedItems.length - 1);
-        }
-      }
-    },
-    responseCount: {
-      handler() {
-        if (this.idx > -1) {
-          this.startEdit(this.idx);
-        }
-      }
-    }
-  },
-  components: {
-    appNutrientBox: nutrientBox
-  },
-  data() {
-    return {
-      activeIndex: -1,
-      quantity: "",
-      moduleIndex: 4
-    };
-  },
-  computed: {
-    ...mapGetters("searchAndAdd4", ["totalForToday"]),
-    ...mapGetters("other", ["ingredientsTotal"]),
-    ...mapState("searchAndAdd4", [
-      "addedItems",
-      "doneAddingItem",
-      "idx",
-      "responseCount",
-      "focus"
-    ]),
-    ...mapState("other", [
-      "recipes",
-      "editIndex",
-      "showRecipe",
-      "ingredientsTemp"
-    ]),
-    ...mapState("firebase", [
-      "password",
-      "email",
-      "loggedIn",
-      "userData",
-      "userID"
-    ]),
-    recipesPortions: {
-      get() {
-        return this.$store.state.other.recipesPortions;
-      },
-      set(value) {
-        this.$store.dispatch("other/setPortions", value);
-      }
-    },
-    recipesName: {
-      get() {
-        return this.$store.state.other.recipesName;
-      },
-      set(value) {
-        this.$store.dispatch("other/nameRecipe", value);
-      }
-    },
-    addedItemsAreSame() {
-      console.log(JSON.stringify(this.recipes[this.editIndex].INGREDIENTS))
-      console.log(JSON.stringify(this.addedItems))
-      console.log(JSON.stringify(this.recipes[this.editIndex].INGREDIENTS) ===
-        JSON.stringify(this.addedItems))
-      if (
-        JSON.parse(JSON.stringify(this.recipes[this.editIndex].INGREDIENTS)) ===
-        JSON.parse(JSON.stringify(this.addedItems))
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-  },
-  methods: {
-    ...mapActions("searchAndAdd4", [
-      "onChanged",
-      "onRemoved",
-      "setAddedItems",
-      "setFocus"
-    ]),
-    ...mapActions("other", [
-      "addToRecipes",
-      "nameRecipe",
-      "setPortions",
-      "changeRecipeName",
-      "changeRecipePortions",
-      "changeRecipeIngredient",
-      "saveIngredients",
-      "removeRecipe",
-      "setEditIndex",
-      "removeIngredient",
-      "createIngredientsTemp"
-    ]),
-    startEdit(index) {
-      if (this.activeIndex === index && !this.focus) {
-        this.activeIndex = -1;
-      } else {
-        this.quantity = "";
-        this.activeIndex = index;
-        setTimeout(() => {
-          this.$refs.inputAmount[0].focus();
-        }, 0);
-      }
-    }
-  }
-};
-</script>

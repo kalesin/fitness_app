@@ -7,12 +7,12 @@
 
     <v-form v-if="clickedSignIn" ref="form" lazy-validation label="Sign In">
       <v-text-field v-model="email" label="E-mail" required></v-text-field>
-      <v-text-field v-model="password" label="Password" required></v-text-field>
+      <v-text-field v-model="password" type="password" label="Password" required></v-text-field>
       <v-btn color="success" class="mr-4" @click="signIn">Sign In</v-btn>
     </v-form>
     <v-form v-if="clickedRegister" ref="form" lazy-validation label="Register">
       <v-text-field v-model="email" label="E-mail" :rules="emailRules" required></v-text-field>
-      <v-text-field v-model="password" label="Password" :rules="passwordRules" required></v-text-field>
+      <v-text-field v-model="password" type="password" label="Password" :rules="passwordRules" required></v-text-field>
       <v-btn color="error" class="mr-4" @click="register">Register</v-btn>
     </v-form>
   </div>

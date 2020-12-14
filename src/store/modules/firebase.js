@@ -30,7 +30,7 @@ const firebase = {
         async getData({ state, commit }, payload) {
             let id = state.userID;
             console.log(id);
-            return Vue.http.get('data/'+`${id}`+'.json')
+            return Vue.http.get(`data/${id}.json`)
             .then(response => response.json())
                 .then(data => {
                     console.log(data)
@@ -60,8 +60,9 @@ const firebase = {
         setEmail({state, commit}, value) {
             commit("SET_EMAIL", value);
         },
-        setUserID({state, commit}, value) {
-            commit("SET_USERID", value);
+        setUserID({state, commit, dispatch}, value) {
+            commit("SET_USERID", value)
+            dispatch("getData")
             /* auth.onAuthStateChanged(user => {
                 if(user) {
                     

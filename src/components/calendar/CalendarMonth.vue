@@ -38,10 +38,6 @@ dayjs.extend(weekday);
 dayjs.extend(weekOfYear);
 
 export default {
-  mounted() {
-    this.getData();
-  },
-
   name: "CalendarMonth",
 
   components: {
@@ -53,11 +49,12 @@ export default {
   data() {
     return {
       selectedDate: dayjs(),
-      dateClicked: ""
+      dateClicked: "",
+      message: ""
     };
   },
   watch: {
-    dailyEntries: {
+    entryEditIndex: {
       handler() {
         this.compareCalendarToEntries;
       }

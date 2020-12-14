@@ -47,20 +47,20 @@
               class="form-control"
               step="0.5"
               placeholder="Amount"
-              v-model="item.CHANGED_QUANTITY"
+              v-model="quantity"
               @blur="setFocus(false)"
               @keyup.enter="
-              onChanged({item, index, userID})"
+              onChanged({item, index, userID, moduleIndex, quantity})"
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
               @click="
-              onChanged({item, index, userID})"
-              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0 || item.CHANGED_QUANTITY === ''"
+              onChanged({item, index, userID, moduleIndex, quantity})"
+              :disabled="parseFloat(quantity)<=0 || quantity === ''"
             >Change</button>
             <button class="btn btn-success" @click="
-            onRemoved({index, userID})">Remove</button>
+            onRemoved({index, userID, moduleIndex})">Remove</button>
           </div>
         </div>
       </div>
@@ -107,56 +107,6 @@
   </div>
 </template>
 
-<style scoped>
-.mainFoods {
-  width: 100%;
-  position: relative;
-  border: 1px solid green;
-  border-radius: 5px;
-  overflow: hidden;
-}
-.addList {
-  width: 100%;
-  height: 600px;
-  flex-direction: column;
-  padding: 0;
-  overflow: auto;
-  flex-wrap: wrap;
-}
-.total {
-  /* 
-  position: absolute;
-  bottom: 0; */
-  width: 100%;
-  margin: 0px;
-  display: flex;
-  border-color: #d6e9c6;
-  flex-direction: column;
-}
-.panel-heading {
-  background-color: #dff0d8;
-}
-.pull-left {
-  margin: 10px 0px;
-  justify-content: space-between;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-.btn {
-  width: 25%;
-}
-.form-control {
-  width: 30%;
-}
-.panel {
-  margin: 0;
-}
-svg {
-  width: 20px;
-}
-</style>
-
 <script>
 import dayjs from "dayjs";
 import nutrientBox from "./nutrientBox.vue";
@@ -182,7 +132,6 @@ export default {
   data() {
     return {
       activeIndex: -1,
-      quantity: "",
       savedCalories: 0,
       showDialogue: false,
       moduleIndex: 1
@@ -240,7 +189,15 @@ export default {
         disabled=true
       } 
       return disabled
-    }
+    },
+    quantity: {
+      get() {
+        return this.$store.state.searchAndAdd.quantity;
+      },
+      set(value) {
+        this.$store.dispatch("searchAndAdd/setQuantity", value);
+      }
+    },
   },
   methods: {
     ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
@@ -263,3 +220,53 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.mainFoods {
+  width: 100%;
+  position: relative;
+  border: 1px solid green;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.addList {
+  width: 100%;
+  height: 600px;
+  flex-direction: column;
+  padding: 0;
+  overflow: auto;
+  flex-wrap: wrap;
+}
+.total {
+  /* 
+  position: absolute;
+  bottom: 0; */
+  width: 100%;
+  margin: 0px;
+  display: flex;
+  border-color: #d6e9c6;
+  flex-direction: column;
+}
+.panel-heading {
+  background-color: #dff0d8;
+}
+.pull-left {
+  margin: 10px 0px;
+  justify-content: space-between;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.btn {
+  width: 25%;
+}
+.form-control {
+  width: 30%;
+}
+.panel {
+  margin: 0;
+}
+svg {
+  width: 20px;
+}
+</style>

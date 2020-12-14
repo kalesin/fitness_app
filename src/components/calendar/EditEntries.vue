@@ -42,8 +42,7 @@
               :disabled="entryEditIndex==-2"
               class="btn-danger btn recipe-btn"
               @click="
-          deleteEntry(entryEditIndex)
-           updateUserDailyEntry()
+          deleteEntry({entryEditIndex, userID})
           "
             >Delete Entry</button>
           </div>
@@ -61,10 +60,9 @@
           <button
             class="btn-success btn recipe-btn"
             @click="
-          saveAddedItems({addedItems, totalForToday})
-          updateUserDailyEntry()
+          saveAddedItems({addedItems, totalForToday, userID})
           "
-            :disabled="addedItems===[]"
+            :disabled="addedItems.length==0"
           >Save Changes</button>
           <button
             class="btn-danger btn recipe-btn"
@@ -121,23 +119,23 @@
                 class="form-control"
                 step="0.5"
                 placeholder="Amount"
-                v-model="item.CHANGED_QUANTITY"
+                v-model="quantity"
                 @keyup.enter="
-              onChanged({item, index})
+              onChanged({item, index, moduleIndex, quantity})
               "
               />
               <div>✕ 100g</div>
               <button
                 class="btn btn-success"
                 @click="
-              onChanged({item, index})
+              onChanged({item, index, moduleIndex, quantity})
               "
-                :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
+                :disabled="parseFloat(quantity)<=0"
               >Change</button>
               <button
                 class="btn btn-success"
                 @click="
-            onRemoved({index})
+            onRemoved({item, index, moduleIndex})
             "
               >Remove</button>
             </div>
@@ -179,7 +177,7 @@ export default {
   data() {
     return {
       activeIndex: -1,
-      quantity: ""
+      moduleIndex: 3
     };
   },
   computed: {
@@ -215,7 +213,15 @@ export default {
       set(value) {
         this.$store.dispatch("searchAndAdd3/setQuery", value);
       }
-    }
+    },
+    quantity: {
+      get() {
+        return this.$store.state.searchAndAdd3.quantity;
+      },
+      set(value) {
+        this.$store.dispatch("searchAndAdd3/setQuantity", value);
+      }
+    },
   },
   methods: {
     ...mapActions("searchAndAdd3", [

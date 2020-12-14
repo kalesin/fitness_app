@@ -200,7 +200,7 @@ const other = {
             commit("ADD_TO_RECIPES", { totalForToday, addedItems, recipesName, recipesPortions })
             commit("RESET_PORTIONS_AND_NAME")
             commit("searchAndAdd2/RESET_ADDED_ITEMS_RECIPES", userID, { root: true })
-
+            
             const data = {
                 recipes: state.recipes
               };
@@ -301,9 +301,13 @@ const other = {
         setEntryEditIndex({ state, commit }, payload) {
             commit("SET_ENTRY_EDIT_INDEX", payload)
         },
-        deleteEntry({ state, commit }, value) {
-            commit("DELETE_ENTRY", value)
+        deleteEntry({ state, commit }, {entryEditIndex, userID}) {
+            commit("DELETE_ENTRY", entryEditIndex)
             commit("SET_ENTRY_EDIT_INDEX", -1)
+            const userData = {
+                dailyEntries: state.dailyEntries
+              };
+              axios.patch(`${state.axios_url}`+ `${userID}` + "/userData.json", userData)
         },
         createAddedItemsTemp({ state, commit }, index) {
             commit("CREATE_ADDEDITEMS_TEMP", index)
@@ -314,6 +318,10 @@ const other = {
             commit("PUSH_TEMP_TO_ENTRIES")
             commit("SET_ENTRY_EDIT_INDEX", -1)
             commit("SORT_DAILY_ENTRIES")
+            const userData = {
+                dailyEntries: state.dailyEntries
+              };
+              axios.patch(`${state.axios_url}`+ `${payload.userID}` + "/userData.json", userData)
         },
         //calendar
         setDailyEntryTemp({ state, commit }, payload) {
