@@ -43,7 +43,6 @@
               class="btn-danger btn recipe-btn"
               @click="
           deleteEntry(entryEditIndex)
-          setEntryEditIndex(-1)
            updateUserDailyEntry()
           "
             >Delete Entry</button>

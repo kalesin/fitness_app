@@ -5,6 +5,7 @@ import Vue from 'vue';
 const searchAndAdd = {
     namespaced: true,
     state: () => ({
+        axios_url: "https://vuejs-stock-trader-f7694.firebaseio.com/data/",
         api_key: "4d036c5868dfd862b3d383c4e2d872fc",
         api_id: "8f153d95",
         api_url: "https://api.edamam.com/api/food-database/v2/parser?",
@@ -63,8 +64,19 @@ const searchAndAdd = {
         RESET_RESPONSE(state, value) {
             state.responseData = value;
         },
-        RESET_ADDED_ITEMS(state, value) {
-            state.addedItems = value;
+        RESET_ADDED_ITEMS(state, userID) {
+            state.addedItems = [];
+            const data = {
+                todaysItems: state.addedItems
+            };
+            axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+        },
+        RESET_ADDED_ITEMS_RECIPES(state, userID) {
+            state.addedItems = [];
+            const data = {
+                currentRecipeItems: state.addedItems
+            };
+            axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
         ADD_ITEM(state) {
             state.addedItems.push(state.itemToAdd);
@@ -153,18 +165,43 @@ const searchAndAdd = {
 
 
         },
-        onChanged({ state, commit }, { item, index }) {
-            item.QUANTITY = parseFloat(item.CHANGED_QUANTITY);
-            item.CHANGED_QUANTITY = "";
+        onChanged({ state, commit }, { item, index, userID, moduleIndex }) {
 
-            item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
-                x => Math.round(x * item.QUANTITY * 100) / 100
-            );
-            commit("CHANGE_ITEM", { item, index })
+            if (parseFloat(item.CHANGED_QUANTITY) > 0 && item.CHANGED_QUANTITY != '') {
+                item.QUANTITY = parseFloat(item.CHANGED_QUANTITY);
+                item.CHANGED_QUANTITY = "";
+                item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
+                    x => Math.round(x * item.QUANTITY * 100) / 100
+                );
+                commit("CHANGE_ITEM", { item, index })
+            }
 
+            if (moduleIndex == 1) {
+                const data = {
+                    todaysItems: state.addedItems
+                };
+                axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+            } else if (moduleIndex == 2) {
+                const data = {
+                    currentRecipeItems: state.addedItems
+                };
+                axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+            }
         },
-        onRemoved({ state, commit }, { index }) {
-            commit("REMOVE_ITEM", { index })
+        onRemoved({ state, commit }, { index, userID, moduleIndex }) {
+            commit("REMOVE_ITEM", index)
+
+            if (moduleIndex == 1) {
+                const data = {
+                    todaysItems: state.addedItems
+                };
+                axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+            } else if (moduleIndex == 2) {
+                const data = {
+                    currentRecipeItems: state.addedItems
+                };
+                axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+            }
         },
         setQuery({ state, commit }, value) {
             commit("SET_QUERY", value)
@@ -176,6 +213,7 @@ const searchAndAdd = {
         },
         setAddedItems({ state, commit }, payload) {
             commit("SET_ADDED_ITEMS", payload)
+            commit("other/RESET_PORTIONS_AND_NAME",0 ,{root: true})
         },
         setFocus({ state, commit }, value) {
             commit("SET_FOCUS", value)

@@ -42,23 +42,21 @@
               step="0.5"
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
+              @blur="setFocus(false)"
               @keyup.enter="
-              onChanged({item, index})
-              updateRecipeItems()"
+              onChanged({item, index, userID, moduleIndex})"
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
               @click="
-              onChanged({item, index})
-              updateRecipeItems()"
-              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0"
+              onChanged({item, index, userID, moduleIndex})"
+              :disabled="parseFloat(item.CHANGED_QUANTITY)<=0 || item.CHANGED_QUANTITY === ''"
             >Change</button>
             <button
               class="btn btn-success"
               @click="
-            onRemoved({index})
-            updateRecipeItems()"
+            onRemoved({index, userID, moduleIndex})"
             >Remove</button>
           </div>
         </div>
@@ -83,12 +81,9 @@
         <button
           class="btn btn-success"
           @click=" 
-             addToRecipes({totalForToday, addedItems, recipesName, recipesPortions})
-             updateRecipeItems()
-             updateRecipes() 
-             resetInputs()
+             addToRecipes({totalForToday, addedItems, recipesName, recipesPortions, userID})
               "
-          :disabled="parseFloat(recipesPortions)<=0 || recipesName === ''"
+          :disabled="parseFloat(recipesPortions)<=0 || recipesName === '' || addedItems.length == 0"
         >Add Recipe</button>
       </div>
     </div>
@@ -178,8 +173,7 @@ export default {
     return {
       activeIndex: -1,
       quantity: "",
-      recipesName: "",
-      recipesPortions: 0
+      moduleIndex: 2
     };
   },
   computed: {
@@ -197,7 +191,23 @@ export default {
       "loggedIn",
       "userData",
       "userID"
-    ])
+    ]),
+     recipesPortions: {
+      get() {
+        return this.$store.state.other.recipesPortions;
+      },
+      set(value) {
+        this.$store.dispatch("other/setPortions", value);
+      }
+    },
+    recipesName: {
+      get() {
+        return this.$store.state.other.recipesName;
+      },
+      set(value) {
+        this.$store.dispatch("other/nameRecipe", value);
+      }
+    },
   },
   methods: {
     ...mapActions("searchAndAdd2", ["onChanged", "onRemoved", "setFocus"]),
@@ -213,22 +223,6 @@ export default {
         }, 0);
       }
     },
-    resetInputs() {
-      this.recipesName = "";
-      this.recipesPortions = 0;
-    },
-    updateRecipeItems() {
-      const data = {
-        currentRecipeItems: this.$store.state.searchAndAdd2.addedItems
-      };
-      this.$http.patch("data/" + `${this.userID}` + ".json", data);
-    },
-    updateRecipes() {
-      const data = {
-        recipes: this.$store.state.other.recipes
-      };
-      this.$http.patch("data/" + `${this.userID}` + ".json", data);
-    }
   }
 };
 </script>

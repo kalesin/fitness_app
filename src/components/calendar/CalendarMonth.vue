@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="entryEditIndex===-1" class="calendar-month">
+    <div class="calendar-month">
       <div class="calendar-month-header">
         <CalendarDateSelector
           :current-date="today"
@@ -21,7 +21,6 @@
         />
       </ol>
     </div>
-    <EditEntries v-else :dateClicked="dateClicked"></EditEntries>
   </div>
 </template>
 
@@ -48,8 +47,7 @@ export default {
   components: {
     CalendarMonthDayItem,
     CalendarDateSelector,
-    CalendarWeekdays,
-    EditEntries
+    CalendarWeekdays
   },
 
   data() {
@@ -59,7 +57,7 @@ export default {
     };
   },
   watch: {
-    entryEditIndex: {
+    dailyEntries: {
       handler() {
         this.compareCalendarToEntries;
       }

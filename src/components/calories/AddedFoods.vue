@@ -50,23 +50,17 @@
               v-model="item.CHANGED_QUANTITY"
               @blur="setFocus(false)"
               @keyup.enter="
-              onChanged({item, index})
-              updateAddedItems()"
+              onChanged({item, index, userID})"
             />
             <div>✕ 100g</div>
             <button
               class="btn btn-success"
               @click="
-              onChanged({item, index})
-              updateAddedItems()"
+              onChanged({item, index, userID})"
               :disabled="parseFloat(item.CHANGED_QUANTITY)<=0 || item.CHANGED_QUANTITY === ''"
             >Change</button>
-            <button
-              class="btn btn-success"
-              @click="
-            onRemoved({index})
-            updateAddedItems()"
-            >Remove</button>
+            <button class="btn btn-success" @click="
+            onRemoved({index, userID})">Remove</button>
           </div>
         </div>
       </div>
@@ -84,22 +78,25 @@
           <button
             class="btn btn-success"
             @click="
-            setMaintenanceCalories(savedCalories)
-            updateUserMainCalories()"
+            setMaintenanceCalories({savedCalories, userID})"
             :disabled="parseFloat(savedCalories)<=0"
           >Set</button>
 
           <button
-          v-if="entryTodayIndex==-1"
+            v-if="entryTodayIndex==-1"
             class="btn btn-success"
             @click="
-            addDailyEntry({today, addedItems, totalForToday})
-            updateUserDailyEntry()
-            updateAddedItems()"
-            :disabled="addedItems===[]"
+            addDailyEntry({today, addedItems, totalForToday, userID})"
+            :disabled="isDisabled"
           >Save today</button>
 
-          <v-btn v-else color="success" large @click.stop="showDialogue=true">Save today</v-btn>
+          <v-btn
+            v-else
+            color="success"
+            large
+            @click.stop="showDialogue=true"
+            :disabled="isDisabled"
+          >Save today</v-btn>
           <app-entry-dialogue :visible="showDialogue" @close="showDialogue=false"></app-entry-dialogue>
         </div>
       </div>
@@ -169,12 +166,14 @@ import EntryDialogue from "./EntryDialogue";
 
 export default {
   mounted() {
-    let index = this.dailyEntries.findIndex((element)=>{element.date === this.today});
-      if (index!= -1) {
-        this.setEntryTodayIndex(index);
-      } else {
-        this.setEntryTodayIndex(-1);
-      }
+    let index = this.dailyEntries.findIndex(element => {
+      element.date === this.today;
+    });
+    if (index != -1) {
+      this.setEntryTodayIndex(index);
+    } else {
+      this.setEntryTodayIndex(-1);
+    }
   },
   components: {
     appNutrientBox: nutrientBox,
@@ -185,7 +184,8 @@ export default {
       activeIndex: -1,
       quantity: "",
       savedCalories: 0,
-      showDialogue: false
+      showDialogue: false,
+      moduleIndex: 1
     };
   },
   watch: {
@@ -195,10 +195,10 @@ export default {
           this.startEdit(this.addedItems.length - 1);
         }
         for (let i = 0; i < this.dailyEntries.length; i++) {
-      if (this.dailyEntries[i].date === this.today) {
-        this.setEntryTodayIndex(i);
-      }
-    }
+          if (this.dailyEntries[i].date === this.today) {
+            this.setEntryTodayIndex(i);
+          }
+        }
       }
     },
     responseCount: {
@@ -218,8 +218,12 @@ export default {
       "responseCount",
       "focus"
     ]),
-    ...mapState("other", ["maintenanceCalories", "dailyEntries", "entryTodayExists",
-        "entryTodayIndex"]),
+    ...mapState("other", [
+      "maintenanceCalories",
+      "dailyEntries",
+      "entryTodayExists",
+      "entryTodayIndex"
+    ]),
     ...mapState("firebase", [
       "password",
       "email",
@@ -229,6 +233,13 @@ export default {
     ]),
     today() {
       return dayjs().format("YYYY-MM-DD");
+    },
+    isDisabled() {
+      let disabled = false;
+      if (this.addedItems.length == 0) {
+        disabled=true
+      } 
+      return disabled
     }
   },
   methods: {
@@ -248,26 +259,6 @@ export default {
           this.$refs.inputAmount[0].focus();
         }, 0);
       }
-    },
-    updateAddedItems() {
-      const data = {
-        todaysItems: this.$store.state.searchAndAdd.addedItems
-      };
-      this.$http.patch("data/" + `${this.userID}` + ".json", data);
-    },
-    updateUserMainCalories() {
-      const data = {
-        userData: {
-          maintenanceCalories: this.$store.state.other.maintenanceCalories
-        }
-      };
-      this.$http.patch("data/" + `${this.userID}` + ".json", data);
-    },
-    updateUserDailyEntry() {
-      const userData = {
-        dailyEntries: this.$store.state.other.dailyEntries
-      };
-      this.$http.patch("data/" + `${this.userID}` + "/userData.json", userData);
     }
   }
 };

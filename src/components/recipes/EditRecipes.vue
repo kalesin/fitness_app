@@ -11,9 +11,7 @@
           <button
             class="btn-danger btn recipe-btn"
             @click="
-          removeRecipe(editIndex)
-          setEditIndex(-1)
-          updateRecipes()
+          removeRecipe({editIndex, userID})
           "
           >Delete Recipe</button>
         </div>
@@ -41,19 +39,16 @@
         <button
           class="btn-success btn recipe-btn"
           @click="
-          saveIngredients({editIndex, totalForToday, addedItems, recipesName, recipesPortions})
-          updateRecipes()
-          resetInputs()
+          saveIngredients({editIndex, totalForToday, addedItems, recipesName, recipesPortions, userID})
           "
-          :disabled="parseFloat(recipesPortions)<=0 && recipesName===''"
+          :disabled="parseFloat(recipesPortions)<=0 && recipesName==='' && addedItemsAreSame"
         >Save Changes</button>
+
+        <!-- vedno odpre startEdit(tazadnji) ker je watcher -->
         <button
           class="btn-danger btn recipe-btn"
           @click="
-          setAddedItems(recipes[editIndex].INGREDIENTS)
-          updateRecipes()
-          resetInputs()
-          "
+          setAddedItems(recipes[editIndex].INGREDIENTS)"
         >Discard Changes</button>
       </div>
       <div class="panel-heading ingredients">
@@ -103,8 +98,9 @@
               step="0.5"
               placeholder="Amount"
               v-model="item.CHANGED_QUANTITY"
+              @blur="setFocus(false)"
               @keyup.enter="
-              onChanged({item, index})
+              onChanged({item, index, moduleIndex})
               "
             />
             <div>✕ 100g</div>
@@ -118,7 +114,7 @@
             <button
               class="btn btn-success"
               @click="
-            onRemoved({item, index})
+            onRemoved({item, index, moduleIndex})
             "
             >Remove</button>
           </div>
@@ -220,10 +216,16 @@ export default {
   watch: {
     addedItems: {
       handler() {
-        if(this.doneAddingItem){
+        if (this.doneAddingItem) {
           this.startEdit(this.addedItems.length - 1);
         }
-        
+      }
+    },
+    responseCount: {
+      handler() {
+        if (this.idx > -1) {
+          this.startEdit(this.idx);
+        }
       }
     }
   },
@@ -234,24 +236,70 @@ export default {
     return {
       activeIndex: -1,
       quantity: "",
-      recipesName: "",
-      recipesPortions: ""
+      moduleIndex: 4
     };
   },
   computed: {
     ...mapGetters("searchAndAdd4", ["totalForToday"]),
     ...mapGetters("other", ["ingredientsTotal"]),
-    ...mapState("searchAndAdd4", ["addedItems", "doneAddingItem"]),
+    ...mapState("searchAndAdd4", [
+      "addedItems",
+      "doneAddingItem",
+      "idx",
+      "responseCount",
+      "focus"
+    ]),
     ...mapState("other", [
       "recipes",
       "editIndex",
       "showRecipe",
       "ingredientsTemp"
     ]),
-    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ]),
+    recipesPortions: {
+      get() {
+        return this.$store.state.other.recipesPortions;
+      },
+      set(value) {
+        this.$store.dispatch("other/setPortions", value);
+      }
+    },
+    recipesName: {
+      get() {
+        return this.$store.state.other.recipesName;
+      },
+      set(value) {
+        this.$store.dispatch("other/nameRecipe", value);
+      }
+    },
+    addedItemsAreSame() {
+      console.log(JSON.stringify(this.recipes[this.editIndex].INGREDIENTS))
+      console.log(JSON.stringify(this.addedItems))
+      console.log(JSON.stringify(this.recipes[this.editIndex].INGREDIENTS) ===
+        JSON.stringify(this.addedItems))
+      if (
+        JSON.parse(JSON.stringify(this.recipes[this.editIndex].INGREDIENTS)) ===
+        JSON.parse(JSON.stringify(this.addedItems))
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    }
   },
   methods: {
-    ...mapActions("searchAndAdd4", ["onChanged", "onRemoved", "setAddedItems"]),
+    ...mapActions("searchAndAdd4", [
+      "onChanged",
+      "onRemoved",
+      "setAddedItems",
+      "setFocus"
+    ]),
     ...mapActions("other", [
       "addToRecipes",
       "nameRecipe",
@@ -265,8 +313,8 @@ export default {
       "removeIngredient",
       "createIngredientsTemp"
     ]),
-    startEdit( index ) {
-      if (this.activeIndex === index) {
+    startEdit(index) {
+      if (this.activeIndex === index && !this.focus) {
         this.activeIndex = -1;
       } else {
         this.quantity = "";
@@ -275,22 +323,6 @@ export default {
           this.$refs.inputAmount[0].focus();
         }, 0);
       }
-    },
-    resetInputs() {
-      this.recipesName = "";
-      this.recipesPortions = "";
-    },
-    resetPortions() {
-      this.recipesPortions = 0;
-    },
-    resetName() {
-      this.recipesName = "";
-    },
-    updateRecipes() {
-      const data = {
-        recipes: this.$store.state.other.recipes
-      };
-      this.$http.patch("data/"+`${this.userID}`+".json", data);
     }
   }
 };

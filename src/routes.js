@@ -2,7 +2,7 @@ import Home from './components/Home.vue';
 import Header from './components/Header.vue'
 import Calories from './components/calories/Calories.vue'
 import Recipes from './components/recipes/Recipes.vue'
-import Calendar from './components/calendar/CalendarMonth.vue'
+import Calendar from './components/calendar/Calendar.vue'
 
 export const routes = [
     { path: '/home', component: Home},
