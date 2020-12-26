@@ -1,42 +1,20 @@
 <template>
-  <app-home v-if="!loggedIn"></app-home>
-  <v-app v-else>
-    <!-- <v-app-bar app>
-    </v-app-bar>-->
-
-    <app-header></app-header>
-
-    <!-- Sizes your content based upon application components -->
-    <v-main>
-      <!-- Provides the application the proper gutter -->
-      <v-container fluid>
-        <!-- If using vue-router -->
-        <router-view></router-view>
-      </v-container>
-    </v-main>
-  </v-app>
+  <div id="app">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-import Header from "./components/Header.vue";
-import Home from "./components/Home.vue";
-
-import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
+  
+  name: "app",
   data() {
     return {
-    };
+    }
   },
-  computed: {
-...mapState("firebase", ["password", "email", "loggedIn", "userData"]),
-  },
-  components: {
-    appHeader: Header,
-    appHome: Home
-  },
-  created() {}
 };
+
 </script>
 
 <style>

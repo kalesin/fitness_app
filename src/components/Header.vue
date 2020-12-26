@@ -1,9 +1,16 @@
 <template>
   <v-navigation-drawer permanent>
     <v-list-item>
+      <v-list-item-avatar>
+            <v-img :src="`${user.photoURL}`" height="100px" contain position="left" >
+        </v-img>
+          </v-list-item-avatar>
+    </v-list-item>
+    <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="title">Fitness App</v-list-item-title>
-        <v-list-item-subtitle>"shred city"</v-list-item-subtitle>
+        <v-list-item-title class="title" style="font-size: 25px">Fitness App</v-list-item-title>
+        <v-list-item-subtitle>Welcome, {{ user.displayName }}!</v-list-item-subtitle>
+        
       </v-list-item-content>
     </v-list-item>
     <router-link
@@ -13,7 +20,7 @@
       activeClass="active"
       tag="div"
     >
-      <v-list-item link @click="signOut()">
+      <v-list-item link @click="logOut()">
         <v-list-item-icon>
           <v-icon class="active-icon">{{ item.icon }}</v-icon>
         </v-list-item-icon>
@@ -50,26 +57,50 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
-import {auth, db} from '../scripts/auth.js'
+import firebase from "firebase";
 
 export default {
+  created() {
+    this.displayName = firebase.auth().currentUser.displayName
+  },
   data() {
     return {
       items: [
-        { title: "My Account", icon: "mdi-account-circle", url: "/myaccount"},
-        { title: "Daily Entry", icon: "mdi-food-apple-outline", url: "/calories" },
-        { title: "My Recipes", icon: "mdi-food-fork-drink", url: "/recipes" },
-        { title: "Calendar of Daily Entries", icon: "mdi-calendar-multiselect", url: "/calendar" },
+        {
+          title: "My Account",
+          icon: "mdi-account-circle",
+          url: "/user/myaccount"
+        },
+        {
+          title: "Daily Entry",
+          icon: "mdi-food-apple-outline",
+          url: "/user/calories"
+        },
+        {
+          title: "My Recipes",
+          icon: "mdi-food-fork-drink",
+          url: "/user/recipes"
+        },
+        {
+          title: "Calendar of Daily Entries",
+          icon: "mdi-calendar-multiselect",
+          url: "/user/calendar"
+        }
       ],
-      logout: [
-{ title: "Log Out", icon: "mdi-login", url: "/home" },
-      ],
+      logout: [{ title: "Log Out", icon: "mdi-login", url: "/auth" }],
       right: null,
       isDropdownOpen: false
     };
   },
   computed: {
-   ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"]),
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID",
+      "user"
+    ])
   },
   methods: {
     ...mapActions("firebase", [
@@ -78,11 +109,8 @@ export default {
       "setLoggedIn",
       "setUserID"
     ]),
-    signOut() {
-      auth.signOut().then(()=>{
-        console.log("user has logged out")
-        this.setLoggedIn(false);
-      })
+    logOut() {
+      firebase.auth().signOut();
     }
   }
 };

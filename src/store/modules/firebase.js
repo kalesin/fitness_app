@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 import Vue from 'vue';
-import {auth, db} from '/home/romank/Coding Projects/Fitness_app/src/scripts/auth.js'
+
 
 const firebase = {
     namespaced: true,
@@ -11,6 +11,7 @@ const firebase = {
         password: "",
         email: "",
         userID: "",
+        user: {},
     }),
     mutations: {
         SET_LOGGEDIN(state, value){
@@ -24,16 +25,17 @@ const firebase = {
         },
         SET_USERID(state, value) {
             state.userID = value;
+        },
+        SET_USER(state, value) {
+            state.user = value;
         }
     },
     actions: {
         async getData({ state, commit }, payload) {
             let id = state.userID;
-            console.log(id);
             return Vue.http.get(`data/${id}.json`)
             .then(response => response.json())
                 .then(data => {
-                    console.log(data)
                     if (data) {
                         const currentRecipeItems = data.currentRecipeItems ? data.currentRecipeItems : [];
                         const todaysItems = data.todaysItems ? data.todaysItems : [];
@@ -63,14 +65,9 @@ const firebase = {
         setUserID({state, commit, dispatch}, value) {
             commit("SET_USERID", value)
             dispatch("getData")
-            /* auth.onAuthStateChanged(user => {
-                if(user) {
-                    
-                } else {
-                    commit("SET_USERID", "");
-                }
-              }) */
-            
+        },
+        setUser({state, commit, dispatch}, value) {
+            commit("SET_USER", value)
         },
         
     },

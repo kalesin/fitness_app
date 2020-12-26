@@ -20,7 +20,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
-import { auth, db } from "../scripts/auth.js";
+import firebase from 'firebase'
 
 export default {
   data() {
@@ -60,7 +60,7 @@ export default {
     register() {
       this.setPassword(this.password);
       this.setEmail(this.email);
-      auth
+      firebase.auth
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(cred => {
           console.log(cred.user);
@@ -69,7 +69,7 @@ export default {
     signIn() {
       this.setPassword(this.password);
       this.setEmail(this.email);
-      auth.signInWithEmailAndPassword(this.email, this.password).then(cred => {
+      firebase.auth.signInWithEmailAndPassword(this.email, this.password).then(cred => {
         console.log(cred.user);
         this.setLoggedIn(true);
         this.setUserID(cred.user.uid);

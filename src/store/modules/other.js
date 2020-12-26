@@ -72,7 +72,6 @@ const other = {
             state.recipeQuantity = value;
         },
         ADD_PORTION_OF_RECIPE(state, index) {
-            console.log(state.recipes[index]);
             state.itemToAdd = {
                 NAME: state.recipes[index].NAME,
                 NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS,
@@ -97,7 +96,6 @@ const other = {
             state.editIndex = -1;
         },
         CHANGE_RECIPE_NAME(state, payload) {
-            console.log(payload)
             state.recipes[payload.editIndex].NAME = payload.recipesName;
         },
         CHANGE_RECIPE_PORTIONS(state, payload) {
@@ -342,12 +340,9 @@ const other = {
     getters: {
         ingredientsTotal(state) {
             let ingredientTotal = [];
-            console.log(state.ingredientsTemp);
             for (let j = 0; j < 5; j++) {
                 ingredientTotal[j] = 0;
-                console.log(state.ingredientsTemp.length);
                 for (let i = 0; i < state.ingredientsTemp.length; i++) {
-                    console.log(state.ingredientsTemp[i].CALCULATED_NUTRIENTS[j]);
                     ingredientTotal[j] += state.ingredientsTemp[i].CALCULATED_NUTRIENTS[j];
                 }
                 ingredientTotal[j] = Math.round(ingredientTotal[j] * 100) / 100;
