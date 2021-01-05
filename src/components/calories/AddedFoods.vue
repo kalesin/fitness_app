@@ -1,5 +1,82 @@
 <template>
-  <div class="mainFoods">
+  <v-container class="pa-0">
+    <v-card class="grey lighten-5 overflow-y-auto mr-3" tile flat height="716">
+      <v-row style="width: 100%;" class="mx-0">
+        <v-col cols="4" v-for="(item, index) in addedItems" :key="index" class="pb-0" :class="[(index+1) % 3 == 0 ? 'pr-3' : 'pr-0']">
+          <v-card outlined class="lime lighten-3">
+            <v-card-text
+              style="text-transform: capitalize;"
+              class="text-h5 pa-4"
+              v-if="item.IS_PORTION === false"
+            >{{item.NAME}} ({{item.QUANTITY*100}}g)</v-card-text>
+            <v-card-text
+              style="text-transform: capitalize;"
+              class="text-h5"
+              v-else
+            >{{item.NAME}} ({{item.QUANTITY}} portions)</v-card-text>
+            <app-nutrient-box :nutrientArray="item.CALCULATED_NUTRIENTS" size="small" type="normal" class="mx-2"></app-nutrient-box>
+
+            <v-row style="width: 100%;" class="mx-0 pt-1">
+              <v-col cols="2" class="pl-2 pt-1">
+                <v-btn large icon @click="startEdit(index)">
+                  <v-icon v-if="activeIndex!==index">mdi-pencil-outline</v-icon>
+                  <v-icon v-else>mdi-pencil-off-outline</v-icon>
+                </v-btn>
+              </v-col>
+              <v-col cols="10">
+                <v-card v-if="activeIndex == index" style="height: 44px;" class="mt-n2 rounded-lg">
+                  <v-row style="width: 100%;" class="mx-0">
+                    <v-col cols="5" class="pt-1">
+                      <v-text-field
+                        dense
+                        ref="inputAmount"
+                        type="number"
+                        step="0.5"
+                        placeholder="x 100g"
+                        v-model="quantity"
+                        @blur="setFocus(false)"
+                        @keyup.enter="
+              onChanged({item, index, userID, moduleIndex, quantity})"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="2" class="pt-0">
+                      <v-btn
+                        icon
+                        large
+                        color="green"
+                        @click="
+              onChanged({item, index, userID, moduleIndex, quantity})"
+                        :disabled="parseFloat(quantity)<=0 || quantity === ''"
+                      >
+                        <v-icon>mdi-check-bold</v-icon>
+                      </v-btn>
+                    </v-col>
+                    <v-col cols="2" class="pt-0">
+                      <v-btn icon large color="amber" @click="quantity=''">
+                        <v-icon>mdi-close-thick</v-icon>
+                      </v-btn>
+                    </v-col>
+                    <v-col cols="2" class="pt-0">
+                      <v-btn
+                        icon
+                        large
+                        color="red"
+                        @click="
+            onRemoved({index, userID, moduleIndex})"
+                      >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-card>
+  </v-container>
+  <!--  <div class="mainFoods">
     <div class="addList">
       <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
         <div class="panel-heading">
@@ -104,12 +181,12 @@
         <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal" total="daily"></app-nutrient-box>
       </div>
     </div>
-  </div>
+  </div>-->
 </template>
 
 <script>
-import dayjs from "dayjs";
 import nutrientBox from "./nutrientBox.vue";
+import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
 
 import EntryDialogue from "./EntryDialogue";
@@ -126,8 +203,10 @@ export default {
     }
   },
   components: {
-    appNutrientBox: nutrientBox,
-    appEntryDialogue: EntryDialogue
+    appNutrientBox: nutrientBox
+
+    /* 
+    appEntryDialogue: EntryDialogue */
   },
   data() {
     return {
@@ -186,9 +265,9 @@ export default {
     isDisabled() {
       let disabled = false;
       if (this.addedItems.length == 0) {
-        disabled=true
-      } 
-      return disabled
+        disabled = true;
+      }
+      return disabled;
     },
     quantity: {
       get() {
@@ -197,7 +276,7 @@ export default {
       set(value) {
         this.$store.dispatch("searchAndAdd/setQuantity", value);
       }
-    },
+    }
   },
   methods: {
     ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
