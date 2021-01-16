@@ -1,6 +1,6 @@
 <template>
-  <v-card flat tile class="grey lighten-5 overflow-y-auto mr-3">
-    <v-row class="mx-0" style="width:100%">
+  <v-card class="grey lighten-5 overflow-y-auto mr-3" tile flat>
+    <v-row style="width: 100%;" class="mx-0">
       <v-col
         cols="4"
         v-for="(item, index) in addedItems"
@@ -80,7 +80,6 @@
       </v-col>
     </v-row>
   </v-card>
-
   <!--  <div class="mainFoods">
     <div class="addList">
       <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
@@ -197,28 +196,13 @@ import { mapGetters, mapState, mapActions } from "vuex";
 import EntryDialogue from "./EntryDialogue";
 
 export default {
-  mounted() {
-    let index = this.dailyEntries.findIndex(element => {
-      element.date === this.today;
-    });
-    if (index != -1) {
-      this.setEntryTodayIndex(index);
-    } else {
-      this.setEntryTodayIndex(-1);
-    }
-  },
   components: {
     appNutrientBox: nutrientBox
-
-    /* 
-    appEntryDialogue: EntryDialogue */
   },
   data() {
     return {
       activeIndex: -1,
-      savedCalories: 0,
-      showDialogue: false,
-      moduleIndex: 1
+      moduleIndex: 4
     };
   },
   watch: {
@@ -243,8 +227,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapState("searchAndAdd", [
+    ...mapGetters("searchAndAdd4", ["totalForToday"]),
+    ...mapState("searchAndAdd4", [
       "addedItems",
       "doneAddingItem",
       "idx",
@@ -255,7 +239,9 @@ export default {
       "maintenanceCalories",
       "dailyEntries",
       "entryTodayExists",
-      "entryTodayIndex"
+      "entryTodayIndex",
+      "recipes",
+      "editIndex"
     ]),
     ...mapState("firebase", [
       "password",
@@ -276,29 +262,26 @@ export default {
     },
     quantity: {
       get() {
-        return this.$store.state.searchAndAdd.quantity;
+        return this.$store.state.searchAndAdd4.quantity;
       },
       set(value) {
-        this.$store.dispatch("searchAndAdd/setQuantity", value);
+        this.$store.dispatch("searchAndAdd4/setQuantity", value);
       }
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
+    ...mapActions("searchAndAdd4", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
       "setMaintenanceCalories",
       "addDailyEntry",
       "setEntryTodayIndex"
     ]),
     startEdit(index) {
-      if (this.activeIndex == index && !this.focus) {
+      if (this.activeIndex == index) {
+        /*  && !this.focus */
         this.activeIndex = -1;
       } else {
-        this.quantity = "";
         this.activeIndex = index;
-        setTimeout(() => {
-          this.$refs.inputAmount[0].focus();
-        }, 0);
       }
     }
   }
@@ -306,51 +289,4 @@ export default {
 </script>
 
 <style scoped>
-.mainFoods {
-  width: 100%;
-  position: relative;
-  border: 1px solid green;
-  border-radius: 5px;
-  overflow: hidden;
-}
-.addList {
-  width: 100%;
-  height: 600px;
-  flex-direction: column;
-  padding: 0;
-  overflow: auto;
-  flex-wrap: wrap;
-}
-.total {
-  /* 
-  position: absolute;
-  bottom: 0; */
-  width: 100%;
-  margin: 0px;
-  display: flex;
-  border-color: #d6e9c6;
-  flex-direction: column;
-}
-.panel-heading {
-  background-color: #dff0d8;
-}
-.pull-left {
-  margin: 10px 0px;
-  justify-content: space-between;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-.btn {
-  width: 25%;
-}
-.form-control {
-  width: 30%;
-}
-.panel {
-  margin: 0;
-}
-svg {
-  width: 20px;
-}
 </style>

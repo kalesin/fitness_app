@@ -125,9 +125,9 @@ const other = {
             if (!(payload.recipesPortions === "")) {
                 state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
             }
-            state.recipes[payload.editIndex].INGREDIENTS = payload.addedItems;
-            state.recipes[payload.editIndex].NUTRIENTS = payload.totalForToday;
-            state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.totalForToday.map(
+            state.recipes[payload.editIndex].INGREDIENTS = payload.addedRecipe;
+            state.recipes[payload.editIndex].NUTRIENTS = payload.totalRecipe;
+            state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.totalRecipe.map(
                 x => Math.round(x / state.recipes[payload.editIndex].PORTIONS * 100) / 100);
         },
         ADD_INGREDIENT(state, payload) {
@@ -197,7 +197,6 @@ const other = {
         addToRecipes({ state, commit }, { totalForToday, addedItems, recipesName, recipesPortions, userID}) {
             commit("ADD_TO_RECIPES", { totalForToday, addedItems, recipesName, recipesPortions })
             commit("RESET_PORTIONS_AND_NAME")
-            commit("searchAndAdd2/RESET_ADDED_ITEMS_RECIPES", userID, { root: true })
             
             const data = {
                 recipes: state.recipes
@@ -258,9 +257,7 @@ const other = {
             commit("REMOVE_INGREDIENT", index)
         },
         saveIngredients({ state, commit }, payload) {
-            commit("SAVE_INGREDIENTS", payload)
-            commit("RESET_PORTIONS_AND_NAME")
-
+            commit("SAVE_INGREDIENTS", payload) 
             const data = {
                 recipes: state.recipes
               };

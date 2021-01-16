@@ -1,9 +1,7 @@
 <template>
  <v-app>
-      <app-header></app-header>
-      <v-main>
-          <router-view></router-view>
-      </v-main>
+      <app-header style="width: 13%"></app-header>
+          <router-view style="width: 87%"></router-view>
     </v-app>
 </template>
 

@@ -10,17 +10,11 @@ const searchAndAdd = {
         api_id: "8f153d95",
         api_url: "https://api.edamam.com/api/food-database/v2/parser?",
         query: "",
-        query2: "",
-        query3: "",
-        query4: "",
         responseData: 0,
         quantity: "",
         nutrients: 0,
         nutrientsArray: [],
         addedItems: [],
-        addedItems2: [],
-        addedItems3: [],
-        addedItems4: [],
         itemToAdd: [],
         idx: -1,
         doneAddingItem: false,
@@ -92,11 +86,14 @@ const searchAndAdd = {
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
         },
-        REMOVE_ITEM(state, { index }) {
+        REMOVE_ITEM(state, index) {
             state.addedItems.splice(index, 1);
         },
         SET_QUERY(state, value) {
             state.query = value;
+        },
+        SET_RECIPE_QUERY(state, value) {
+            state.queryRecipe = value;
         },
         SET_QUANTITY(state, value) {
             state.quantity = value;
@@ -194,6 +191,7 @@ const searchAndAdd = {
             }
         },
         onRemoved({ state, commit }, { index, userID, moduleIndex }) {
+            console.log(index)
             commit("REMOVE_ITEM", index)
 
             if (moduleIndex == 1) {

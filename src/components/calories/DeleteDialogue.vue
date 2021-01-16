@@ -3,16 +3,16 @@
     <v-card>
       <p
         style="padding:10px; font-size:20px;"
-      >There already exists an entry for today. Want to overwrite?</p>
+      >Clicking will permanently delete the selected recipe. Want to delete recipe?</p>
  
       <v-card-actions>
         <v-btn
           color="success"
           @click.stop="
-      overwriteDailyEntry({today, addedItems, totalForToday, userID})
+      removeRecipe({editIndex: index, userID})
       show=false
       "
-        >Yes, Overwrite entry</v-btn>
+        >Yes, Delete</v-btn>
         <v-btn color="error" @click.stop="show=false">No, Cancel</v-btn>
       </v-card-actions>
     </v-card>
@@ -22,13 +22,12 @@
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
 
-import dayjs from "dayjs";
-
 export default {
   props: ["visible"],
   computed: {
     ...mapState("searchAndAdd", ["addedItems"]),
     ...mapState("firebase", ["userID"]),
+    ...mapState("other", ["editIndex"]),
     ...mapGetters("searchAndAdd", ["totalForToday"]),
     show: {
       get() {
@@ -40,12 +39,9 @@ export default {
         }
       }
     },
-    today() {
-      return dayjs().format("YYYY-MM-DD");
-    }
   },
   methods: {
-    ...mapActions("other", ["overwriteDailyEntry"])
+    ...mapActions("other", ["removeRecipe"])
   }
 };
 </script>
