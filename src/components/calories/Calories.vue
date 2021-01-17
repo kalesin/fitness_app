@@ -123,7 +123,6 @@
 
 <script>
 import AddedFoods from "./AddedFoods";
-import AddedTotal from "./AddedTotal";
 import RecipesDisplay from "./RecipesDisplay";
 import RecipesEdit from "./RecipesEdit";
 import nutrientBox from "./nutrientBox.vue";

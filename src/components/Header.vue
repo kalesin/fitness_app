@@ -73,13 +73,8 @@ export default {
         },
         {
           title: "Daily Entry",
-          icon: "mdi-food-apple-outline",
-          url: "/user/calories"
-        },
-        {
-          title: "My Recipes",
           icon: "mdi-food-fork-drink",
-          url: "/user/recipes"
+          url: "/user/calories"
         },
         {
           title: "Calendar of Daily Entries",
