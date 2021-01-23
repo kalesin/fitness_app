@@ -1,20 +1,28 @@
 <template>
   <li
-    class="calendar-day progressBar"
+    class="calendar-day"
     :class="{
       'calendar-day--not-current': !day.isCurrentMonth,
       'calendar-day--today': isToday
     }"
     @click="selectDate()"
   >
-    <span>{{ label }}</span>
+    <span class="ma-1">{{ label }}</span>
 
-    <div v-if="day.entryExists" class="button-progressbar">
-      <div :style="daily" class="progressBarBackground"></div>
-      <div class="progressBarBackground2"></div>
-      <div class="middiv"><div class="progressBarText">{{day.entry.total[0]}}/{{maintenanceCalories}}</div></div>
-      <button class="btn btn-success">Edit</button>
-    </div>
+    <v-row v-if="day.entryExists" style="width: 100%" class="mx-0 yellow lighten-4">
+      <v-col cols="5">
+        <v-card-text class="text-justify text-h5 pt-4 pa-0 pl-6 font-weight-bold">{{this.day.entry.total[0]}} kcal</v-card-text>
+      </v-col>
+      <v-col cols="7" class="pr-4 pl-0">
+        <v-progress-circular
+          :size="100"
+          :width="20"
+          :rotate="90"
+          :value="dailyProgress"
+          color="green"
+        >{{ Math.round(dailyProgress) }} %</v-progress-circular>
+      </v-col>
+    </v-row>
   </li>
 </template>
 
@@ -23,7 +31,6 @@ import dayjs from "dayjs";
 import { mapState, mapGetters, mapActions } from "vuex";
 
 export default {
-  
   name: "CalendarMonthDayItem",
 
   props: {
@@ -39,13 +46,19 @@ export default {
 
     isToday: {
       type: Boolean,
-      default: false 
+      default: false
     }
   },
   computed: {
     ...mapState("other", ["dailyEntries", "maintenanceCalories"]),
     label() {
       return dayjs(this.day.date).format("D");
+    },
+    dailyProgress: {
+      get() {
+        return (this.day.entry.total[0] / this.maintenanceCalories) * 100;
+      },
+      set(value) {}
     },
     daily() {
       return {
@@ -54,7 +67,7 @@ export default {
             ? `${(this.day.entry.total[0] / this.maintenanceCalories) * 100}%`
             : "0%"
       };
-    },
+    }
   },
   methods: {
     selectDate() {
@@ -65,7 +78,7 @@ export default {
 </script>
 
 <style scoped>
-.middiv{
+.middiv {
   position: absolute;
   height: 30px;
   bottom: 0;
@@ -91,45 +104,14 @@ span {
   z-index: 1;
 }
 
-.progressBarBackground {
-  position: absolute;
-  background-color: greenyellow;
-  height: 30px;
-  bottom: 0;
-  z-index: -1;
-  max-width: 100%;
-  height: 75%;
-  display: flex;
-}
-.progressBarBackground2 {
-  position: absolute;
-  background-color: rgb(255, 47, 47);
-  height: 30px;
-  bottom: 0;
-  z-index: -2;
-  width: 100%;
-  height: 75%;
-  display: flex;
-}
-.progressBarText {
-  align-self: center;
-  z-index: 2;
-  width: 100%;
-}
-.progressBar {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 500;
-  position: relative;
-}
 .calendar-day {
   display: flex;
   position: relative;
-  min-height: 100px;
+  height: 124px;
   font-size: 16px;
   background-color: #fff;
   color: var(--grey-800);
-  padding: 0 0 5px;
+  padding: 0 0;
 }
 
 .calendar-day > span {

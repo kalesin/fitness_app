@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CalendarMonth v-if="entryEditIndex===-1"></CalendarMonth>
+    <CalendarMonth v-if="entryEditIndex==-1"></CalendarMonth>
     <EditEntries v-else :dateClicked="dateClicked"></EditEntries>
   </div>
 </template>
@@ -41,7 +41,6 @@ export default {
     ...mapActions("other", [
       "setEntryEditIndex",
       "setDailyEntryTemp",
-      "setEditEntries",
       "setDaysUnix"
     ]),
   }

@@ -8,17 +8,16 @@
         class="pb-0"
         :class="[(index+1) % 1 == 0 ? 'pr-3 pl-0' : 'pr-3 pl-0']"
       >
-        <v-card outlined class="lime lighten-3">
+        <v-card outlined class="orange lighten-4">
           <v-card-text
             style="text-transform: capitalize;"
             class="text-h5 pa-4"
             v-if="item.IS_PORTION === false"
           >{{item.NAME}} ({{item.QUANTITY*100}}g)</v-card-text>
-          <v-card-text
-            style="text-transform: capitalize;"
-            class="text-h5"
-            v-else
-          >{{item.NAME}} ({{item.QUANTITY}} portions)</v-card-text>
+          <v-card-text style="text-transform: capitalize;" class="text-h5" v-else>
+            <div v-if="item.QUANTITY==1">{{item.NAME}} ({{item.QUANTITY}} portion)</div>
+            <div v-else>{{item.NAME}} ({{item.QUANTITY}} portions)</div>
+          </v-card-text>
           <app-nutrient-box :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></app-nutrient-box>
 
           <v-row style="width: 100%;" class="mx-0 pt-1">
@@ -67,7 +66,8 @@
                       large
                       color="red"
                       @click="
-            onRemoved({index, userID, moduleIndex})"
+            onRemoved({index, userID, moduleIndex})
+            setDeleted(true)"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -80,113 +80,6 @@
       </v-col>
     </v-row>
   </v-card>
-
-  <!--  <div class="mainFoods">
-    <div class="addList">
-      <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
-        <div class="panel-heading">
-          <h3
-            v-if="item.IS_PORTION === false"
-            class="panel-title"
-            style="text-transform: capitalize;"
-          >{{item.NAME}} ({{item.QUANTITY*100}}g)</h3>
-          <h3
-            v-else
-            class="panel-title"
-            style="text-transform: capitalize;"
-          >{{item.NAME}} ({{item.QUANTITY}} portions)</h3>
-        </div>
-        <div class="panel-body">
-          <div style="display:flex; width:100%">
-            <app-nutrient-box
-              :nutrientArray="item.CALCULATED_NUTRIENTS"
-              size="small"
-              type="normal"
-              style="flex-grow: 1"
-            ></app-nutrient-box>
-            <button @click="startEdit(index)">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 50 50"
-                enable-background="new 0 0 50 50"
-              >
-                <path
-                  d="M9.6 40.4l2.5-9.9L27 15.6l7.4 7.4-14.9 14.9-9.9 2.5zm4.3-8.9l-1.5 6.1 6.1-1.5L31.6 23 27 18.4 13.9 31.5z"
-                />
-                <path d="M17.8 37.3c-.6-2.5-2.6-4.5-5.1-5.1l.5-1.9c3.2.8 5.7 3.3 6.5 6.5l-1.9.5z" />
-                <path d="M29.298 19.287l1.414 1.414-13.01 13.02-1.414-1.412z" />
-                <path d="M11 39l2.9-.7c-.3-1.1-1.1-1.9-2.2-2.2L11 39z" />
-                <path
-                  d="M35 22.4L27.6 15l3-3 .5.1c3.6.5 6.4 3.3 6.9 6.9l.1.5-3.1 2.9zM30.4 15l4.6 4.6.9-.9c-.5-2.3-2.3-4.1-4.6-4.6l-.9.9z"
-                />
-              </svg>
-            </button>
-          </div>
-          <div v-if="activeIndex == index" class="pull-left">
-            <input
-              ref="inputAmount"
-              type="number"
-              class="form-control"
-              step="0.5"
-              placeholder="Amount"
-              v-model="quantity"
-              @blur="setFocus(false)"
-              @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})"
-            />
-            <div>✕ 100g</div>
-            <button
-              class="btn btn-success"
-              @click="
-              onChanged({item, index, userID, moduleIndex, quantity})"
-              :disabled="parseFloat(quantity)<=0 || quantity === ''"
-            >Change</button>
-            <button class="btn btn-success" @click="
-            onRemoved({index, userID, moduleIndex})">Remove</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="total">
-      <div class="panel-heading">
-        <h3 class="panel-title">Total today:</h3>
-        <div class="pull-left">
-          <input
-            type="number"
-            class="form-control"
-            placeholder="Enter maintenance calories"
-            v-model="savedCalories"
-          />
-          <button
-            class="btn btn-success"
-            @click="
-            setMaintenanceCalories({savedCalories, userID})"
-            :disabled="parseFloat(savedCalories)<=0"
-          >Set</button>
-
-          <button
-            v-if="entryTodayIndex==-1"
-            class="btn btn-success"
-            @click="
-            addDailyEntry({today, addedItems, totalForToday, userID})"
-            :disabled="isDisabled"
-          >Save today</button>
-
-          <v-btn
-            v-else
-            color="success"
-            large
-            @click.stop="showDialogue=true"
-            :disabled="isDisabled"
-          >Save today</v-btn>
-          <app-entry-dialogue :visible="showDialogue" @close="showDialogue=false"></app-entry-dialogue>
-        </div>
-      </div>
-      <div class="panel-body">
-        <app-nutrient-box :nutrientArray="totalForToday" size="large" type="normal" total="daily"></app-nutrient-box>
-      </div>
-    </div>
-  </div>-->
 </template>
 
 <script>
@@ -209,24 +102,26 @@ export default {
   },
   components: {
     appNutrientBox: nutrientBox
-
-    /* 
-    appEntryDialogue: EntryDialogue */
   },
   data() {
     return {
       activeIndex: -1,
       savedCalories: 0,
       showDialogue: false,
-      moduleIndex: 1
+      moduleIndex: 1,
+      deleted: false
     };
   },
   watch: {
     addedItems: {
       handler() {
-        if (this.doneAddingItem) {
+        if (this.deleted) {
+          this.activeIndex = -1;
+          this.setDeleted(false);
+        } else {
           this.startEdit(this.addedItems.length - 1);
         }
+
         for (let i = 0; i < this.dailyEntries.length; i++) {
           if (this.dailyEntries[i].date === this.today) {
             this.setEntryTodayIndex(i);
@@ -246,7 +141,7 @@ export default {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
     ...mapState("searchAndAdd", [
       "addedItems",
-      "doneAddingItem",
+      "deleteFlag",
       "idx",
       "responseCount",
       "focus"
@@ -284,7 +179,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
+    ...mapActions("searchAndAdd", [
+      "onChanged",
+      "onRemoved",
+      "setFocus",
+      "setDeleteFlag"
+    ]),
     ...mapActions("other", [
       "setMaintenanceCalories",
       "addDailyEntry",
@@ -297,9 +197,14 @@ export default {
         this.quantity = "";
         this.activeIndex = index;
         setTimeout(() => {
-          this.$refs.inputAmount[0].focus();
+          if (this.$refs.inputAmount[0]) {
+            this.$refs.inputAmount[0].focus();
+          }
         }, 0);
       }
+    },
+    setDeleted(value) {
+      this.deleted = value;
     }
   }
 };

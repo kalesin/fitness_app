@@ -1,5 +1,83 @@
 <template>
-  <div>
+<v-container fluid class="grey lighten-5 ma-0 pa-3">
+    <v-row style="width: 100%;" class="mx-0">
+        <v-col cols="9" class="pr-0 pa-0">
+          <v-card outlined class="mr-3 rounded-xl">
+            <v-card-text class="text-h4 ma-2">Search for the food you want to add!</v-card-text>
+            <v-row class="mx-2" v-if="editIndex==-1">
+              <v-col cols="9">
+                <v-text-field
+                  style="width: 100%"
+                  dense
+                  clearable
+                  placeholder="Search foods"
+                  ref="search"
+                  solo
+                  v-model="query"
+                  @keyup.enter="
+                allInOne();
+                setDoneAddingItem(true);
+                "
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" class="mx-auto">
+                <v-btn
+                  style="width: 190px"
+                  color="success"
+                  @click="
+              allInOne();
+              setDoneAddingItem(true);
+              "
+                >
+                  <v-icon>mdi-magnify</v-icon>Search
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row class="mx-2" v-else>
+              <v-col cols="9">
+                <v-text-field
+                  style="width: 100%"
+                  dense
+                  clearable
+                  placeholder="Search foods"
+                  ref="search"
+                  solo
+                  v-model="query4"
+                  @keyup.enter="
+                searchRecipe();
+                setDoneAddingItem(true);
+                "
+                ></v-text-field>
+              </v-col>
+              <v-col cols="2" class="mx-auto">
+                <v-btn
+                  style="width: 190px"
+                  color="success"
+                  @click="
+              searchRecipe();
+              setDoneAddingItem(true);
+              "
+                >
+                  <v-icon>mdi-magnify</v-icon>Search
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card>
+          <!-- <app-added-foods></app-added-foods> -->
+        </v-col>
+
+      <v-col cols="3" class="pa-0">
+        <app-nutrient-box
+          v-if="entryEditIndex==-1"
+          :nutrientArray="totalForToday"
+          type="entry"
+        ></app-nutrient-box>
+        
+      </v-col>
+    </v-row>
+  </v-container>
+
+  <!-- <div>
     <div class="recipes-button">
       <button class="btn btn-danger" @click="
         setEntryEditIndex(-1)
@@ -76,7 +154,6 @@
         </div>
       </div>
       <div class="addList col-sm-6 col-md-4">
-        <!--  <div class="panel panel-success" v-for="(item, index) in recipes" :key="index"></div> -->
         <div class="panel panel-success" v-for="(item, index) in addedItems" :key="index">
           <div class="panel-heading">
             <h3
@@ -143,7 +220,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -186,7 +263,6 @@ export default {
     ...mapState("searchAndAdd3", [
       "addedItems",
       "query",
-      "doneAddingItem",
       "idx",
       "responseCount",
       "focus"
@@ -237,7 +313,6 @@ export default {
       "createAddedItemsTemp",
       "saveAddedItems",
       "setEntryEditIndex",
-      "setEditEntries",
       "deleteEntry",
       "setDailyEntryTemp"
     ]),

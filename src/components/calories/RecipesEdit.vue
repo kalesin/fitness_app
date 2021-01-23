@@ -8,7 +8,7 @@
         class="pb-0"
         :class="[(index+1) % 1 == 0 ? 'pr-3 pl-0' : 'pr-3 pl-0']"
       >
-        <v-card outlined class="lime lighten-3">
+        <v-card outlined class="yellow lighten-4">
           <v-card-text
             style="text-transform: capitalize;"
             class="text-h5 pa-4"
@@ -67,7 +67,8 @@
                       large
                       color="red"
                       @click="
-            onRemoved({index, userID, moduleIndex})"
+            onRemoved({index, userID, moduleIndex})
+            startEdit(-1)"
                     >
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
@@ -208,7 +209,10 @@ export default {
   watch: {
     addedItems: {
       handler() {
-        if (this.doneAddingItem) {
+        if (this.deleted) {
+          this.activeIndex = -1;
+          this.setDeleted(false);
+        } else {
           this.startEdit(this.addedItems.length - 1);
         }
         for (let i = 0; i < this.dailyEntries.length; i++) {
@@ -230,7 +234,6 @@ export default {
     ...mapGetters("searchAndAdd4", ["totalForToday"]),
     ...mapState("searchAndAdd4", [
       "addedItems",
-      "doneAddingItem",
       "idx",
       "responseCount",
       "focus"
@@ -277,11 +280,16 @@ export default {
       "setEntryTodayIndex"
     ]),
     startEdit(index) {
-      if (this.activeIndex == index) {
-        /*  && !this.focus */
+      if (this.activeIndex == index && !this.focus) {
         this.activeIndex = -1;
       } else {
+        this.quantity = "";
         this.activeIndex = index;
+        setTimeout(() => {
+          if (this.$refs.inputAmount[0]) {
+            this.$refs.inputAmount[0].focus();
+          }
+        }, 0);
       }
     }
   }

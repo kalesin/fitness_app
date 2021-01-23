@@ -189,7 +189,6 @@ export default {
     ...mapActions("other", [
       "setEntryEditIndex",
       "setDailyEntryTemp",
-      "setEditEntries",
       "setDaysUnix"
     ]),
     getWeekday(date) {
@@ -199,21 +198,16 @@ export default {
       this.selectedDate = newSelectedDate;
     },
     dateToEdit(day) {
-      this.setEditEntries(true);
-      let exists = false;
-      let idx = 0;
-      for (let i = 0; i < this.dailyEntries.length; i++) {
-        if (this.dailyEntries[i].date === day.date) {
-          exists = true;
-          idx = i;
-        }
-      }
-      if (exists) {
-        this.setEntryEditIndex(idx);
-      } else {
-        this.setDailyEntryTemp(day);
+
+let index = this.dailyEntries.findIndex(element => element.date===day.date
+    );
+    console.log(index)
+    if (index == -1) {
+      this.setDailyEntryTemp(day);
         this.setEntryEditIndex(-2);
-      }
+    } else {
+      this.setEntryEditIndex(index);
+    }
     }
   }
 };

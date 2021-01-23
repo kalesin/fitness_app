@@ -17,7 +17,7 @@ const searchAndAdd = {
         addedItems: [],
         itemToAdd: [],
         idx: -1,
-        doneAddingItem: false,
+        deletedFlag: false,
         responseCount: 0,
         focus: true,
     }),
@@ -101,13 +101,6 @@ const searchAndAdd = {
         SET_ADDED_ITEMS(state, payload) {
             state.addedItems = JSON.parse(JSON.stringify(payload));
         },
-        SET_FOCUS_ADDED_ITEM(state, payload) {
-            state.focusAddedItem.exists = payload.exists;
-            state.focusAddedItem.index = payload.index;
-        },
-        SET_DONE_ADDING_ITEM(state, value) {
-            state.doneAddingItem = value;
-        },
         SET_INDEX(state, value) {
             state.idx = value
         }
@@ -148,24 +141,14 @@ const searchAndAdd = {
             commit("SET_QUANTITY", "")
         },
         addItemValue({ state, commit }, payload) {
-            let exists = false;
-            let index = -1;
-            for (let i = 0; i < state.addedItems.length; i++) {
-                if (state.addedItems[i].NAME === payload.NAME) {
-                    exists = true;
-                    index = i;
-                }
-            }
-            if (exists == true) {
+            let index = state.addedItems.findIndex(element => element.NAME === payload.NAME);
+            if (index != -1) {
                 commit("SET_INDEX", index)
                 commit("INCREMENT_RESPONSE_COUNT")
                 commit("SET_FOCUS", true)
             } else {
                 commit("ADD_ITEM_VALUE", payload)
             }
-
-
-
         },
         onChanged({ state, commit }, { item, index, userID, moduleIndex, quantity }) {
 
@@ -191,9 +174,7 @@ const searchAndAdd = {
             }
         },
         onRemoved({ state, commit }, { index, userID, moduleIndex }) {
-            console.log(index)
             commit("REMOVE_ITEM", index)
-
             if (moduleIndex == 1) {
                 const data = {
                     todaysItems: state.addedItems
@@ -221,9 +202,6 @@ const searchAndAdd = {
         setFocus({ state, commit }, value) {
             commit("SET_FOCUS", value)
         },
-        setDoneAddingItem({ state, commit }, value) {
-            commit("SET_DONE_ADDING_ITEM", value)
-        }
     },
     getters: {
         totalForToday(state) {

@@ -14,7 +14,7 @@ const other = {
         //progressbar
         maintenanceCalories: 0,
         //editing recipes
-        itemToAdd: [],
+        portionItem: {},
         editIndex: -1,
         ingrEditIndex: -1,
         showRecipe: false,
@@ -72,11 +72,10 @@ const other = {
             state.recipeQuantity = value;
         },
         ADD_PORTION_OF_RECIPE(state, index) {
-            state.itemToAdd = {
+            state.portionItem = {
                 NAME: state.recipes[index].NAME,
                 NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS,
                 QUANTITY: 1,
-                CHANGED_QUANTITY: "",
                 CALCULATED_NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS.map(
                     x => Math.round(x * 100) / 100
                 ),
@@ -166,9 +165,6 @@ const other = {
         SET_DAILY_ENTRY_TEMP(state, payload) {
             state.dailyEntryTemp = { date: payload.date, unix: payload.dateUnix, items: [], total: [0, 0, 0, 0, 0] };
         },
-        SET_EDIT_ENTRIES(state, value) {
-            state.editEntries = value;
-        },
         PUSH_TEMP_TO_ENTRIES(state) {
             state.dailyEntries.push(state.dailyEntryTemp);
         },
@@ -218,7 +214,7 @@ const other = {
         setRecipeQuantity({ state, commit }, value) {
             commit("SET_RECIPE_QUANTITY", value)
         },
-        addPortionOfRecipe({ state, commit }, index) {
+        addPortionOfRecipe({ state, commit }, index ) {
             commit("ADD_PORTION_OF_RECIPE", index)
         },
         createItemToAddObject({ state, commit }, object) {
@@ -321,9 +317,6 @@ const other = {
         //calendar
         setDailyEntryTemp({ state, commit }, payload) {
             commit("SET_DAILY_ENTRY_TEMP", payload)
-        },
-        setEditEntries({ state, commit }, value) {
-            commit("SET_EDIT_ENTRIES", value)
         },
         setDaysUnix({ state, commit }, value) {
             commit("SET_DAYS_UNIX", value)
