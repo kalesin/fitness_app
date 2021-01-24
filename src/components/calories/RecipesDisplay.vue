@@ -6,7 +6,7 @@
       </v-col>
       <v-col cols="4" class="pa-0 pt-4 pl-2">
         <v-btn
-          v-if="editIndex!=-2"
+          v-if="editIndex!=-2" 
           color="success"
           @click="
       setEditIndex(-2)
@@ -66,16 +66,10 @@
                   large
                   icon
                   color="red"
-                  @click.stop="showDialogue=true"
-                  @click="setDeleteIndex(index)"
+                  @click.stop="shownIndex=index"
                 >
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
-                <deletedialogue
-                  :visible="showDialogue"
-                  @close="showDialogue=false"
-                  :index="index"
-                ></deletedialogue>
               </v-col>
             </v-row>
             <nutrientbox class="px-3 pb-3" :nutrientArray="item.PORTION_NUTRIENTS" type="box"></nutrientbox>
@@ -83,6 +77,11 @@
         </v-col>
       </v-row>
     </v-card>
+    <deletedialogue
+      v-if="shownIndex >= 0"
+      @close="shownIndex=-1"
+      :index="shownIndex"
+    ></deletedialogue>
   </v-card>
 </template>
 
@@ -101,7 +100,7 @@ export default {
   },
   data() {
     return {
-      showDialogue: false,
+      shownIndex: -1,
       activeIndex: -1
     };
   },

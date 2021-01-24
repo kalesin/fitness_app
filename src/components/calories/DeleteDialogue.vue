@@ -8,7 +8,7 @@
       <v-card-actions>
         <v-btn
           color="success"
-          @click.stop="
+          @click.stop=" 
       removeRecipe({index: deleteIndex, userID})
       show=false
       "
@@ -24,9 +24,6 @@ import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
   props: {
-  	visible: {
-      type: Boolean,
-  	},
   	index: {
       type: Number,
       required: true
@@ -38,11 +35,11 @@ export default {
     ...mapState("other", ["deleteIndex"]),
     show: {
       get() {
-        return this.visible;
+        return this.index >= 0
       },
       set(value) {
         if (!value) {
-          this.$emit("close");
+          this.$emit("close")
         }
       }
     }
