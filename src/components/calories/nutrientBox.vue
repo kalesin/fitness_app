@@ -88,11 +88,24 @@
         </v-col>
         <v-col cols="1" class="py-10 pl-0">
           <v-btn
+          v-if="editIndex == -2"
             icon
             large
             color="success"
             @click="
             addToRecipes({totalForToday: totalRecipe, addedItems: addedRecipe, recipesName, recipesPortions, userID})
+            setEditIndex(-1)"
+            :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
+          >
+            <v-icon>mdi-content-save</v-icon>
+          </v-btn>
+          <v-btn
+          v-else
+            icon
+            large
+            color="success"
+            @click="
+            saveIngredients({editIndex, totalRecipe, addedRecipe, recipesName, recipesPortions, userID})
             setEditIndex(-1)"
             :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
           >
@@ -254,17 +267,12 @@ export default {
       return disabled;
     },
     ...mapState("searchAndAdd", [
-      "addedItems",
-      "doneAddingItem",
-      "idx",
-      "responseCount",
-      "focus"
+      "addedItems"
     ]),
     ...mapState("searchAndAdd4", { addedRecipe: "addedItems" }),
     ...mapState("other", [
       "maintenanceCalories",
       "dailyEntries",
-      "entryTodayExists",
       "entryTodayIndex",
       "editIndex"
     ]),
@@ -290,10 +298,9 @@ export default {
   methods: {
     ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
-      "setMaintenanceCalories",
+      "saveIngredients",
       "addDailyEntry",
       "setEntryTodayIndex",
-      "saveIngredients",
       "addToRecipes",
       "setEditIndex"
     ])

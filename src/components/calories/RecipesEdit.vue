@@ -19,7 +19,7 @@
             class="text-h5"
             v-else
           >{{item.NAME}} ({{item.QUANTITY}} portions)</v-card-text>
-          <app-nutrient-box :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></app-nutrient-box>
+          <nutrientbox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></nutrientbox>
 
           <v-row style="width: 100%;" class="mx-0 pt-1">
             <v-col cols="2" class="pl-2 pt-1">
@@ -198,7 +198,7 @@ import EntryDialogue from "./EntryDialogue";
 
 export default {
   components: {
-    appNutrientBox: nutrientBox
+    nutrientbox: nutrientBox
   },
   data() {
     return {
@@ -239,18 +239,10 @@ export default {
       "focus"
     ]),
     ...mapState("other", [
-      "maintenanceCalories",
       "dailyEntries",
-      "entryTodayExists",
       "entryTodayIndex",
-      "recipes",
-      "editIndex"
     ]),
     ...mapState("firebase", [
-      "password",
-      "email",
-      "loggedIn",
-      "userData",
       "userID"
     ]),
     today() {
@@ -286,7 +278,7 @@ export default {
         this.quantity = "";
         this.activeIndex = index;
         setTimeout(() => {
-          if (this.$refs.inputAmount[0]) {
+          if (this.$refs.inputAmount) {
             this.$refs.inputAmount[0].focus();
           }
         }, 0);

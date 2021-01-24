@@ -118,6 +118,7 @@ const other = {
             state.ingredientsTemp.splice(index, 1);
         },
         SAVE_INGREDIENTS(state, payload) {
+            console.log("neki")
             if (!(payload.recipesName === "")) {
                 state.recipes[payload.editIndex].NAME = payload.recipesName;
             }
@@ -179,6 +180,9 @@ const other = {
         },
         OVERWRITE_ENTRY(state) {
             state.dailyEntries.splice(state.entryTodayIndex, 1);
+        },
+        SET_DELETE_INDEX(state, value) {
+            state.deleteIndex = value;
         }
     },
     actions: {
@@ -192,6 +196,7 @@ const other = {
         },
         addToRecipes({ state, commit }, { totalForToday, addedItems, recipesName, recipesPortions, userID}) {
             commit("ADD_TO_RECIPES", { totalForToday, addedItems, recipesName, recipesPortions })
+            commit("searchAndAdd4/SET_ADDED_ITEMS", [], {root: true})
             commit("RESET_PORTIONS_AND_NAME")
             
             const data = {
@@ -220,8 +225,8 @@ const other = {
         createItemToAddObject({ state, commit }, object) {
             commit("searchAndAdd/ITEM_TO_ADD_OBJECT", { object }, { root: true })
         },
-        removeRecipe({ state, commit }, {editIndex, userID}) {
-            commit("REMOVE_RECIPES", editIndex)
+        removeRecipe({ state, commit }, {index, userID}) {
+            commit("REMOVE_RECIPES", index)
             commit("RESET_EDIT_INDEX")
 
             const data = {
@@ -323,6 +328,9 @@ const other = {
         },
         setEntryTodayIndex({ state, commit }, value) {
             commit("SET_ENTRY_TODAY_INDEX", value)
+        },
+        setDeleteIndex({state, commit}, value){
+            commit("SET_DELETE_INDEX", value)
         }
 
 

@@ -4,12 +4,12 @@
       <p
         style="padding:10px; font-size:20px;"
       >Clicking will permanently delete the selected recipe. Want to delete recipe?</p>
- 
+
       <v-card-actions>
         <v-btn
           color="success"
           @click.stop="
-      removeRecipe({editIndex: index, userID})
+      removeRecipe({index: deleteIndex, userID})
       show=false
       "
         >Yes, Delete</v-btn>
@@ -23,12 +23,19 @@
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
-  props: ["visible"],
+  props: {
+  	visible: {
+      type: Boolean,
+  	},
+  	index: {
+      type: Number,
+      required: true
+  	}
+  },
   computed: {
-    ...mapState("searchAndAdd", ["addedItems"]),
     ...mapState("firebase", ["userID"]),
-    ...mapState("other", ["editIndex"]),
     ...mapGetters("searchAndAdd", ["totalForToday"]),
+    ...mapState("other", ["deleteIndex"]),
     show: {
       get() {
         return this.visible;
@@ -38,10 +45,10 @@ export default {
           this.$emit("close");
         }
       }
-    },
+    }
   },
   methods: {
-    ...mapActions("other", ["removeRecipe"])
+    ...mapActions("other", ["removeRecipe"]),
   }
 };
 </script>

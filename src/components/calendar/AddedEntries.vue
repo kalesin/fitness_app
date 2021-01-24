@@ -83,11 +83,9 @@
 </template>
 
 <script>
-import nutrientBox from "./nutrientBox.vue";
+import nutrientBox from "../calories/nutrientBox";
 import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
-
-import EntryDialogue from "./EntryDialogue";
 
 export default {
   mounted() {

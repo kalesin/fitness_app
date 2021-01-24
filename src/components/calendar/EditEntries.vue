@@ -63,15 +63,15 @@
               </v-col>
             </v-row>
           </v-card>
-          <!-- <app-added-foods></app-added-foods> -->
+          <addedentries></addedentries> 
         </v-col>
 
       <v-col cols="3" class="pa-0">
-        <app-nutrient-box
+        <nutrientbox
           v-if="entryEditIndex==-1"
           :nutrientArray="totalForToday"
           type="entry"
-        ></app-nutrient-box>
+        ></nutrientbox>
         
       </v-col>
     </v-row>
@@ -225,6 +225,8 @@
 
 <script>
 import nutrientBox from "../calories/nutrientBox.vue";
+import AddedEntries from "../calendar/AddedEntries"
+
 import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
@@ -249,7 +251,8 @@ export default {
   },
   props: ["dateClicked"],
   components: {
-    appNutrientBox: nutrientBox
+    nutrientbox: nutrientBox,
+    addedentries: AddedEntries
   },
   data() {
     return {

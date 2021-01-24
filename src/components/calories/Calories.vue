@@ -59,14 +59,14 @@
             </v-col>
           </v-row>
         </v-card>
-        <app-added-foods v-if="editIndex==-1"></app-added-foods>
-        <app-recipes-edit v-else></app-recipes-edit>
+        <addedfoods v-if="editIndex==-1"></addedfoods>
+        <recipesedit v-else></recipesedit>
       </v-col>
 
       <v-col cols="3" class="pa-0">
-        <app-recipes-display></app-recipes-display>
-        <app-nutrient-box v-if="editIndex==-1" :nutrientArray="totalForToday" type="daily"></app-nutrient-box>
-        <app-nutrient-box v-else :nutrientArray="totalRecipe" type="recipe"></app-nutrient-box>
+        <recipesdisplay></recipesdisplay>
+        <nutrientbox v-if="editIndex==-1" :nutrientArray="totalForToday" type="daily"></nutrientbox>
+        <nutrientbox v-else :nutrientArray="totalRecipe" type="recipe"></nutrientbox>
       </v-col>
     </v-row>
   </v-container>
@@ -87,10 +87,10 @@ export default {
     this.$refs.search.focus();
   },
   components: {
-    appAddedFoods: AddedFoods,
-    appRecipesDisplay: RecipesDisplay,
-    appNutrientBox: nutrientBox,
-    appRecipesEdit: RecipesEdit
+    addedfoods: AddedFoods,
+    recipesdisplay: RecipesDisplay,
+    nutrientbox: nutrientBox,
+    recipesedit: RecipesEdit
   },
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
