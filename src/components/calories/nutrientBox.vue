@@ -1,10 +1,10 @@
 <template>
-  <v-card outlined class="transparent pa-0 ma-0">
-    <v-card v-if="type === 'box'" class="rounded-t-xl" flat tile outlined>
+  <v-card outlined class="pa-0 ma-0 rounded-t-xl">
+    <div v-if="type === 'box'" class="rounded-t-xl" flat tile outlined>
       <v-card-text class="text-center text-h5 pa-2">{{nutrientArray[0]}} kcal</v-card-text>
-    </v-card>
+    </div>
 
-    <v-card v-if="type === 'daily'" class="rounded-t-xl" outlined tile>
+    <div v-if="type === 'daily'" class="rounded-t-xl" outlined tile>
       <v-row style="width: 100%" class="mx-0">
         <v-col cols="2">
           <v-progress-circular
@@ -44,9 +44,9 @@
           <app-entry-dialogue :visible="showDialogue" @close="showDialogue=false"></app-entry-dialogue>
         </v-col>
       </v-row>
-    </v-card>
+    </div>
 
-    <v-card v-if="type=='recipe'" class="rounded-t-xl" outlined tile>
+    <div v-if="type=='recipe'" class="rounded-t-xl" outlined tile>
       <v-row style="width: 100%" class="mx-0 px-2 pt-4">
         <v-col cols="8" class="py-0">
           <v-text-field
@@ -113,9 +113,9 @@
           </v-btn>
         </v-col>
       </v-row>
-    </v-card>
+    </div>
 
-    <v-card v-if="type=='entry'" class="rounded-t-xl" outlined tile>
+    <div v-if="type=='entry'" class="rounded-t-xl" outlined tile>
       <v-row style="width: 100%" class="mx-0 px-2 pt-4">
         <v-col cols="12" class="py-0">
           <v-text-field
@@ -158,32 +158,32 @@
           </v-btn>
         </v-col>
       </v-row>
-    </v-card>
+    </div>
 
     <v-row style="width: 100%" class="ma-0">
       <v-col class="pa-0">
-        <v-card flat tile outlined class="rounded-bl-xl">
+        <div flat tile outlined class="rounded-bl-xl">
           <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Protein:</v-card-text>
           <v-card-text class="text-center pa-2">{{nutrientArray[1]}} g</v-card-text>
-        </v-card>
+        </div>
       </v-col>
       <v-col class="pa-0">
-        <v-card flat tile outlined>
+        <div flat tile outlined>
           <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Carbs:</v-card-text>
           <v-card-text class="text-center pa-2">{{nutrientArray[2]}} g</v-card-text>
-        </v-card>
+        </div>
       </v-col>
       <v-col class="pa-0">
-        <v-card flat tile outlined>
+        <div flat tile outlined>
           <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Fats:</v-card-text>
           <v-card-text class="text-center pa-2">{{nutrientArray[3]}} g</v-card-text>
-        </v-card>
+        </div>
       </v-col>
       <v-col class="pa-0">
-        <v-card flat tile outlined class="rounded-br-xl">
+        <div flat tile outlined class="rounded-br-xl">
           <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Fiber:</v-card-text>
           <v-card-text class="text-center pa-2">{{nutrientArray[4]}} g</v-card-text>
-        </v-card>
+        </div>
       </v-col>
     </v-row>
   </v-card>

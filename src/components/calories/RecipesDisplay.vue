@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-b-lg rounded-t-xl pa-0" tile flat outlined>
+  <div class="rounded-b-lg rounded-t-xl pa-0" tile flat outlined>
     <v-row class="mx-0" style="width: 100%">
       <v-col cols="7" class="pa-0">
         <v-card-text class="text-h4">My Recipes:</v-card-text>
@@ -21,7 +21,7 @@
       </v-col>
     </v-row>
 
-    <v-card class="rounded-b-lg" tile flat outlined>
+    <div class="rounded-b-lg" tile flat outlined>
       <v-row class="mx-0 overflow-y-auto" style="width: 100%">
         <v-col v-for="(item, index) in recipes" :key="index" cols="12" class="pa-2 pb-0">
           <v-card
@@ -76,13 +76,13 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-card>
+    </div>
     <deletedialogue
       v-if="shownIndex >= 0"
       @close="shownIndex=-1"
       :index="shownIndex"
     ></deletedialogue>
-  </v-card>
+  </div>
 </template>
 
 <style scoped>
