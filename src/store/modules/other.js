@@ -120,7 +120,7 @@ const other = {
         SAVE_INGREDIENTS(state, payload) {
             console.log("neki")
             if (!(payload.recipesName === "")) {
-                state.recipes[payload.editIndex].NAME = payload.recipesName;
+                state.recipes[payload.editIndex].NAME = payload.recipesName.toLowerCase().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
             }
             if (!(payload.recipesPortions === "")) {
                 state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;

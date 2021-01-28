@@ -9,42 +9,39 @@
         :class="[(index+1) % 1 == 0 ? 'pr-3 pl-0' : 'pr-3 pl-0']"
       >
         <v-card outlined class="orange lighten-4">
-          <v-card-text
-            style="text-transform: capitalize;"
-            class="text-h5 pa-4"
-            v-if="item.IS_PORTION === false"
-          >{{item.NAME}} ({{item.QUANTITY*100}}g)</v-card-text>
-          <v-card-text style="text-transform: capitalize;" class="text-h5" v-else>
-            <div v-if="item.QUANTITY==1">{{item.NAME}} ({{item.QUANTITY}} portion)</div>
-            <div v-else>{{item.NAME}} ({{item.QUANTITY}} portions)</div>
-          </v-card-text>
-          <nutrientbox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></nutrientbox>
-
-          <v-row style="width: 100%;" class="mx-0 pt-1">
-            <v-col cols="2" class="pl-2 pt-1">
-              <v-btn large icon @click="startEdit(index)">
-                <v-icon v-if="activeIndex!==index">mdi-pencil-outline</v-icon>
-                <v-icon v-else>mdi-pencil-off-outline</v-icon>
-              </v-btn>
-            </v-col>
-            <v-col cols="10">
-              <v-card v-if="activeIndex == index" style="height: 44px;" class="mt-n2 rounded-lg">
-                <v-row style="width: 100%;" class="mx-0">
-                  <v-col cols="5" class="pt-1">
-                    <v-text-field
-                      dense
-                      ref="inputAmount"
-                      type="number"
-                      step="0.5"
-                      placeholder="x 100g"
-                      v-model="quantity"
-                      @blur="setFocus(false)"
-                      @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col cols="2" class="pt-0">
+          <div class="d-flex">
+            <v-card-text
+              style="text-transform: capitalize; width:65%"
+              class="text-h5 pa-4"
+            >{{item.NAME}}</v-card-text>
+            <div class="d-flex flex-column pt-2 pr-2" style="width: 35%">
+              <div class="d-flex justify-end pr-0">
+                <v-btn class="justify-end" large icon @click="startEdit(index)">
+                  <v-icon v-if="activeIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
+                  <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
+                </v-btn>
+                <v-btn
+                  class="justify-end"
+                  icon
+                  large
+                  color="red"
+                  @click="
+            onRemoved({index, userID, moduleIndex})
+            setDeleted(true)"
+                >
+                  <v-icon class="mr-2">mdi-delete</v-icon>
+                </v-btn>
+              </div>
+              <div style="height: 50px">
+                <div v-if="item.IS_PORTION === false">
+                  <v-card-text
+                  @click="startEdit(index)"
+                    v-if="activeIndex!==index"
+                    style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                  >x {{item.QUANTITY*100}}g</v-card-text>
+                  <div v-else class="d-flex justify-space-around">
                     <v-btn
+                      class="mr-1"
                       icon
                       large
                       color="green"
@@ -54,28 +51,62 @@
                     >
                       <v-icon>mdi-check-bold</v-icon>
                     </v-btn>
-                  </v-col>
-                  <v-col cols="2" class="pt-0">
-                    <v-btn icon large color="amber" @click="quantity=''">
-                      <v-icon>mdi-close-thick</v-icon>
-                    </v-btn>
-                  </v-col>
-                  <v-col cols="2" class="pt-0">
+                    <v-text-field
+                      class="mt-2 mr-1"
+                      dense
+                      ref="inputAmount"
+                      type="number"
+                      step="0.5"
+                      :placeholder="`x ${item.QUANTITY*100}g`"
+                      v-model="quantity"
+                      @blur="setFocus(false)"
+                      @keyup.enter="
+              onChanged({item, index, userID, moduleIndex, quantity})
+              resetEdit()"
+                    ></v-text-field>
+                  </div>
+                </div>
+                <div v-else>
+                  <v-card-text
+                  @click="startEdit(index)"
+                    v-if="activeIndex!==index"
+                    style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                  >
+                    <div v-if="item.QUANTITY==1">x 1 por.</div>
+                    <div v-else>x {{item.QUANTITY}} por.</div>
+                  </v-card-text>
+                  <div v-else class="d-flex justify-space-around">
                     <v-btn
+                      class="mr-1"
                       icon
                       large
-                      color="red"
+                      color="green"
                       @click="
-            onRemoved({index, userID, moduleIndex})
-            setDeleted(true)"
+              onChanged({item, index, userID, moduleIndex, quantity})"
+                      :disabled="parseFloat(quantity)<=0 || quantity === ''"
                     >
-                      <v-icon>mdi-delete</v-icon>
+                      <v-icon>mdi-check-bold</v-icon>
                     </v-btn>
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-col>
-          </v-row>
+                    <v-text-field
+                      class="mt-2 mr-1"
+                      dense
+                      ref="inputAmount"
+                      type="number"
+                      step="0.5"
+                      :placeholder="`x ${item.QUANTITY} por.`"
+                      v-model="quantity"
+                      @blur="setFocus(false)"
+                      @keyup.enter="
+              onChanged({item, index, userID, moduleIndex, quantity})
+              resetEdit()"
+                    ></v-text-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></NutrientBox>
         </v-card>
       </v-col>
     </v-row>
@@ -83,7 +114,7 @@
 </template>
 
 <script>
-import nutrientBox from "./nutrientBox.vue";
+import NutrientBox from "./NutrientBox";
 import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
 
@@ -101,13 +132,14 @@ export default {
     }
   },
   components: {
-    nutrientbox: nutrientBox
+    NutrientBox
   },
   data() {
     return {
       activeIndex: -1,
       moduleIndex: 1,
-      deleted: false
+      deleted: false,
+      inputIndex: -1
     };
   },
   watch: {
@@ -143,12 +175,8 @@ export default {
       "responseCount",
       "focus"
     ]),
-    ...mapState("other", [
-      "dailyEntries"
-    ]),
-    ...mapState("firebase", [
-      "userID"
-    ]),
+    ...mapState("other", ["dailyEntries"]),
+    ...mapState("firebase", ["userID"]),
     today() {
       return dayjs().format("YYYY-MM-DD");
     },
@@ -162,14 +190,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", [
-      "onChanged",
-      "onRemoved",
-      "setFocus"
-    ]),
-    ...mapActions("other", [
-      "setEntryTodayIndex"
-    ]),
+    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
+    ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
       if (this.activeIndex == index && !this.focus) {
         this.activeIndex = -1;
@@ -183,8 +205,14 @@ export default {
         }, 0);
       }
     },
+    resetEdit(){
+this.activeIndex = -1;
+    },
     setDeleted(value) {
       this.deleted = value;
+    },
+    setInput(index) {
+      this.inputIndex = index;
     }
   }
 };

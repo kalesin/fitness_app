@@ -19,7 +19,7 @@
             class="text-h5"
             v-else
           >{{item.NAME}} ({{item.QUANTITY}} portions)</v-card-text>
-          <nutrientbox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></nutrientbox>
+          <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></NutrientBox>
 
           <v-row style="width: 100%;" class="mx-0 pt-1">
             <v-col cols="2" class="pl-2 pt-1">
@@ -190,7 +190,7 @@
 </template>
 
 <script>
-import nutrientBox from "./nutrientBox.vue";
+import NutrientBox from "./NutrientBox.vue";
 import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
 
@@ -198,7 +198,7 @@ import EntryDialogue from "./EntryDialogue";
 
 export default {
   components: {
-    nutrientbox: nutrientBox
+    NutrientBox
   },
   data() {
     return {

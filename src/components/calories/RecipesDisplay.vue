@@ -6,7 +6,7 @@
       </v-col>
       <v-col cols="4" class="pa-0 pt-4 pl-2">
         <v-btn
-          v-if="editIndex!=-2" 
+          v-if="editIndex!=-2"
           color="success"
           @click="
       setEditIndex(-2)
@@ -62,26 +62,17 @@
                 </v-btn>
               </v-col>
               <v-col cols="1" class="my-5 pl-8">
-                <v-btn
-                  large
-                  icon
-                  color="red"
-                  @click.stop="shownIndex=index"
-                >
+                <v-btn large icon color="red" @click.stop="shownIndex=index">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
-            <nutrientbox class="px-3 pb-3" :nutrientArray="item.PORTION_NUTRIENTS" type="box"></nutrientbox>
+            <NutrientBox class="px-3 pb-3" :nutrientArray="item.PORTION_NUTRIENTS" type="box"></NutrientBox>
           </v-card>
         </v-col>
       </v-row>
     </div>
-    <deletedialogue
-      v-if="shownIndex >= 0"
-      @close="shownIndex=-1"
-      :index="shownIndex"
-    ></deletedialogue>
+    <DeleteDialogue v-if="shownIndex >= 0" @close="shownIndex=-1" :index="shownIndex"></DeleteDialogue>
   </div>
 </template>
 
@@ -89,14 +80,14 @@
 </style>
 
 <script>
-import nutrientBox from "./nutrientBox.vue";
+import NutrientBox from "./NutrientBox";
 import { mapState, mapActions } from "vuex";
 import DeleteDialogue from "./DeleteDialogue";
 
 export default {
   components: {
-    nutrientbox: nutrientBox,
-    deletedialogue: DeleteDialogue
+    NutrientBox,
+    DeleteDialogue,
   },
   data() {
     return {
@@ -105,7 +96,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("other", ["recipes", "portionItem", "editIndex"]),
+    ...mapState("other", ["recipes", "portionItem"]),
     ...mapState("firebase", ["userID"]),
     quantity: {
       get() {
@@ -114,7 +105,7 @@ export default {
       set(value) {
         this.$store.dispatch("other/setRecipeQuantity", value);
       }
-    }
+    },
   },
   methods: {
     ...mapActions("other", [
@@ -128,12 +119,11 @@ export default {
       if (this.activeIndex == index && this.editIndex != -2) {
         this.activeIndex = -1;
         this.setEditIndex(-1);
-        
       } else {
         this.activeIndex = index;
         if (this.recipes[index]) {
           this.setAddedRecipe(this.recipes[index].INGREDIENTS);
-        }else {
+        } else {
           this.setAddedRecipe([]);
         }
         this.setEditIndex(index);

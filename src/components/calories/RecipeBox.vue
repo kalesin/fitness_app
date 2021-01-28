@@ -1,62 +1,16 @@
 <template>
-  <v-card outlined class="pa-0 ma-0 rounded-t-xl">
-    <div v-if="type === 'box'" class="rounded-t-xl" flat tile outlined>
-      <v-card-text class="text-center text-h5 pa-2">{{nutrientArray[0]}} kcal</v-card-text>
-    </div>
-
-    <div v-if="type === 'daily'" class="rounded-t-xl" outlined tile>
-      <v-row style="width: 100%" class="mx-0">
-        <v-col cols="2">
-          <v-progress-circular
-            :size="100"
-            :width="20"
-            :rotate="90"
-            :value="dailyProgress"
-            color="green"
-          >{{ Math.round(dailyProgress) }} %</v-progress-circular>
-        </v-col>
-        <v-col cols="6" class="py-6 ml-12">
-          <v-card-text class="text-center text-h6 pa-0 font-weight-regular">Today's total:</v-card-text>
-          <v-card-text class="text-center text-h4 pa-0">{{nutrientArray[0]}} kcal</v-card-text>
-        </v-col>
-        <v-col cols="1" class="py-10 pl-0">
-          <v-btn
-            icon
-            large
-            v-if="entryTodayIndex==-1"
-            color="success"
-            @click="
-            addDailyEntry({today, addedItems, totalForToday, userID})"
-            :disabled="isDisabled"
-          >
-            <v-icon>mdi-content-save</v-icon>
-          </v-btn>
-          <v-btn
-            icon
-            v-else
-            color="success"
-            large
-            @click.stop="showDialogue=true"
-            :disabled="isDisabled"
-          >
-            <v-icon>mdi-content-save</v-icon>
-          </v-btn>
-          <app-entry-dialogue :visible="showDialogue" @close="showDialogue=false"></app-entry-dialogue>
-        </v-col>
-      </v-row>
-    </div>
-
-    <div v-if="type=='recipe'" class="rounded-t-xl" outlined tile>
+  <v-card outlined class="pa-0 mb-2 rounded-xl" style="border: solid #cccccc 1px">
       <v-row style="width: 100%" class="mx-0 px-2 pt-4">
         <v-col cols="8" class="py-0">
           <v-text-field
+            counter="30"
+            :rules="rules"
+            maxlength="30"
             dense
             outlined
             type="text"
             label="Recipe name"
             v-model="recipesName"
-            @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})"
           ></v-text-field>
         </v-col>
         <v-col cols="4" class="py-0">
@@ -67,8 +21,6 @@
             step="1"
             v-model="recipesPortions"
             label="Portions"
-            @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -88,7 +40,7 @@
         </v-col>
         <v-col cols="1" class="py-10 pl-0">
           <v-btn
-          v-if="editIndex == -2"
+            v-if="editIndex == -2"
             icon
             large
             color="success"
@@ -100,7 +52,7 @@
             <v-icon>mdi-content-save</v-icon>
           </v-btn>
           <v-btn
-          v-else
+            v-else
             icon
             large
             color="success"
@@ -113,76 +65,30 @@
           </v-btn>
         </v-col>
       </v-row>
-    </div>
-
-    <div v-if="type=='entry'" class="rounded-t-xl" outlined tile>
-      <v-row style="width: 100%" class="mx-0 px-2 pt-4">
-        <v-col cols="12" class="py-0">
-          <v-text-field
-            dense
-            outlined
-            type="text"
-            label="Recipe name"
-            v-model="recipesName"
-            value="name"
-            @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row style="width: 100%" class="mx-0 mb-3">
-        <v-col cols="2">
-          <v-progress-circular
-            :size="100"
-            :width="20"
-            :rotate="90"
-            :value="recipeProgress"
-            color="green"
-          >{{ Math.round(recipeProgress) }} %</v-progress-circular>
-        </v-col>
-        <v-col cols="6" class="py-6 ml-12">
-          <v-card-text class="text-center text-h6 pa-0 font-weight-regular">Recipe total:</v-card-text>
-          <v-card-text class="text-center text-h4 pa-0">{{nutrientArray[0]}} kcal</v-card-text>
-        </v-col>
-        <v-col cols="1" class="py-10 pl-0">
-          <v-btn
-            icon
-            large
-            color="success"
-            @click="
-            addToRecipes({totalForToday: totalRecipe, addedItems: addedRecipe, recipesName, recipesPortions, userID})
-            setEditIndex(-1)"
-            :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
-          >
-            <v-icon>mdi-content-save</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-    </div>
 
     <v-row style="width: 100%" class="ma-0">
       <v-col class="pa-0">
-        <div flat tile outlined class="rounded-bl-xl">
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Protein:</v-card-text>
-          <v-card-text class="text-center pa-2">{{nutrientArray[1]}} g</v-card-text>
+        <div>
+          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Protein:</v-card-text>
+          <v-card-text class="text-center pa-1">{{nutrientArray[1]}} g</v-card-text>
         </div>
       </v-col>
       <v-col class="pa-0">
-        <div flat tile outlined>
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Carbs:</v-card-text>
-          <v-card-text class="text-center pa-2">{{nutrientArray[2]}} g</v-card-text>
+        <div>
+          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Carbs:</v-card-text>
+          <v-card-text class="text-center pa-1">{{nutrientArray[2]}} g</v-card-text>
         </div>
       </v-col>
       <v-col class="pa-0">
-        <div flat tile outlined>
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Fats:</v-card-text>
-          <v-card-text class="text-center pa-2">{{nutrientArray[3]}} g</v-card-text>
+        <div>
+          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fats:</v-card-text>
+          <v-card-text class="text-center pa-1">{{nutrientArray[3]}} g</v-card-text>
         </div>
       </v-col>
       <v-col class="pa-0">
-        <div flat tile outlined class="rounded-br-xl">
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-2">Fiber:</v-card-text>
-          <v-card-text class="text-center pa-2">{{nutrientArray[4]}} g</v-card-text>
+        <div>
+          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fiber:</v-card-text>
+          <v-card-text class="text-center pa-1">{{nutrientArray[4]}} g</v-card-text>
         </div>
       </v-col>
     </v-row>
@@ -206,15 +112,13 @@ export default {
       this.setEntryTodayIndex(index);
     }
   },
-  components: {
-    appEntryDialogue: EntryDialogue
-  },
   props: ["nutrientArray", "size", "type", "total"],
   data() {
     return {
       activeIndex: -1,
       showDialogue: false,
-      moduleIndex: 1
+      moduleIndex: 1,
+      rules: [v => v.length <= 30 || "Max 30 characters"]
     };
   },
   watch: {
@@ -266,9 +170,7 @@ export default {
       }
       return disabled;
     },
-    ...mapState("searchAndAdd", [
-      "addedItems"
-    ]),
+    ...mapState("searchAndAdd", ["addedItems"]),
     ...mapState("searchAndAdd4", { addedRecipe: "addedItems" }),
     ...mapState("other", [
       "maintenanceCalories",
