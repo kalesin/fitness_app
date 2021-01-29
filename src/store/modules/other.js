@@ -196,7 +196,7 @@ const other = {
         },
         addToRecipes({ state, commit }, { totalForToday, addedItems, recipesName, recipesPortions, userID}) {
             commit("ADD_TO_RECIPES", { totalForToday, addedItems, recipesName, recipesPortions })
-            commit("searchAndAdd4/SET_ADDED_ITEMS", [], {root: true})
+            commit("searchAndAdd2/SET_ADDED_ITEMS", [], {root: true})
             commit("RESET_PORTIONS_AND_NAME")
             
             const data = {

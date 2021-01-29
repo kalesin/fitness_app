@@ -96,7 +96,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("other", ["recipes", "portionItem"]),
+    ...mapState("other", ["recipes", "portionItem", "editIndex"]),
     ...mapState("firebase", ["userID"]),
     quantity: {
       get() {
@@ -114,7 +114,7 @@ export default {
       "setDeleteIndex"
     ]),
     ...mapActions("searchAndAdd", ["addItemValue", "setAddedItems"]),
-    ...mapActions("searchAndAdd4", { setAddedRecipe: "setAddedItems" }),
+    ...mapActions("searchAndAdd2", { setAddedRecipe: "setAddedItems" }),
     startEdit(index) {
       if (this.activeIndex == index && this.editIndex != -2) {
         this.activeIndex = -1;

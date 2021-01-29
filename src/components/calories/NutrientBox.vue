@@ -267,7 +267,7 @@ export default {
       return disabled;
     },
     ...mapState("searchAndAdd", ["addedItems"]),
-    ...mapState("searchAndAdd4", { addedRecipe: "addedItems" }),
+    ...mapState("searchAndAdd2", { addedRecipe: "addedItems" }),
     ...mapState("other", [
       "maintenanceCalories",
       "dailyEntries",
@@ -276,10 +276,10 @@ export default {
     ]),
     ...mapState("other", ["recipes"]),
     ...mapState("firebase", ["userID"]),
-    ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapGetters("searchAndAdd2", { ingredientsTotal: "totalForToday" }),
+    ...mapGetters("searchAndAdd", ["totalForToday"]),/* 
+    ...mapGetters("searchAndAdd2", { ingredientsTotal: "totalForToday" }), */
     ...mapGetters("searchAndAdd3", { addedItemsTotal: "totalForToday" }),
-    ...mapGetters("searchAndAdd4", { totalRecipe: "totalForToday" }),
+    ...mapGetters("searchAndAdd2", { totalRecipe: "totalForToday" }),
     dailyProgress: {
       get() {
         return (this.totalForToday[0] / this.maintenanceCalories) * 100;

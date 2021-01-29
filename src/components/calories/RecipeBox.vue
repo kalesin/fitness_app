@@ -1,97 +1,91 @@
 <template>
-  <v-card outlined class="pa-0 mb-2 rounded-xl" style="border: solid #cccccc 1px">
-      <v-row style="width: 100%" class="mx-0 px-2 pt-4">
-        <v-col cols="8" class="py-0">
-          <v-text-field
-            counter="30"
-            :rules="rules"
-            maxlength="30"
-            dense
-            outlined
-            type="text"
-            label="Recipe name"
-            v-model="recipesName"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="4" class="py-0">
-          <v-text-field
-            dense
-            outlined
-            type="number"
-            step="1"
-            v-model="recipesPortions"
-            label="Portions"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-      <v-row style="width: 100%" class="mx-0 mb-3">
-        <v-col cols="2">
-          <v-progress-circular
-            :size="100"
-            :width="20"
-            :rotate="90"
-            :value="recipeProgress"
-            color="green"
-          >{{ Math.round(recipeProgress) }} %</v-progress-circular>
-        </v-col>
-        <v-col cols="6" class="py-6 ml-12">
-          <v-card-text class="text-center text-h6 pa-0 font-weight-regular">Recipe total:</v-card-text>
-          <v-card-text class="text-center text-h4 pa-0">{{nutrientArray[0]}} kcal</v-card-text>
-        </v-col>
-        <v-col cols="1" class="py-10 pl-0">
-          <v-btn
-            v-if="editIndex == -2"
-            icon
-            large
-            color="success"
-            @click="
+  <v-card outlined class="pa-0 mb-2 rounded-xl" style="border: solid #cccccc 1px; overflow: hidden; min-height: 20vh !important">
+    <div class="d-flex">
+      <v-text-field
+        class="ma-4 mb-0"
+        counter="30"
+        :rules="rules"
+        maxlength="30"
+        dense
+        outlined
+        type="text"
+        label="Recipe name"
+        v-model="recipesName"
+      ></v-text-field>
+      <v-text-field
+      :rules="rules2"
+        class="ma-4 mb-0"
+        dense
+        outlined
+        type="number"
+        step="1"
+        v-model="recipesPortions"
+        label="Portions"
+      ></v-text-field>
+    </div>
+
+    <div class="d-flex">
+      <v-progress-circular
+        class="mx-4 my-auto"
+        :size="100"
+        :width="20"
+        :rotate="90"
+        :value="recipeProgress"
+        color="green"
+      >{{ Math.round(recipeProgress) }} %</v-progress-circular>
+      <div class="d-flex align-center mx-auto">
+        <v-btn
+          v-if="editIndex == -2"
+          icon
+          large
+          color="success"
+          @click="
             addToRecipes({totalForToday: totalRecipe, addedItems: addedRecipe, recipesName, recipesPortions, userID})
             setEditIndex(-1)"
-            :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
-          >
-            <v-icon>mdi-content-save</v-icon>
-          </v-btn>
-          <v-btn
-            v-else
-            icon
-            large
-            color="success"
-            @click="
+          :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
+        >
+          <v-icon>mdi-content-save</v-icon>
+        </v-btn>
+        <v-btn
+          v-else
+          icon
+          large
+          color="success"
+          @click="
             saveIngredients({editIndex, totalRecipe, addedRecipe, recipesName, recipesPortions, userID})
             setEditIndex(-1)"
-            :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
-          >
-            <v-icon>mdi-content-save</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
+          :disabled="parseFloat(recipesPortions)<=0 || recipesName===''"
+        >
+          <v-icon>mdi-content-save</v-icon>
+        </v-btn>
+      </div>
 
-    <v-row style="width: 100%" class="ma-0">
-      <v-col class="pa-0">
-        <div>
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Protein:</v-card-text>
-          <v-card-text class="text-center pa-1">{{nutrientArray[1]}} g</v-card-text>
+      <div class="flex-shrink-1 mr-2" style="width: 50%">
+        <div class="mx-auto mb-2">
+          <v-card-text class="text-center text-h6 pa-0 font-weight-regular">Recipe total:</v-card-text>
+          <v-card-text class="text-center text-h4 pa-0">{{nutrientArray[0]}} kcal</v-card-text>
         </div>
-      </v-col>
-      <v-col class="pa-0">
-        <div>
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Carbs:</v-card-text>
-          <v-card-text class="text-center pa-1">{{nutrientArray[2]}} g</v-card-text>
+
+        <div class="d-flex justify-space-around">
+          <div>
+            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Protein:</v-card-text>
+            <v-card-text class="text-center pa-1">{{nutrientArray[1]}} g</v-card-text>
+          </div>
+          <div>
+            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Carbs:</v-card-text>
+            <v-card-text class="text-center pa-1">{{nutrientArray[2]}} g</v-card-text>
+          </div>
+          <div>
+            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fats:</v-card-text>
+            <v-card-text class="text-center pa-1">{{nutrientArray[3]}} g</v-card-text>
+          </div>
+          <div>
+            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fiber:</v-card-text>
+            <v-card-text class="text-center pa-1">{{nutrientArray[4]}} g</v-card-text>
+          </div>
         </div>
-      </v-col>
-      <v-col class="pa-0">
-        <div>
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fats:</v-card-text>
-          <v-card-text class="text-center pa-1">{{nutrientArray[3]}} g</v-card-text>
-        </div>
-      </v-col>
-      <v-col class="pa-0">
-        <div>
-          <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fiber:</v-card-text>
-          <v-card-text class="text-center pa-1">{{nutrientArray[4]}} g</v-card-text>
-        </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </v-card>
 </template>
 
@@ -118,7 +112,8 @@ export default {
       activeIndex: -1,
       showDialogue: false,
       moduleIndex: 1,
-      rules: [v => v.length <= 30 || "Max 30 characters"]
+      rules: [v => v.length <= 30 || "Max 30 characters"],
+      rules2: [v => v>=1 || "Portions can't be - or 0"]
     };
   },
   watch: {
@@ -171,7 +166,7 @@ export default {
       return disabled;
     },
     ...mapState("searchAndAdd", ["addedItems"]),
-    ...mapState("searchAndAdd4", { addedRecipe: "addedItems" }),
+    ...mapState("searchAndAdd2", { addedRecipe: "addedItems" }),
     ...mapState("other", [
       "maintenanceCalories",
       "dailyEntries",
@@ -180,10 +175,10 @@ export default {
     ]),
     ...mapState("other", ["recipes"]),
     ...mapState("firebase", ["userID"]),
-    ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapGetters("searchAndAdd2", { ingredientsTotal: "totalForToday" }),
+    ...mapGetters("searchAndAdd", ["totalForToday"]),/* 
+    ...mapGetters("searchAndAdd2", { ingredientsTotal: "totalForToday" }), */
     ...mapGetters("searchAndAdd3", { addedItemsTotal: "totalForToday" }),
-    ...mapGetters("searchAndAdd4", { totalRecipe: "totalForToday" }),
+    ...mapGetters("searchAndAdd2", { totalRecipe: "totalForToday" }),
     dailyProgress: {
       get() {
         return (this.totalForToday[0] / this.maintenanceCalories) * 100;

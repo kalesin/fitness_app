@@ -1,11 +1,11 @@
 <template>
   <v-dialog v-model="show" width="90%">
     <v-card height="100vh" class="pa-3">
-      <div class="d-flex" style="height: 30vh">
+      <div class="d-flex" style="height: 27vh">
         <Search class="flex-grow-1" ></Search>
         <RecipeBox :nutrientArray="totalRecipe"></RecipeBox>
       </div>
-      <div class="d-flex" style="height: 50vh">
+      <div class="d-flex" style="height: 55vh">
         <RecipesEdit class="pa-3 flex-grow-1"></RecipesEdit>
       </div>
       <v-card-actions class="justify-end">
@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     ...mapState("firebase", ["userID"]),
-    ...mapGetters("searchAndAdd4", { totalRecipe: "totalForToday" }),
+    ...mapGetters("searchAndAdd2", { totalRecipe: "totalForToday" }),
     ...mapGetters("searchAndAdd", ["totalForToday"]),
     ...mapState("other", ["deleteIndex"]),
     show: {
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     ...mapActions("other", ["removeRecipe"]),
-    ...mapActions("searchAndAdd4", { searchRecipe: "searchFood" })
+    ...mapActions("searchAndAdd2", { searchRecipe: "searchFood" })
   }
 };
 </script>

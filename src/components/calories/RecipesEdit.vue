@@ -231,8 +231,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("searchAndAdd4", ["totalForToday"]),
-    ...mapState("searchAndAdd4", [
+    ...mapGetters("searchAndAdd2", ["totalForToday"]),
+    ...mapState("searchAndAdd2", [
       "addedItems",
       "idx",
       "responseCount",
@@ -257,15 +257,15 @@ export default {
     },
     quantity: {
       get() {
-        return this.$store.state.searchAndAdd4.quantity;
+        return this.$store.state.searchAndAdd2.quantity;
       },
       set(value) {
-        this.$store.dispatch("searchAndAdd4/setQuantity", value);
+        this.$store.dispatch("searchAndAdd2/setQuantity", value);
       }
     }
   },
   methods: {
-    ...mapActions("searchAndAdd4", ["onChanged", "onRemoved", "setFocus"]),
+    ...mapActions("searchAndAdd2", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
       "setMaintenanceCalories",
       "addDailyEntry",
