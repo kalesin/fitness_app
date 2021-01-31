@@ -1,115 +1,110 @@
 <template>
-  <v-card flat tile class="grey lighten-5 overflow-y-auto mr-3">
-    <v-row class="mx-0" style="width:100%">
-      <v-col
-        cols="4"
-        v-for="(item, index) in addedItems"
-        :key="index"
-        class="pb-0"
-        :class="[(index+1) % 1 == 0 ? 'pr-3 pl-0' : 'pr-3 pl-0']"
-      >
-        <v-card outlined class="orange lighten-4">
-          <div class="d-flex">
-            <v-card-text
-              style="text-transform: capitalize; width:65%"
-              class="text-h5 pa-4"
-            >{{item.NAME}}</v-card-text>
-            <div class="d-flex flex-column pt-2 pr-2" style="width: 35%">
-              <div class="d-flex justify-end pr-0">
-                <v-btn class="justify-end" large icon @click="startEdit(index)">
-                  <v-icon v-if="activeIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
-                  <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
-                </v-btn>
-                <v-btn
-                  class="justify-end"
-                  icon
-                  large
-                  color="red"
-                  @click="
+  <v-card flat tile class="light-green lighten-3 overflow-y-auto d-flex flex-wrap align-content-start rounded-lg pl-2">
+    <div
+      v-for="(item, index) in addedItems"
+      :key="index"
+      class="itemCard pa-2 pb-0 pl-0"
+    >
+      <v-card outlined class="lime accent-1 rounded-lg">
+        <div class="d-flex">
+          <v-card-text
+            style="text-transform: capitalize; width: 65%; text-align: center; line-height: 100px; height: 100px"
+            class="text-h5 pa-0 justify-end align-end"
+          >{{item.NAME}}</v-card-text>
+          <div class="d-flex flex-column pt-2 pr-2" style="width: 35%">
+            <div class="d-flex justify-end pr-0">
+              <v-btn class="justify-end" large icon @click="startEdit(index)">
+                <v-icon v-if="activeIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
+                <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
+              </v-btn>
+              <v-btn
+                class="justify-end"
+                icon
+                large
+                color="red"
+                @click="
             onRemoved({index, userID, moduleIndex})
             setDeleted(true)"
-                >
-                  <v-icon class="mr-2">mdi-delete</v-icon>
-                </v-btn>
-              </div>
-              <div style="height: 50px">
-                <div v-if="item.IS_PORTION === false">
-                  <v-card-text
+              >
+                <v-icon class="mr-2">mdi-delete</v-icon>
+              </v-btn>
+            </div>
+            <div style="height: 50px">
+              <div v-if="item.IS_PORTION === false">
+                <v-card-text
                   @click="startEdit(index)"
-                    v-if="activeIndex!==index"
-                    style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
-                  >x {{item.QUANTITY*100}}g</v-card-text>
-                  <div v-else class="d-flex justify-space-around">
-                    <v-btn
-                      class="mr-1"
-                      icon
-                      large
-                      color="green"
-                      @click="
+                  v-if="activeIndex!==index"
+                  style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                >x {{item.QUANTITY*100}}g</v-card-text>
+                <div v-else class="d-flex justify-space-around">
+                  <v-btn
+                    class="mr-1"
+                    icon
+                    large
+                    color="green"
+                    @click="
               onChanged({item, index, userID, moduleIndex, quantity})"
-                      :disabled="parseFloat(quantity)<=0 || quantity === ''"
-                    >
-                      <v-icon>mdi-check-bold</v-icon>
-                    </v-btn>
-                    <v-text-field
-                      class="mt-2 mr-1"
-                      dense
-                      ref="inputAmount"
-                      type="number"
-                      step="0.5"
-                      :placeholder="`x ${item.QUANTITY*100}g`"
-                      v-model="quantity"
-                      @blur="setFocus(false)"
-                      @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})
-              resetEdit()"
-                    ></v-text-field>
-                  </div>
-                </div>
-                <div v-else>
-                  <v-card-text
-                  @click="startEdit(index)"
-                    v-if="activeIndex!==index"
-                    style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                    :disabled="parseFloat(quantity)<=0 || quantity === ''"
                   >
-                    <div v-if="item.QUANTITY==1">x 1 por.</div>
-                    <div v-else>x {{item.QUANTITY}} por.</div>
-                  </v-card-text>
-                  <div v-else class="d-flex justify-space-around">
-                    <v-btn
-                      class="mr-1"
-                      icon
-                      large
-                      color="green"
-                      @click="
-              onChanged({item, index, userID, moduleIndex, quantity})"
-                      :disabled="parseFloat(quantity)<=0 || quantity === ''"
-                    >
-                      <v-icon>mdi-check-bold</v-icon>
-                    </v-btn>
-                    <v-text-field
-                      class="mt-2 mr-1"
-                      dense
-                      ref="inputAmount"
-                      type="number"
-                      step="0.5"
-                      :placeholder="`x ${item.QUANTITY} por.`"
-                      v-model="quantity"
-                      @blur="setFocus(false)"
-                      @keyup.enter="
+                    <v-icon>mdi-check-bold</v-icon>
+                  </v-btn>
+                  <v-text-field
+                    class="mt-2 mr-1"
+                    dense
+                    ref="inputAmount"
+                    type="number"
+                    step="0.5"
+                    :placeholder="`x ${item.QUANTITY*100}g`"
+                    v-model="quantity"
+                    @blur="setFocus(false)"
+                    @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
               resetEdit()"
-                    ></v-text-field>
-                  </div>
+                  ></v-text-field>
+                </div>
+              </div>
+              <div v-else>
+                <v-card-text
+                  @click="startEdit(index)"
+                  v-if="activeIndex!==index"
+                  style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                >
+                  <div v-if="item.QUANTITY==1">x 1 por.</div>
+                  <div v-else>x {{item.QUANTITY}} por.</div>
+                </v-card-text>
+                <div v-else class="d-flex justify-space-around">
+                  <v-btn
+                    class="mr-1"
+                    icon
+                    large
+                    color="green"
+                    @click="
+              onChanged({item, index, userID, moduleIndex, quantity})"
+                    :disabled="parseFloat(quantity)<=0 || quantity === ''"
+                  >
+                    <v-icon>mdi-check-bold</v-icon>
+                  </v-btn>
+                  <v-text-field
+                    class="mt-2 mr-1"
+                    dense
+                    ref="inputAmount"
+                    type="number"
+                    step="0.5"
+                    :placeholder="`x ${item.QUANTITY} por.`"
+                    v-model="quantity"
+                    @blur="setFocus(false)"
+                    @keyup.enter="
+              onChanged({item, index, userID, moduleIndex, quantity})
+              resetEdit()"
+                  ></v-text-field>
                 </div>
               </div>
             </div>
           </div>
-
-          <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></NutrientBox>
-        </v-card>
-      </v-col>
-    </v-row>
+        </div>
+        <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="ma-2 mt-0"></NutrientBox>
+      </v-card>
+    </div>
   </v-card>
 </template>
 
@@ -218,5 +213,19 @@ this.activeIndex = -1;
 };
 </script>
 
+
 <style scoped>
+.itemCard {
+  width: calc(100%/3);
+}
+@media only screen and (max-width: 1400px) {
+  .itemCard {
+    width: 50% !important;
+  }
+}
+@media only screen and (max-width: 1000px) {
+  .itemCard {
+    width: 100% !important;
+  }
+}
 </style>

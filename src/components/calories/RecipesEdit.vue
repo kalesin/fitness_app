@@ -102,7 +102,7 @@
             </div>
           </div>
         </div>
-        <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="mx-2"></NutrientBox>
+        <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="ma-2 mt-0"></NutrientBox>
       </v-card>
     </div>
   </v-card>

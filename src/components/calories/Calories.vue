@@ -1,15 +1,14 @@
 <template>
-  <v-container fluid class="grey lighten-5 ma-0 pa-3 d-flex">
-    <v-row class="mx-0">
-      <v-col cols="9" class="pr-0 pa-0">
-        <Search></Search>
-        <AddedFoods></AddedFoods>
-      </v-col>
-      <v-col cols="3" class="pa-0">
-        <RecipesDisplay @close="activeIndex=-1"></RecipesDisplay>
-        <NutrientBox :nutrientArray="totalForToday" type="daily"></NutrientBox>
-      </v-col>
-    </v-row>
+  <v-container fluid class="grey lighten-5 ma-0 pa-3 d-flex flex-column">
+    <div class="d-flex mb-3" style="height: 180px;">
+      <Search class="mr-3" style="height: 180px; width: 50vw"></Search>
+      <DailyBox style="height: 180px; width: 50vw" :nutrientArray="totalForToday"></DailyBox>
+    </div>
+    <div class="d-flex">
+      <AddedFoods class="flex-grow-1 addedFoods" style="width: 75vw;"></AddedFoods>
+
+      <RecipesDisplay style="width: 25vw" @close="activeIndex=-1"></RecipesDisplay>
+    </div>
 
     <Recipes v-if="editIndex != -1" @close="editIndex=-1" :index="editIndex"></Recipes>
   </v-container>
@@ -21,7 +20,7 @@
 <script>
 import AddedFoods from "./AddedFoods";
 import RecipesDisplay from "./RecipesDisplay";
-import NutrientBox from "./NutrientBox";
+import DailyBox from "./DailyBox";
 import Search from "./Search";
 
 import Recipes from "./Recipes";
@@ -31,20 +30,20 @@ export default {
   components: {
     AddedFoods,
     RecipesDisplay,
-    NutrientBox,
+    DailyBox,
     Search,
     Recipes
   },
-  watch:{
+  watch: {
     editIndex: {
       handler() {
         if (this.editIndex != -1 && this.editIndex != -2) {
-          console.log(this.recipes[0])
+          console.log(this.recipes[0]);
           this.recipesName = this.recipes[this.editIndex].NAME;
           this.recipesPortions = this.recipes[this.editIndex].PORTIONS;
         } else if (this.editIndex != -1 && this.editIndex == -2) {
           this.recipesName = "New Recipe";
-          this.recipesPortions= 1;
+          this.recipesPortions = 1;
         }
       }
     }
@@ -69,7 +68,7 @@ export default {
       }
     },
 
-     recipesPortions: {
+    recipesPortions: {
       get() {
         return this.$store.state.other.recipesPortions;
       },
@@ -84,7 +83,13 @@ export default {
       set(value) {
         this.$store.dispatch("other/nameRecipe", value);
       }
-    },
+    }
   }
 };
 </script>
+
+<style scoped>
+.addedFoods {
+  height: calc(100vh - 180px - 3 * 12px);
+}
+</style>
