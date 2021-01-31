@@ -1,7 +1,7 @@
 <template>
  <v-app>
-      <app-header style="width: 13%"></app-header>
-          <router-view style="width: 87%"></router-view>
+      <app-header></app-header>
+          <router-view class="router"></router-view>
     </v-app>
 </template>
 
@@ -39,3 +39,12 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-navigation-drawer {
+  width: 13vw !important;
+}
+.router {
+  width: calc(100vw - 13vw) !important;
+}
+</style>

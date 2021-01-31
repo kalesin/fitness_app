@@ -227,35 +227,8 @@ export default {
         }
       }
     },
-    editIndex: {
-      handler() {
-        if (this.editIndex != -1 && this.editIndex != -2) {
-          this.recipesName = this.recipes[this.editIndex].NAME;
-          this.recipesPortions = this.recipes[this.editIndex].PORTIONS;
-        } else if (this.editIndex != -1 && this.editIndex == -2) {
-          this.recipesName = "New recipe";
-          this.recipesPortions = 0;
-        }
-      }
-    }
   },
   computed: {
-    recipesPortions: {
-      get() {
-        return this.$store.state.other.recipesPortions;
-      },
-      set(value) {
-        this.$store.dispatch("other/setPortions", value);
-      }
-    },
-    recipesName: {
-      get() {
-        return this.$store.state.other.recipesName;
-      },
-      set(value) {
-        this.$store.dispatch("other/nameRecipe", value);
-      }
-    },
     today() {
       return dayjs().format("YYYY-MM-DD");
     },

@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid class="grey lighten-5 ma-0 pa-3">
-    <v-row style="width: 100%;" class="mx-0">
+  <v-container fluid class="grey lighten-5 ma-0 pa-3 d-flex">
+    <v-row class="mx-0">
       <v-col cols="9" class="pr-0 pa-0">
         <Search></Search>
         <AddedFoods></AddedFoods>
@@ -35,9 +35,23 @@ export default {
     Search,
     Recipes
   },
+  watch:{
+    editIndex: {
+      handler() {
+        if (this.editIndex != -1 && this.editIndex != -2) {
+          console.log(this.recipes[0])
+          this.recipesName = this.recipes[this.editIndex].NAME;
+          this.recipesPortions = this.recipes[this.editIndex].PORTIONS;
+        } else if (this.editIndex != -1 && this.editIndex == -2) {
+          this.recipesName = "New Recipe";
+          this.recipesPortions= 1;
+        }
+      }
+    }
+  },
   computed: {
-
     ...mapGetters("searchAndAdd", ["totalForToday"]),
+    ...mapState("other", ["recipes"]),
     quantity: {
       get() {
         return this.$store.state.searchAndAdd.quantity;
@@ -53,7 +67,24 @@ export default {
       set(value) {
         this.$store.dispatch("other/setEditIndex", value);
       }
-    }
+    },
+
+     recipesPortions: {
+      get() {
+        return this.$store.state.other.recipesPortions;
+      },
+      set(value) {
+        this.$store.dispatch("other/setPortions", value);
+      }
+    },
+    recipesName: {
+      get() {
+        return this.$store.state.other.recipesName;
+      },
+      set(value) {
+        this.$store.dispatch("other/nameRecipe", value);
+      }
+    },
   }
 };
 </script>
