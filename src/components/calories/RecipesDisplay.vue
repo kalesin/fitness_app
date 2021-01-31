@@ -1,78 +1,75 @@
 <template>
-  <div class="rounded-b-lg rounded-t-xl pa-0" tile flat outlined>
-    <v-row class="mx-0" style="width: 100%">
-      <v-col cols="7" class="pa-0">
-        <v-card-text class="text-h4">My Recipes:</v-card-text>
-      </v-col>
-      <v-col cols="4" class="pa-0 pt-4 pl-2">
-        <v-btn
-          v-if="editIndex!=-2"
-          color="success"
-          @click="
+  <v-card class="blue lighten-3 rounded-lg pa-0" tile flat>
+    <div class="d-flex align-center mx-4">
+      <v-card-text class="text-h4">My Recipes:</v-card-text>
+      <v-btn
+        v-if="editIndex!=-2"
+        color="success"
+        @click="
       setEditIndex(-2)
       startEdit(-2)"
-        >
-          <v-icon>mdi-plus-circle</v-icon>add new
-        </v-btn>
-        <v-btn v-else color="error" @click="
+      >
+        <v-icon>mdi-plus-circle</v-icon>add new
+      </v-btn>
+      <v-btn class="align-center" v-else color="error" @click="
       setEditIndex(-1)">
-          <v-icon>mdi-close-thick</v-icon>scrap
-        </v-btn>
-      </v-col>
-    </v-row>
-
-    <div class="rounded-b-lg" tile flat outlined>
-      <v-row class="mx-0 overflow-y-auto" style="width: 100%">
-        <v-col v-for="(item, index) in recipes" :key="index" cols="12" class="pa-2 pb-0">
-          <v-card
-            flat
-            outlined
-            style="width: 100%"
-            :class="{'yellow lighten-4': editIndex == index}"
-          >
-            <v-row style="width: 100%;" class="mx-0">
-              <v-col cols="7" class="ma-0 pa-0">
-                <v-card-text class="text-h5 pa-0 pl-4 pt-6">{{item.NAME}}</v-card-text>
-                <v-card-text class="text-h5 pa-1 pl-4">(per portion)</v-card-text>
-              </v-col>
-              <v-col cols="1" class="my-4 px-0">
-                <v-btn
-                  icon
-                  x-large
-                  color="green"
-                  @click="
+        <v-icon>mdi-close-thick</v-icon>scrap
+      </v-btn>
+    </div>
+    <div class="overflow-y-auto d-flex flex-column addedFoods">
+      <div v-for="(item, index) in recipes" :key="index" class="itemCard pa-2 pt-0">
+        <v-card
+          outlined
+          class="lime accent-1 rounded-lg"
+          :class="{'red lighten-4': editIndex == index}"
+        >
+          <div class="d-flex">
+            <v-card-text
+              style="text-transform: capitalize; width: 65%;"
+              class="text-h5 pa-2"
+            >{{item.NAME}} (per portion)</v-card-text>
+            <div class="d-flex align-center justify-space-between" style="width: 35%">
+              <v-btn
+                icon
+                large
+                color="green"
+                @click="
       addPortionOfRecipe(index);
       addItemValue(portionItem)
             updateAddedItems()"
-                >
-                  <v-icon>mdi-plus-circle</v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="1" class="my-5 pl-6">
-                <v-btn
-                  large
-                  icon
-                  @click="
-        setAddedRecipe(recipes[index].INGREDIENTS)
+              >
+                <v-icon>mdi-plus-circle</v-icon>
+              </v-btn>
+              <v-btn
+                class="justify-end"
+                large
+                icon
+                @click="setAddedRecipe(recipes[index].INGREDIENTS)
               startEdit(index)"
-                >
-                  <v-icon v-if="editIndex!==index">mdi-pencil-outline</v-icon>
-                  <v-icon v-else>mdi-pencil-off-outline</v-icon>
-                </v-btn>
-              </v-col>
-              <v-col cols="1" class="my-5 pl-8">
-                <v-btn large icon color="red" @click.stop="shownIndex=index">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <NutrientBox class="px-3 pb-3" :nutrientArray="item.PORTION_NUTRIENTS" type="box"></NutrientBox>
-          </v-card>
-        </v-col>
-      </v-row>
+              >
+                <v-icon v-if="editIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
+                <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
+              </v-btn>
+              <v-btn
+                class="justify-end"
+                icon
+                large
+                color="red"
+                @click="
+            onRemoved({index, userID, moduleIndex})
+            setDeleted(true)"
+              >
+                <v-icon class="mr-2" @click.stop="shownIndex=index">mdi-delete</v-icon>
+              </v-btn>
+            </div>
+          </div>
+          <NutrientBox :nutrientArray="item.PORTION_NUTRIENTS" class="ma-2 mt-0"></NutrientBox>
+        </v-card>
+      </div>
     </div>
+
     <DeleteDialogue v-if="shownIndex >= 0" @close="shownIndex=-1" :index="shownIndex"></DeleteDialogue>
-  </div>
+  </v-card>
 </template>
 
 <style scoped>
@@ -86,11 +83,11 @@ import DeleteDialogue from "./DeleteDialogue";
 export default {
   components: {
     NutrientBox,
-    DeleteDialogue,
+    DeleteDialogue
   },
   data() {
     return {
-      shownIndex: -1,
+      shownIndex: -1
     };
   },
   computed: {
@@ -103,7 +100,7 @@ export default {
       set(value) {
         this.$store.dispatch("other/setRecipeQuantity", value);
       }
-    },
+    }
   },
   methods: {
     ...mapActions("other", [
@@ -137,3 +134,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.addedFoods {
+  height: calc(100vh - 180px - 3 * 12px - 72px);
+}
+</style>

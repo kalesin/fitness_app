@@ -7,7 +7,7 @@
     <div class="d-flex">
       <AddedFoods class="flex-grow-1 addedFoods" style="width: 75vw;"></AddedFoods>
 
-      <RecipesDisplay style="width: 25vw" @close="activeIndex=-1"></RecipesDisplay>
+      <RecipesDisplay class="ml-3 addedFoods" style="width: 25vw" @close="activeIndex=-1"></RecipesDisplay>
     </div>
 
     <Recipes v-if="editIndex != -1" @close="editIndex=-1" :index="editIndex"></Recipes>
