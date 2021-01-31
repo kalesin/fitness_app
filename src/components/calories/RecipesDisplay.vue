@@ -53,11 +53,10 @@
                   large
                   icon
                   @click="
-        setEditIndex(index)
         setAddedRecipe(recipes[index].INGREDIENTS)
               startEdit(index)"
                 >
-                  <v-icon v-if="activeIndex!==index">mdi-pencil-outline</v-icon>
+                  <v-icon v-if="editIndex!==index">mdi-pencil-outline</v-icon>
                   <v-icon v-else>mdi-pencil-off-outline</v-icon>
                 </v-btn>
               </v-col>
@@ -92,7 +91,6 @@ export default {
   data() {
     return {
       shownIndex: -1,
-      activeIndex: -1
     };
   },
   computed: {
@@ -116,17 +114,15 @@ export default {
     ...mapActions("searchAndAdd", ["addItemValue", "setAddedItems"]),
     ...mapActions("searchAndAdd2", { setAddedRecipe: "setAddedItems" }),
     startEdit(index) {
-      if (this.activeIndex == index && this.editIndex != -2) {
-        this.activeIndex = -1;
+      if (this.editIndex == index && this.editIndex != -2) {
         this.setEditIndex(-1);
       } else {
-        this.activeIndex = index;
+        this.setEditIndex(index);
         if (this.recipes[index]) {
           this.setAddedRecipe(this.recipes[index].INGREDIENTS);
         } else {
           this.setAddedRecipe([]);
         }
-        this.setEditIndex(index);
       }
     },
     updateAddedItems() {

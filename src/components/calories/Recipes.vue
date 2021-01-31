@@ -1,18 +1,17 @@
 <template>
   <v-dialog v-model="show" width="90%">
-    <v-card height="100vh" class="pa-3">
-      <div class="d-flex" style="height: 27vh">
-        <Search class="flex-grow-1" ></Search>
-        <RecipeBox :nutrientArray="totalRecipe"></RecipeBox>
+    <v-card class="pa-3">
+      <div class="d-flex mb-3" style="height: 240px;">
+        <Search class="mr-3" style="height: 240px; width: 50vw"></Search>
+
+        <RecipeBox :nutrientArray="totalRecipe" style="height: 240px; width: 50vw"><v-btn  class="totalButtons" width="52" height="52" icon color="error" @click.stop="show=false">
+            <v-icon x-large>mdi-close-circle</v-icon>
+          </v-btn></RecipeBox>
       </div>
-      <div class="d-flex" style="height: 55vh">
-        <RecipesEdit class="pa-3 flex-grow-1"></RecipesEdit>
+      <div class="d-flex recipesEdit">
+        <RecipesEdit class="flex-grow-1"></RecipesEdit>
+        <v-card-actions class="justify-end"></v-card-actions>
       </div>
-      <v-card-actions class="justify-end">
-        <v-btn icon color="error" @click.stop="show=false">
-          <v-icon x-large>mdi-close-circle</v-icon>
-        </v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -53,7 +52,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("other", ["removeRecipe"]),
+    ...mapActions("other", ["removeRecipe", "setEditIndex"]),
     ...mapActions("searchAndAdd2", { searchRecipe: "searchFood" })
   }
 };
@@ -63,5 +62,14 @@ export default {
 .v-card__actions {
   justify-content: space-around;
   padding: 15px;
+}
+.recipesEdit {
+  height: calc(90vh - 240px - 3*12px);
+}
+
+@media only screen and (max-width: 1000px) {
+.totalButtons {
+width: 40px !important;
+}
 }
 </style>

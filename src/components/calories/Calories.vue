@@ -6,7 +6,7 @@
         <AddedFoods></AddedFoods>
       </v-col>
       <v-col cols="3" class="pa-0">
-        <RecipesDisplay></RecipesDisplay>
+        <RecipesDisplay @close="activeIndex=-1"></RecipesDisplay>
         <NutrientBox :nutrientArray="totalForToday" type="daily"></NutrientBox>
       </v-col>
     </v-row>

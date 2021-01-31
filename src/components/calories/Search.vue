@@ -1,10 +1,10 @@
 <template>
-  <v-card outlined class="mr-3 rounded-xl">
-    <v-card-text class="text-h4 ma-2">Search for the food you want to add!</v-card-text>
-    <v-row v-if="editIndex==-1" class="mx-2">
-      <v-col cols="9">
+  <v-card outlined class="rounded-xl d-flex flex-column">
+    <div v-if="editIndex==-1">
+      <v-card-text class="text-h4">Add food to your eaten items!</v-card-text>
+      <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
-          style="width: 100%"
+          class="mr-8 mt-6"
           dense
           clearable
           placeholder="Search foods"
@@ -15,23 +15,18 @@
                 allInOne();;
                 "
         ></v-text-field>
-      </v-col>
-      <v-col cols="2" class="mx-auto">
-        <v-btn
-          style="width: 20vw"
-          color="success"
-          @click="
+        <v-btn color="success" @click="
               allInOne();;
-              "
-        >
+              ">
           <v-icon>mdi-magnify</v-icon>Search
         </v-btn>
-      </v-col>
-    </v-row>
-    <v-row v-else class="mx-2">
-      <v-col cols="9">
+      </div>
+    </div>
+    <div v-else>
+      <v-card-text class="text-h4">Add food to the recipe!</v-card-text>
+      <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
-          style="width: 30vw"
+          class="mr-8 mt-6"
           dense
           clearable
           placeholder="Search foods"
@@ -42,19 +37,13 @@
                 searchRecipe();
                 "
         ></v-text-field>
-      </v-col>
-      <v-col cols="2" class="mx-auto">
-        <v-btn
-          style="width: 10vw"
-          color="success"
-          @click="
+        <v-btn color="success" @click="
               searchRecipe();
-              "
-        >
+              ">
           <v-icon>mdi-magnify</v-icon>Search
         </v-btn>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
   </v-card>
 </template>
 
@@ -67,7 +56,7 @@ export default {
   },
   computed: {
     ...mapState("searchAndAdd", ["addedItems"]),
-    ...mapState("searchAndAdd2", {recipeItems: "addedItems"}),
+    ...mapState("searchAndAdd2", { recipeItems: "addedItems" }),
     ...mapState("firebase", ["userID"]),
     ...mapState("other", ["editIndex"]),
     query: {
@@ -89,7 +78,7 @@ export default {
   },
   methods: {
     ...mapActions("searchAndAdd", ["searchFood"]),
-    ...mapActions("searchAndAdd2", {searchRecipe: "searchFood"}),
+    ...mapActions("searchAndAdd2", { searchRecipe: "searchFood" }),
     updateAddedItems() {
       const data = {
         todaysItems: this.$store.state.searchAndAdd.addedItems
