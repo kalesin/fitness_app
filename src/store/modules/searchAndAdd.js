@@ -15,6 +15,13 @@ const searchAndAdd = {
         nutrients: 0,
         nutrientsArray: [],
         addedItems: [],
+        items: {
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+            snack: []
+        },
+        itemsIndex: -1,
         itemToAdd: [],
         idx: -1,
         deletedFlag: false,
@@ -79,6 +86,15 @@ const searchAndAdd = {
         },
         ADD_ITEM(state) {
             state.addedItems.push(state.itemToAdd);
+            if (state.itemsIndex == 0) {
+                state.items.breakfast.push(state.itemToAdd)
+            } else if (state.itemsIndex == 1) {
+                state.items.lunch.push(state.itemToAdd)
+            } else if (state.itemsIndex == 2) {
+                state.items.dinner.push(state.itemToAdd)
+            } else if (state.itemsIndex == -1) {
+                state.items.snack.push(state.itemToAdd)
+            }
         },
         ADD_ITEM_VALUE(state, payload) {
             state.addedItems.push(payload);
@@ -103,6 +119,9 @@ const searchAndAdd = {
         },
         SET_INDEX(state, value) {
             state.idx = value
+        },
+        SET_ITEMS_INDEX(state, value) {
+            state.itemsIndex == value
         }
     },
     actions: {
@@ -198,11 +217,14 @@ const searchAndAdd = {
         setAddedItems({ state, commit }, payload) {
             console.log(payload)
             commit("SET_ADDED_ITEMS", payload)
-            commit("other/RESET_PORTIONS_AND_NAME",0 ,{root: true})
+            commit("other/RESET_PORTIONS_AND_NAME", 0, { root: true })
         },
         setFocus({ state, commit }, value) {
             commit("SET_FOCUS", value)
         },
+        setItemsIndex({state, commit}, value) {
+            commit("SET_ITEMS_INDEX", value)
+        }
     },
     getters: {
         totalForToday(state) {

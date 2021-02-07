@@ -9,8 +9,7 @@
         :key="index"
         class="rounded-lg pl-1 pb-1 mb-2 light-green lighten-4 light-green--text"
         style="width: 20%"
-        @mouseover="setHoverIndex(index)"
-        @mouseout="setHoverIndex(-1)"
+        @click="setItemIndex(index)"
       >
         <v-list-item-icon x-large>
           <v-icon class="mx-4 gray">mdi-plus-circle</v-icon>
@@ -19,6 +18,7 @@
           <v-list-item-title class="text-h5">{{choiceArray[index]}}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      
       </v-list-item-group>
     </v-list>
 
@@ -161,7 +161,6 @@ export default {
       deleted: false,
       inputIndex: -1,
       choiceArray: ["Breakfast", "Lunch", "Dinner"],
-      hoverIndex: -1,
       selectedItem: -1
     };
   },
@@ -196,7 +195,8 @@ export default {
       "addedItems",
       "idx",
       "responseCount",
-      "focus"
+      "focus",
+      "itemsIndex"
     ]),
     ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
@@ -213,7 +213,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
+    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus", "setItemsIndex"]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
       if (this.activeIndex == index && !this.focus) {
@@ -237,8 +237,8 @@ export default {
     setInput(index) {
       this.inputIndex = index;
     },
-    setHoverIndex(index) {
-      this.hoverIndex = index;
+    setBLDIndex(index) {
+      this.BLDIndex = index;
     }
   }
 };
