@@ -12,16 +12,16 @@
 
       <div class="mx-auto my-auto totalText" style="width: 450px">
         <div>
-          <v-card-text class="text-center text-h5 pa-0 pt-4 font-weight-bold">
+          <v-card-text class="text-center text-h4 pa-0 pt-4 font-weight-bold">
             {{start}}
             <p style="display: inline-block; margin-left: -6px" v-html="sup"></p>
-            {{end}} total
+            {{end}} total:
           </v-card-text>
 
           <v-card-text class="text-center text-h4 pa-0 pt-2">{{nutrientArray[0]}} kcal</v-card-text>
         </div>
 
-        <div class="d-flex justify-space-between mb-5">
+        <div class="d-flex justify-space-between mb-5 mx-auto" style="width: 250px">
           <div>
             <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Protein:</v-card-text>
             <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[1]}} g</v-card-text>
@@ -82,7 +82,7 @@ import EntryDialogue from "./EntryDialogue";
 export default {
   mounted() {
     this.date = dayjs(this.editDate);
-    this.start = this.date.format("dddd, D");
+    this.start = this.date.format("D");
     this.end = this.date.format(" of MMMM YYYY");
 
     let index = this.dailyEntries.findIndex(

@@ -1,13 +1,12 @@
 <template>
-  <v-container fluid class="grey lighten-5 ma-0 pa-3 d-flex flex-column">
-    <div class="d-flex mb-3" style="height: 180px;">
-      <Search class="mr-3" style="height: 180px; width: 50vw"></Search>
-      <DailyBox style="height: 180px; width: 50vw" :nutrientArray="totalForToday"></DailyBox>
+  <v-container fluid class="ma-0 pa-3 d-flex">
+    <div class="d-flex flex-column" style="width:75%;">
+      <DailyBox style="height: 190px;" :nutrientArray="totalForToday"></DailyBox>
+      <Search class="mx-auto mt-5" style="height: 64px; width: 80%"></Search>
+      <AddedFoods class="addedFoods"></AddedFoods>
     </div>
-    <div class="d-flex">
-      <AddedFoods class="flex-grow-1 addedFoods" style="width: 75vw;"></AddedFoods>
-
-      <RecipesDisplay class="ml-3 addedFoods" style="width: 25vw" @close="activeIndex=-1"></RecipesDisplay>
+    <div class="d-flex" style="width: 25%">
+      <RecipesDisplay class="ml-3 display" @close="activeIndex=-1"></RecipesDisplay>
     </div>
 
     <Recipes v-if="editIndex != -1" @close="editIndex=-1" :index="editIndex"></Recipes>
@@ -90,6 +89,9 @@ export default {
 
 <style scoped>
 .addedFoods {
-  height: calc(100vh - 180px - 3 * 12px);
+  height: calc(100vh - 190px - 60px - 4*12px);
+}
+.display {
+  height: calc(100vh - 2*12px);
 }
 </style>

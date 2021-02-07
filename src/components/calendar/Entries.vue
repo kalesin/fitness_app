@@ -1,26 +1,22 @@
 <template>
-  <v-dialog v-model="show" width="90%">
-    <v-card class="pa-3">
-      <div class="d-flex mb-3" style="height: 240px;">
-        <Search class="mr-3" style="height: 240px; width: 50vw"></Search>
-
-        <EntryBox :nutrientArray="totalEntry" style="height: 240px; width: 50vw">
-          <v-btn
-            class="totalButtons mb-2"
-            width="52"
-            height="52"
-            icon
-            color="error"
-            @click.stop="show=false"
-          >
-            <v-icon x-large>mdi-close-circle</v-icon>
-          </v-btn>
-        </EntryBox>
-      </div>
-      <div class="d-flex recipesEdit">
-        <EntryEdit class="flex-grow-1"></EntryEdit>
-      </div>
+  <v-dialog v-model="show" width="80%">
+    <v-card class="pa-3 d-flex flex-column" style="height: 90vh">
+      <EntryBox :nutrientArray="totalEntry" style="height: 240px">
+        <v-btn
+          class="totalButtons mb-2"
+          width="52"
+          height="52"
+          icon
+          color="error"
+          @click.stop="show=false"
+        >
+          <v-icon x-large>mdi-close-circle</v-icon>
+        </v-btn>
+      </EntryBox>
+      <Search class="mx-auto mt-5" style="height: 64px; width: 80%"></Search>
+      <EntryEdit class="recipesEdit"></EntryEdit>
     </v-card>
+
     <v-snackbar absolute top rounded="pill" shaped v-model="snackbar">
       {{ text }}
       <template v-slot:action="{ attrs }">
@@ -38,9 +34,7 @@ import Search from "../calories/Search";
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
-  mounted() {
-    
-  },
+  mounted() {},
   data() {
     return {
       snackbar: false,
@@ -71,11 +65,9 @@ export default {
           this.$emit("close");
         }
       }
-    },
+    }
   },
-  methods: {
-      
-  }
+  methods: {}
 };
 </script>
 
@@ -85,7 +77,7 @@ export default {
   padding: 15px;
 }
 .recipesEdit {
-  height: calc(90vh - 240px - 3 * 12px);
+  height: calc(90vh - 240px - 64px - 3 * 12px);
 }
 
 @media only screen and (max-width: 1000px) {

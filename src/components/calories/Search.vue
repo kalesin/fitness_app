@@ -1,13 +1,10 @@
 <template>
-  <v-card outlined class="rounded-xl d-flex flex-column">
+  <v-card flat class="rounded-xl d-flex flex-column">
     <div v-if="editIndex==-1 && entryEditIndex==-1">
-      <v-card-text class="text-h4">Add food to your eaten items!</v-card-text>
-      <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
-          class="mr-8 mt-6"
           dense
           clearable
-          placeholder="Search foods"
+          placeholder="Search for food you want to add!"
           ref="search"
           solo
           v-model="query"
@@ -15,21 +12,12 @@
                 allInOne();;
                 "
         ></v-text-field>
-        <v-btn color="success" @click="
-              allInOne();;
-              ">
-          <v-icon>mdi-magnify</v-icon>Search
-        </v-btn>
-      </div>
     </div>
     <div v-if="editIndex!=-1 && entryEditIndex==-1">
-      <v-card-text class="text-h4">Add food to the recipe!</v-card-text>
-      <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
-          class="mr-8 mt-6"
           dense
           clearable
-          placeholder="Search foods"
+          placeholder="Search for food you want to add to the recipe!"
           ref="search"
           solo
           v-model="query2"
@@ -37,21 +25,12 @@
                 searchRecipe();
                 "
         ></v-text-field>
-        <v-btn color="success" @click="
-              searchRecipe();
-              ">
-          <v-icon>mdi-magnify</v-icon>Search
-        </v-btn>
-      </div>
     </div>
     <div v-if="editIndex==-1 && entryEditIndex!=-1">
-      <v-card-text class="text-h4">Add food to the entry!</v-card-text>
-      <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
-          class="mr-8 mt-6"
           dense
           clearable
-          placeholder="Search foods"
+          placeholder="Search for the food you want to add to this day!"
           ref="search"
           solo
           v-model="query3"
@@ -59,12 +38,6 @@
                 searchEntry();
                 "
         ></v-text-field>
-        <v-btn color="success" @click="
-              searchEntry();
-              ">
-          <v-icon>mdi-magnify</v-icon>Search
-        </v-btn>
-      </div>
     </div>
   </v-card>
 </template>

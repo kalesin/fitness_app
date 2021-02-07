@@ -12,7 +12,7 @@
 
       <div class="ma-auto my-auto totalText" style="width: 250px">
         <div class="ma-0">
-          <v-card-text class="text-center text-h5 pa-0 pt-4 font-weight-bold">Today's total:</v-card-text>
+          <v-card-text class="text-center text-h4 pa-0 pt-4 font-weight-bold">Today's total:</v-card-text>
           <v-card-text class="text-center text-h4 pa-0 pt-2">{{nutrientArray[0]}} kcal</v-card-text>
         </div>
 

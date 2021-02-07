@@ -1,26 +1,22 @@
 <template>
-  <v-dialog v-model="show" width="90%">
-    <v-card class="pa-3">
-      <div class="d-flex mb-3" style="height: 240px;">
-        <Search class="mr-3" style="height: 240px; width: 50vw"></Search>
-
-        <RecipeBox :nutrientArray="totalRecipe" style="height: 240px; width: 50vw">
-          <v-btn
-            class="totalButtons mb-2"
-            width="52"
-            height="52"
-            icon
-            color="error"
-            @click.stop="show=false"
-          >
-            <v-icon x-large>mdi-close-circle</v-icon>
-          </v-btn>
-        </RecipeBox>
-      </div>
-      <div class="d-flex recipesEdit">
-        <RecipesEdit class="flex-grow-1"></RecipesEdit>
-      </div>
+  <v-dialog v-model="show" width="80%">
+    <v-card class="pa-3 d-flex flex-column" style="height: 90vh">
+      <RecipeBox :nutrientArray="totalRecipe" style="height: 240px">
+        <v-btn
+          class="totalButtons mb-2"
+          width="52"
+          height="52"
+          icon
+          color="error"
+          @click.stop="show=false"
+        >
+          <v-icon x-large>mdi-close-circle</v-icon>
+        </v-btn>
+      </RecipeBox>
+      <Search class="mx-auto mt-5" style="height: 64px; width: 80%"></Search>
+      <RecipesEdit class="recipesEdit"></RecipesEdit>
     </v-card>
+
     <v-snackbar absolute top rounded="pill" shaped v-model="snackbar">
       {{ text }}
       <template v-slot:action="{ attrs }">
@@ -40,11 +36,10 @@ import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   mounted() {
     if (!this.addedRecipe) {
-        /* alert("Can't submit a recipe with no items, add some items!") */
-        setTimeout(function() {}, 1000).then(this.snackbar = true);
-        console.log(snackbar)
-      }
-    
+      /* alert("Can't submit a recipe with no items, add some items!") */
+      setTimeout(function() {}, 1000).then((this.snackbar = true));
+      console.log(snackbar);
+    }
   },
   data() {
     return {
@@ -88,7 +83,7 @@ export default {
   padding: 15px;
 }
 .recipesEdit {
-  height: calc(90vh - 240px - 3 * 12px);
+  height: calc(90vh - 240px - 64px - 3 * 12px);
 }
 
 @media only screen and (max-width: 1000px) {

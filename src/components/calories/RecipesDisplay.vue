@@ -137,6 +137,6 @@ export default {
 
 <style scoped>
 .addedFoods {
-  height: calc(100vh - 180px - 3 * 12px - 72px);
+  height: calc(100% - 72px);
 }
 </style>

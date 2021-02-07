@@ -10,33 +10,35 @@
         color="green"
       >{{ Math.round(recipeProgress) }} %</v-progress-circular>
 
-      <div class="ma-auto totalText" style="width: 250px">
-        <div class="ma-0">
-          <v-card-text class="text-center text-h5 pa-0 pt-2 font-weight-bold">Recipe total:</v-card-text>
-          <v-card-text class="text-center text-h4 pa-0 pt-2">{{nutrientArray[0]}} kcal</v-card-text>
-        </div>
+      <div class="totalText ma-auto" style="width: 274px">
+        <div class="mr-8">
+          <div class="ma-0">
+            <v-card-text class="text-center text-h4 pa-0 pt-2 font-weight-bold">Recipe total:</v-card-text>
+            <v-card-text class="text-center text-h4 pa-0 pt-2">{{nutrientArray[0]}} kcal</v-card-text>
+          </div>
 
-        <div class="d-flex justify-space-between">
-          <div>
-            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Protein:</v-card-text>
-            <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[1]}} g</v-card-text>
-          </div>
-          <div>
-            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Carbs:</v-card-text>
-            <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[2]}} g</v-card-text>
-          </div>
-          <div>
-            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fats:</v-card-text>
-            <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[3]}} g</v-card-text>
-          </div>
-          <div>
-            <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fiber:</v-card-text>
-            <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[4]}} g</v-card-text>
+          <div class="d-flex justify-space-between">
+            <div>
+              <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Protein:</v-card-text>
+              <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[1]}} g</v-card-text>
+            </div>
+            <div>
+              <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Carbs:</v-card-text>
+              <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[2]}} g</v-card-text>
+            </div>
+            <div>
+              <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fats:</v-card-text>
+              <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[3]}} g</v-card-text>
+            </div>
+            <div>
+              <v-card-text class="text-center text-subtitle-1 font-weight-bold pa-1">Fiber:</v-card-text>
+              <v-card-text class="text-center pa-1 totalTextSize">{{nutrientArray[4]}} g</v-card-text>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="d-flex flex-column ma-auto align-space-between justify-space-around">
+      <div class="d-flex flex-column ma-auto">
         <slot></slot>
         <v-btn
           class="totalButtons"
@@ -66,9 +68,14 @@
         </v-btn>
       </div>
     </div>
-    <v-form ref="form" v-model="valid" lazy-validation class="d-flex mx-4 mt-4 mb-0">
+    <v-form
+      ref="form"
+      v-model="valid"
+      lazy-validation
+      class="d-flex mx-4 mt-4 mb-0 justify-space-around"
+    >
       <v-text-field
-        class="mb-0 mr-4"
+        class="mx-8"
         counter="30"
         :rules="nameRules"
         required
@@ -82,7 +89,7 @@
       <v-text-field
         :rules="portionsRules"
         required
-        class="mb-0"
+        class="mx-8"
         dense
         outlined
         type="number"
@@ -233,7 +240,7 @@ export default {
     width: 75px !important;
   }
   .totalText {
-    width: 230px !important;
+    width: 250px !important;
     margin: 0 !important;
   }
   .totalTextSize {
