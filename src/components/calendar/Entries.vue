@@ -4,7 +4,7 @@
       <div class="d-flex mb-3" style="height: 240px;">
         <Search class="mr-3" style="height: 240px; width: 50vw"></Search>
 
-        <RecipeBox :nutrientArray="totalRecipe" style="height: 240px; width: 50vw">
+        <EntryBox :nutrientArray="totalEntry" style="height: 240px; width: 50vw">
           <v-btn
             class="totalButtons mb-2"
             width="52"
@@ -15,10 +15,10 @@
           >
             <v-icon x-large>mdi-close-circle</v-icon>
           </v-btn>
-        </RecipeBox>
+        </EntryBox>
       </div>
       <div class="d-flex recipesEdit">
-        <RecipesEdit class="flex-grow-1"></RecipesEdit>
+        <EntryEdit class="flex-grow-1"></EntryEdit>
       </div>
     </v-card>
     <v-snackbar absolute top rounded="pill" shaped v-model="snackbar">
@@ -31,19 +31,14 @@
 </template>
 
 <script>
-import RecipeBox from "./RecipeBox";
-import RecipesEdit from "./RecipesEdit";
+import EntryBox from "../calories/EntryBox";
+import EntryEdit from "./EntryEdit";
 
-import Search from "./Search";
+import Search from "../calories/Search";
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
   mounted() {
-    if (!this.addedRecipe) {
-        /* alert("Can't submit a recipe with no items, add some items!") */
-        setTimeout(function() {}, 1000).then(this.snackbar = true);
-        console.log(snackbar)
-      }
     
   },
   data() {
@@ -59,14 +54,14 @@ export default {
     }
   },
   components: {
-    RecipeBox,
-    RecipesEdit,
+    EntryBox,
+    EntryEdit,
     Search
   },
   computed: {
     ...mapState("firebase", ["userID"]),
-    ...mapState("searchAndAdd2", { addedRecipe: "addedItems" }),
-    ...mapGetters("searchAndAdd2", { totalRecipe: "totalForToday" }),
+    ...mapState("searchAndAdd3", { addedEntry: "addedItems" }),
+    ...mapGetters("searchAndAdd3", { totalEntry: "totalForToday" }),
     show: {
       get() {
         return this.index != -1;
@@ -76,9 +71,11 @@ export default {
           this.$emit("close");
         }
       }
-    }
+    },
   },
-  methods: {}
+  methods: {
+      
+  }
 };
 </script>
 

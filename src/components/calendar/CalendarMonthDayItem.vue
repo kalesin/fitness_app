@@ -5,24 +5,22 @@
       'calendar-day--not-current': !day.isCurrentMonth,
       'calendar-day--today': isToday
     }"
-    @click="selectDate()"
+    @click="selectDate(day)"
   >
     <span class="ma-1">{{ label }}</span>
-
-    <v-row v-if="day.entryExists" style="width: 100%" class="mx-0 yellow lighten-4">
-      <v-col cols="5">
-        <v-card-text class="text-justify text-h5 pt-4 pa-0 pl-6 font-weight-bold">{{this.day.entry.total[0]}} kcal</v-card-text>
-      </v-col>
-      <v-col cols="7" class="pr-4 pl-0">
-        <v-progress-circular
-          :size="100"
-          :width="20"
-          :rotate="90"
-          :value="dailyProgress"
-          color="green"
-        >{{ Math.round(dailyProgress) }} %</v-progress-circular>
-      </v-col>
-    </v-row>
+    <div v-if="day.entryExists" style="height: 100%; width: 100%" class="d-flex yellow lighten-4">
+      <v-card-text
+        class="d-flex pa-4 align-center text-h5 font-weight-bold" style="width: 50%"
+      >{{this.day.entry.total[0]}} kcal</v-card-text>
+      <v-progress-circular
+      class="d-flex my-auto"
+        :size="100"
+        :width="20"
+        :rotate="90"
+        :value="dailyProgress"
+        color="green"
+      >{{ Math.round(dailyProgress) }} %</v-progress-circular>
+    </div>
   </li>
 </template>
 
@@ -70,7 +68,9 @@ export default {
     }
   },
   methods: {
-    selectDate() {
+    ...mapActions("other", ["setEditDate"]),
+    selectDate(day) {
+      this.setEditDate(day.date)
       this.$emit("selectDate");
     }
   }

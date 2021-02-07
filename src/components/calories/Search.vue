@@ -1,6 +1,6 @@
 <template>
   <v-card outlined class="rounded-xl d-flex flex-column">
-    <div v-if="editIndex==-1">
+    <div v-if="editIndex==-1 && entryEditIndex==-1">
       <v-card-text class="text-h4">Add food to your eaten items!</v-card-text>
       <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
@@ -22,7 +22,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-else>
+    <div v-if="editIndex!=-1 && entryEditIndex==-1">
       <v-card-text class="text-h4">Add food to the recipe!</v-card-text>
       <div class="mx-2 flex-grow-1 d-flex align-center">
         <v-text-field
@@ -44,6 +44,28 @@
         </v-btn>
       </div>
     </div>
+    <div v-if="editIndex==-1 && entryEditIndex!=-1">
+      <v-card-text class="text-h4">Add food to the entry!</v-card-text>
+      <div class="mx-2 flex-grow-1 d-flex align-center">
+        <v-text-field
+          class="mr-8 mt-6"
+          dense
+          clearable
+          placeholder="Search foods"
+          ref="search"
+          solo
+          v-model="query3"
+          @keyup.enter="
+                searchEntry();
+                "
+        ></v-text-field>
+        <v-btn color="success" @click="
+              searchEntry();
+              ">
+          <v-icon>mdi-magnify</v-icon>Search
+        </v-btn>
+      </div>
+    </div>
   </v-card>
 </template>
 
@@ -58,7 +80,7 @@ export default {
     ...mapState("searchAndAdd", ["addedItems"]),
     ...mapState("searchAndAdd2", { recipeItems: "addedItems" }),
     ...mapState("firebase", ["userID"]),
-    ...mapState("other", ["editIndex"]),
+    ...mapState("other", ["editIndex", "entryEditIndex"]),
     query: {
       get() {
         return this.$store.state.searchAndAdd.query;
@@ -74,11 +96,20 @@ export default {
       set(value) {
         this.$store.dispatch("searchAndAdd2/setQuery", value);
       }
+    },
+    query3: {
+      get() {
+        return this.$store.state.searchAndAdd3.query;
+      },
+      set(value) {
+        this.$store.dispatch("searchAndAdd3/setQuery", value);
+      }
     }
   },
   methods: {
     ...mapActions("searchAndAdd", ["searchFood"]),
     ...mapActions("searchAndAdd2", { searchRecipe: "searchFood" }),
+    ...mapActions("searchAndAdd3", {searchEntry: "searchFood"}),
     updateAddedItems() {
       const data = {
         todaysItems: this.$store.state.searchAndAdd.addedItems

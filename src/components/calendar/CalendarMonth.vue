@@ -30,7 +30,6 @@ import weekday from "dayjs/plugin/weekday";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import CalendarMonthDayItem from "./CalendarMonthDayItem";
 import CalendarDateSelector from "./CalendarDateSelector";
-import EditEntries from "./EditEntries";
 import CalendarWeekdays from "./CalendarWeekdays";
 import { mapGetters, mapState, mapActions } from "vuex";
 
@@ -189,7 +188,8 @@ export default {
     ...mapActions("other", [
       "setEntryEditIndex",
       "setDailyEntryTemp",
-      "setDaysUnix"
+      "setDaysUnix",
+      "setEditDate"
     ]),
     getWeekday(date) {
       return dayjs(date).weekday();
@@ -197,17 +197,18 @@ export default {
     selectDate(newSelectedDate) {
       this.selectedDate = newSelectedDate;
     },
-    dateToEdit(day) {
-
-let index = this.dailyEntries.findIndex(element => element.date===day.date
-    );
-    console.log(index)
-    if (index == -1) {
-      this.setDailyEntryTemp(day);
+    dateToEdit(day) {/* 
+      this.setEditDate(day.date) */
+      let index = this.dailyEntries.findIndex(
+        element => element.date === day.date
+      );
+      console.log(index);
+      if (index == -1) {
+        this.setDailyEntryTemp(day);
         this.setEntryEditIndex(-2);
-    } else {
-      this.setEntryEditIndex(index);
-    }
+      } else {
+        this.setEntryEditIndex(index);
+      }
     }
   }
 };

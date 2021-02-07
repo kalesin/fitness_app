@@ -29,6 +29,7 @@ const other = {
         editEntries: false,
         daysUnix: [],
         compareCalendar: [],
+        editDate: ""
 
     }),
     mutations: {
@@ -183,6 +184,9 @@ const other = {
         },
         SET_DELETE_INDEX(state, value) {
             state.deleteIndex = value;
+        },
+        SET_EDIT_DATE(state, value) {
+            state.editDate = value;
         }
     },
     actions: {
@@ -331,6 +335,9 @@ const other = {
         },
         setDeleteIndex({state, commit}, value){
             commit("SET_DELETE_INDEX", value)
+        },
+        setEditDate({state, commit}, value){
+            commit("SET_EDIT_DATE", value)
         }
 
 

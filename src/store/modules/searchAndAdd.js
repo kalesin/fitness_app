@@ -196,6 +196,7 @@ const searchAndAdd = {
             commit("CREATE_ITEM_TO_ADD", false)
         },
         setAddedItems({ state, commit }, payload) {
+            console.log(payload)
             commit("SET_ADDED_ITEMS", payload)
             commit("other/RESET_PORTIONS_AND_NAME",0 ,{root: true})
         },

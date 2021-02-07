@@ -1,12 +1,12 @@
 <template>
   <div>
     <CalendarMonth v-if="entryEditIndex==-1"></CalendarMonth>
-    <EditEntries v-else :dateClicked="dateClicked"></EditEntries>
+    <Entries v-else :dateClicked="dateClicked" :index="entryEditIndex" @close="setEntryEditIndex(-1)"></Entries>
   </div>
 </template>
 
 <script>
-import EditEntries from "./EditEntries";
+import Entries from "./Entries";
 import CalendarMonth from "./CalendarMonth";
 
 import { mapGetters, mapState, mapActions } from "vuex";
@@ -16,7 +16,7 @@ export default {
 
   components: {
     CalendarMonth,
-    EditEntries
+    Entries
   },
 
   data() {

@@ -110,10 +110,7 @@
 
 <script>
 import NutrientBox from "./NutrientBox.vue";
-import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
-
-import EntryDialogue from "./EntryDialogue";
 
 export default {
   components: {
@@ -159,16 +156,6 @@ export default {
     ]),
     ...mapState("other", ["dailyEntries", "entryTodayIndex"]),
     ...mapState("firebase", ["userID"]),
-    today() {
-      return dayjs().format("YYYY-MM-DD");
-    },
-    isDisabled() {
-      let disabled = false;
-      if (this.addedItems.length == 0) {
-        disabled = true;
-      }
-      return disabled;
-    },
     quantity: {
       get() {
         return this.$store.state.searchAndAdd2.quantity;
