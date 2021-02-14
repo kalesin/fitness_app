@@ -2,8 +2,8 @@
   <v-container fluid class="ma-0 pa-3 d-flex">
     <div class="d-flex flex-column" style="width:75%;">
       <DailyBox style="height: 190px;" :nutrientArray="totalForToday"></DailyBox>
-      <Search class="mx-auto mt-5" style="height: 64px; width: 80%"></Search>
-      <AddedFoods class="addedFoods"></AddedFoods>
+      <Search class="mx-auto mt-5" style="height: 64px; width: 80%" :moduleIndex="moduleIndex"></Search>
+      <AddedFoods class="addedFoods overflow-y-auto"></AddedFoods>
     </div>
     <div class="d-flex" style="width: 25%">
       <RecipesDisplay class="ml-3 display" @close="activeIndex=-1"></RecipesDisplay>
@@ -26,6 +26,11 @@ import Recipes from "./Recipes";
 import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
+  data(){
+    return {
+moduleIndex: 1
+    }
+  },
   components: {
     AddedFoods,
     RecipesDisplay,

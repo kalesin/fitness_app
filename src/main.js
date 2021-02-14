@@ -40,11 +40,12 @@ new Vue({
     };
     firebase.initializeApp(config);
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
+      if (user && user.uid) {
         console.log(user.uid)
         this.$store.dispatch("firebase/setUser", user)
-        this.$store.dispatch("firebase/setUserID", user.uid)
-        this.$router.push('/user')
+        if (this.$router.currentRoute.path !== "/user") {
+          this.$router.push('/user')
+        }
       } else {
         this.$router.push('/auth')
       }

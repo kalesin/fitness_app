@@ -19,9 +19,11 @@ const searchAndAdd = {
             breakfast: [],
             lunch: [],
             dinner: [],
-            snack: []
+            snack: [],
+            unsorted: []
         },
-        itemsIndex: -1,
+        itemsPropNames: ["breakfast", "lunch", "dinner", "snack", "unsorted"],
+        itemsIndex: 4,
         itemToAdd: [],
         idx: -1,
         deletedFlag: false,
@@ -84,16 +86,22 @@ const searchAndAdd = {
             };
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
-        ADD_ITEM(state) {
-            state.addedItems.push(state.itemToAdd);
-            if (state.itemsIndex == 0) {
-                state.items.breakfast.push(state.itemToAdd)
-            } else if (state.itemsIndex == 1) {
-                state.items.lunch.push(state.itemToAdd)
-            } else if (state.itemsIndex == 2) {
-                state.items.dinner.push(state.itemToAdd)
-            } else if (state.itemsIndex == -1) {
-                state.items.snack.push(state.itemToAdd)
+        ADD_ITEM(state, moduleIndex) {
+            if (moduleIndex == 1) {
+                if (state.itemsIndex == 4) {
+                    state.items.unsorted.push(state.itemToAdd)
+                } else if (state.itemsIndex == 0) {
+                    state.items.breakfast.push(state.itemToAdd)
+                } else if (state.itemsIndex == 1) {
+                    state.items.lunch.push(state.itemToAdd)
+                } else if (state.itemsIndex == 2) {
+                    state.items.dinner.push(state.itemToAdd)
+                } else if (state.itemsIndex == 3) {
+                    state.items.snack.push(state.itemToAdd)
+                }
+            } else if (moduleIndex == 2) {
+                console.log("bbb")
+                state.addedItems.push(state.itemToAdd)
             }
         },
         ADD_ITEM_VALUE(state, payload) {
@@ -102,8 +110,22 @@ const searchAndAdd = {
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
         },
-        REMOVE_ITEM(state, index) {
-            state.addedItems.splice(index, 1);
+        REMOVE_ITEM(state, { index, moduleIndex }) {
+            if (moduleIndex == 1) {
+                if (state.itemsIndex == 4) {
+                    state.items.unsorted.splice(index, 1);
+                } else if (state.itemsIndex == 0) {
+                    state.items.breakfast.splice(index, 1);
+                } else if (state.itemsIndex == 1) {
+                    state.items.lunch.splice(index, 1);
+                } else if (state.itemsIndex == 2) {
+                    state.items.dinner.splice(index, 1);
+                } else if (state.itemsIndex == 3) {
+                    state.items.snack.splice(index, 1);
+                }
+            } else if (moduleIndex == 2) {
+                state.addedItems.splice(index, 1);
+            }
         },
         SET_QUERY(state, value) {
             state.query = value;
@@ -121,11 +143,20 @@ const searchAndAdd = {
             state.idx = value
         },
         SET_ITEMS_INDEX(state, value) {
-            state.itemsIndex == value
+            if (state.itemsIndex == 4) {
+                state.itemsIndex = value
+            } else if (state.itemsIndex == value) {
+                state.itemsIndex = 4
+            } else if (state.itemsIndex != value) {
+                state.itemsIndex = value
+            }
+        },
+        SET_ITEMS(state, payload) {
+            state.items = JSON.parse(JSON.stringify(payload));
         }
     },
     actions: {
-        async searchFood({ state, getters, commit }, payload) {
+        async searchFood({ state, getters, commit }, moduleIndex) {
             return axios
                 .get(
                     `${state.api_url}ingr=${state.query}&app_id=${state.api_id}&app_key=${state.api_key}`
@@ -133,21 +164,24 @@ const searchAndAdd = {
                 .then(
                     response => {
                         commit("SET_SEARCH_RESPONSE", response)
-                        let exists = false;
-                        let index = -1;
-                        for (let i = 0; i < state.addedItems.length; i++) {
-                            if (state.addedItems[i].NAME === state.responseData.label) {
-                                exists = true;
-                                index = i;
+
+                        let index = -1; //kateri item je
+                        let items = state.items[state.itemsPropNames[state.itemsIndex]];
+
+                        if (items) {
+                            for (let i = 0; i < items.length; i++) {
+                                if (items[i].NAME === state.responseData.label) {
+                                    index = i;
+                                }
                             }
                         }
-                        if (exists == true) {
+                        if (index != -1) {
                             commit("SET_INDEX", index)
                             commit("INCREMENT_RESPONSE_COUNT")
                             commit("SET_FOCUS", true)
                         } else {
                             commit("CREATE_ITEM_TO_ADD", false)
-                            commit("ADD_ITEM")
+                            commit("ADD_ITEM", moduleIndex)
                         }
 
                     }
@@ -155,8 +189,8 @@ const searchAndAdd = {
                     console.log(error);
                 })
         },
-        addItem({ state, commit }) {
-            commit("ADD_ITEM")
+        addItem({ state, commit }, moduleIndex) {
+            commit("ADD_ITEM", moduleIndex)
             commit("SET_QUANTITY", "")
         },
         addItemValue({ state, commit }, payload) {
@@ -177,14 +211,24 @@ const searchAndAdd = {
                 item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
                     x => Math.round(x * item.QUANTITY * 100) / 100
                 );
-                commit("CHANGE_ITEM", { item, index })
+                commit("CHANGE_ITEM", { item, index }) //še tole dopolni
             }
 
             if (moduleIndex == 1) {
-                const data = {
-                    todaysItems: state.addedItems
+                const todaysItems = {
+                    unsorted:
+                        state.items[state.itemsPropNames[4]],
+                    breakfast:
+                        state.items[state.itemsPropNames[0]],
+                    lunch:
+                        state.items[state.itemsPropNames[1]],
+                    dinner:
+                        state.items[state.itemsPropNames[2]],
+                    snack:
+                        state.items[state.itemsPropNames[3]],
+
                 };
-                axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+                axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", todaysItems)
             } else if (moduleIndex == 2) {
                 const data = {
                     currentRecipeItems: state.addedItems
@@ -193,12 +237,22 @@ const searchAndAdd = {
             }
         },
         onRemoved({ state, commit }, { index, userID, moduleIndex }) {
-            commit("REMOVE_ITEM", index)
+            commit("REMOVE_ITEM", { index, moduleIndex })
             if (moduleIndex == 1) {
-                const data = {
-                    todaysItems: state.addedItems
+                const todaysItems = {
+                    unsorted:
+                        state.items[state.itemsPropNames[4]],
+                    breakfast:
+                        state.items[state.itemsPropNames[0]],
+                    lunch:
+                        state.items[state.itemsPropNames[1]],
+                    dinner:
+                        state.items[state.itemsPropNames[2]],
+                    snack:
+                        state.items[state.itemsPropNames[3]],
+                    
                 };
-                axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
+                axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", todaysItems)
             } else if (moduleIndex == 2) {
                 const data = {
                     currentRecipeItems: state.addedItems
@@ -215,15 +269,17 @@ const searchAndAdd = {
             commit("CREATE_ITEM_TO_ADD", false)
         },
         setAddedItems({ state, commit }, payload) {
-            console.log(payload)
             commit("SET_ADDED_ITEMS", payload)
             commit("other/RESET_PORTIONS_AND_NAME", 0, { root: true })
         },
         setFocus({ state, commit }, value) {
             commit("SET_FOCUS", value)
         },
-        setItemsIndex({state, commit}, value) {
+        setItemsIndex({ state, commit }, value) {
             commit("SET_ITEMS_INDEX", value)
+        },
+        setItems({ state, commit }, payload) {
+            commit("SET_ITEMS", payload)
         }
     },
     getters: {

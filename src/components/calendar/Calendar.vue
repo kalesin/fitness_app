@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CalendarMonth v-if="entryEditIndex==-1"></CalendarMonth>
+    <CalendarMonth v-if="entryEditIndex==-1" style="height: 100vh"></CalendarMonth>
     <Entries v-else :dateClicked="dateClicked" :index="entryEditIndex" @close="setEntryEditIndex(-1)"></Entries>
   </div>
 </template>

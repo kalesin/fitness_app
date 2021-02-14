@@ -13,14 +13,14 @@
           <v-icon x-large>mdi-close-circle</v-icon>
         </v-btn>
       </RecipeBox>
-      <Search class="mx-auto mt-5" style="height: 64px; width: 80%"></Search>
+      <Search class="mx-auto mt-5" style="height: 64px; width: 80%" :moduleIndex="moduleIndex"></Search>
       <RecipesEdit class="recipesEdit"></RecipesEdit>
     </v-card>
 
     <v-snackbar absolute top rounded="pill" shaped v-model="snackbar">
       {{ text }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+        <v-btn color="pink" text v-bind="attrs" @click="snackbar=false">Close</v-btn>
       </template>
     </v-snackbar>
   </v-dialog>
@@ -37,14 +37,15 @@ export default {
   mounted() {
     if (!this.addedRecipe) {
       /* alert("Can't submit a recipe with no items, add some items!") */
-      setTimeout(function() {}, 1000).then((this.snackbar = true));
+      this.snackbar = true;
       console.log(snackbar);
     }
   },
   data() {
     return {
       snackbar: false,
-      text: `Can't submit a recipe with no items, add some items!`
+      text: `Can't submit a recipe with no items, add some items!`,
+      moduleIndex: 2
     };
   },
   props: {

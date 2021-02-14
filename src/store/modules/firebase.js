@@ -14,19 +14,17 @@ const firebase = {
         user: {},
     }),
     mutations: {
-        SET_LOGGEDIN(state, value){
+        SET_LOGGEDIN(state, value) {
             state.loggedIn = value;
         },
-        SET_PASSWORD(state, value){
+        SET_PASSWORD(state, value) {
             state.password = value;
         },
-        SET_EMAIL(state, value){
+        SET_EMAIL(state, value) {
             state.email = value;
         },
-        SET_USERID(state, value) {
-            state.userID = value;
-        },
         SET_USER(state, value) {
+            state.userID = value.uid
             state.user = value;
         }
     },
@@ -34,45 +32,60 @@ const firebase = {
         async getData({ state, commit }, payload) {
             let id = state.userID;
             return Vue.http.get(`data/${id}.json`)
-            .then(response => response.json())
+                .then(response => response.json())
                 .then(data => {
                     if (data) {
                         const currentRecipeItems = data.currentRecipeItems ? data.currentRecipeItems : [];
-                        const todaysItems = data.todaysItems ? data.todaysItems : [];
+                        const todaysAddedItems = data.todaysAddedItems ? data.todaysAddedItems : [];
+                        const todaysItems = data.todaysItems ? {
+                            breakfast: data.todaysItems["breakfast"] ? data.todaysItems["breakfast"] : [],
+                            lunch: data.todaysItems["lunch"] ? data.todaysItems["lunch"] : [],
+                            dinner: data.todaysItems["dinner"] ? data.todaysItems["dinner"] : [],
+                            snack: data.todaysItems["snack"] ? data.todaysItems["snack"] : [],
+                            unsorted: data.todaysItems["unsorted"] ? data.todaysItems["unsorted"] : [],
+
+                        } : {
+                                breakfast: [],
+                                lunch: [],
+                                dinner: [],
+                                snack: [],
+                                unsorted: [],
+                            }
                         const recipes = data.recipes ? data.recipes : [];
                         const mainCalories = data.userData.maintenanceCalories ? data.userData.maintenanceCalories : 0;
                         const dailyEntries = data.userData.dailyEntries ? data.userData.dailyEntries : [];
 
-                        commit('searchAndAdd/SET_ADDED_ITEMS', todaysItems, { root: true })
+                        commit('searchAndAdd/SET_ADDED_ITEMS', todaysAddedItems, { root: true })
+                        commit('searchAndAdd/SET_ITEMS', todaysItems, { root: true })
                         commit('searchAndAdd2/SET_ADDED_ITEMS', currentRecipeItems, { root: true })
-                        commit('other/SET_RECIPES', recipes, {root: true})
-                        commit('other/SET_MAINTENANCE_CALORIES', mainCalories, {root: true})
-                        commit('other/SET_DAILY_ENTRIES', dailyEntries, {root: true})
+                        commit('other/SET_RECIPES', recipes, { root: true })
+                        commit('other/SET_MAINTENANCE_CALORIES', mainCalories, { root: true })
+                        commit('other/SET_DAILY_ENTRIES', dailyEntries, { root: true })
                     }
                 }).catch(function (error) {
                     console.log(error);
                 })
         },
-        setLoggedIn({state, commit}, value) {
+        setLoggedIn({ state, commit }, value) {
             commit("SET_LOGGEDIN", value);
         },
-        setPassword({state, commit}, value) {
+        setPassword({ state, commit }, value) {
             commit("SET_PASSWORD", value);
         },
-        setEmail({state, commit}, value) {
+        setEmail({ state, commit }, value) {
             commit("SET_EMAIL", value);
         },
-        setUserID({state, commit, dispatch}, value) {
-            commit("SET_USERID", value)
+        setUser({ state, commit, dispatch }, value) {
+            if (value.uid) {
+                commit("SET_USER", { displayName: value.displayName, uid: value.uid, photoURL: value.photoURL })
+            } else {
+                commit("SET_USER", null)
+            }
             dispatch("getData")
         },
-        setUser({state, commit, dispatch}, value) {
-            commit("SET_USER", value)
-        },
-        
     },
     getters: {
-        
+
     }
 }
 
