@@ -52,7 +52,7 @@ const firebase = {
                                 unsorted: [],
                             }
                         const recipes = data.recipes ? data.recipes : [];
-                        const mainCalories = data.userData.maintenanceCalories ? data.userData.maintenanceCalories : 0;
+                        const mainCalories = data.userData.maintenanceCalories ? data.userData.maintenanceCalories : 2000;
                         const dailyEntries = data.userData.dailyEntries ? data.userData.dailyEntries : [];
 
                         commit('searchAndAdd/SET_ADDED_ITEMS', todaysAddedItems, { root: true })
