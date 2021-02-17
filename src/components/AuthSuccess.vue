@@ -1,8 +1,8 @@
 <template>
- <v-app>
-      <app-header></app-header>
-          <router-view class="router"></router-view>
-    </v-app>
+  <v-app>
+    <app-header class="header"></app-header>
+    <router-view class="router pa-3"></router-view>
+  </v-app>
 </template>
 
 <script>
@@ -13,13 +13,19 @@ import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapState("firebase", ["password", "email", "loggedIn", "userData", "userID"])
+    ...mapState("firebase", [
+      "password",
+      "email",
+      "loggedIn",
+      "userData",
+      "userID"
+    ])
   },
   created() {
     var user = firebase.auth().currentUser;
-    console.log(firebase.auth(), "authsuccess")
+    console.log(firebase.auth(), "authsuccess");
     if (user) {
-      console.log("set user")
+      console.log("set user");
       this.user = user;
     }
   },
@@ -41,10 +47,19 @@ export default {
 </script>
 
 <style scoped>
-.v-navigation-drawer {
-  width: 13vw !important;
+.header {
+  width: 250px !important;
 }
 .router {
-  width: calc(100vw - 13vw) !important;
+  width: calc(100vw - 250px) !important;
 }
+@media only screen and (max-width: 1200px) {
+  .header {
+    width: 72px !important;
+  }
+  .router {
+    width: calc(100vw - 72px) !important;
+  }
+}
+
 </style>

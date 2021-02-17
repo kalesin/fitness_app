@@ -1,14 +1,13 @@
 <template>
-  <v-container fluid class="ma-0 pa-3 d-flex">
-    <div class="d-flex flex-column" style="width:75%;">
+  <v-container fluid class="ma-0 d-flex">
+    <div class="d-flex flex-column middle">
       <DailyBox style="height: 190px;" :nutrientArray="totalForToday"></DailyBox>
       <Search class="mx-auto mt-5" style="height: 64px; width: 80%" :moduleIndex="moduleIndex"></Search>
       <AddedFoods class="addedFoods overflow-y-auto"></AddedFoods>
     </div>
-    <div class="d-flex" style="width: 25%">
+    <div class="d-flex" style="width: 390px">
       <RecipesDisplay class="ml-3 display" @close="activeIndex=-1"></RecipesDisplay>
     </div>
-
     <Recipes v-if="editIndex != -1" @close="editIndex=-1" :index="editIndex"></Recipes>
   </v-container>
 </template>
@@ -93,10 +92,18 @@ moduleIndex: 1
 </script>
 
 <style scoped>
+.middle {
+  width: calc(100% - 390px)
+}
 .addedFoods {
   height: calc(100vh - 190px - 60px - 4*12px);
 }
 .display {
   height: calc(100vh - 2*12px);
+}
+@media only screen and (max-width: 1200px) {
+  .middle {
+    width: calc(100vw - 390px - 72px)
+  }
 }
 </style>

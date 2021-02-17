@@ -1,11 +1,11 @@
 <template>
   <v-navigation-drawer permanent>
-    <v-list-item>
+    <v-list-item class="avatar">
       <v-list-item-avatar>
         <v-img :src="`${user.photoURL}`" height="100px" contain position="left"></v-img>
       </v-list-item-avatar>
     </v-list-item>
-    <v-list-item>
+    <v-list-item :class="{hide: hide}" id="hide">
       <v-list-item-content>
         <v-list-item-title class="title" style="font-size: 25px">Fitness App</v-list-item-title>
         <v-list-item-subtitle>Welcome, {{ user.displayName }}!</v-list-item-subtitle>
@@ -58,6 +58,12 @@ import { mapActions, mapGetters, mapState } from "vuex";
 import firebase from "firebase";
 
 export default {
+  created() {
+    window.addEventListener("resize", this.myEventHandler);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.myEventHandler);
+  },
   data() {
     return {
       items: [
@@ -79,7 +85,8 @@ export default {
       ],
       logout: [{ title: "Log Out", icon: "mdi-login", url: "/auth" }],
       right: null,
-      isDropdownOpen: false
+      isDropdownOpen: false,
+      hide: false
     };
   },
   computed: {
@@ -101,12 +108,26 @@ export default {
     ]),
     logOut() {
       firebase.auth().signOut();
+    },
+    myEventHandler(e) {
+      if (window.innerWidth < 1200) {
+        this.hide = true;
+      } else {
+        this.hide = false;
+      }
     }
   }
 };
 </script>
 
 <style scoped>
+@media only screen and (max-width: 1200px) {
+  .avatar {
+    margin-left: 8px;
+    margin-top: 4px;
+    padding: 0;
+  }
+}
 .active {
   background-color: gray;
 }

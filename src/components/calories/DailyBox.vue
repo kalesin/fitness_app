@@ -3,6 +3,7 @@
     <div class="d-flex my-auto">
       <v-progress-circular
         class="ma-auto"
+        :class="{hide: hide}"
         :size="100"
         :width="20"
         :rotate="90"
@@ -71,6 +72,12 @@ import { mapGetters, mapState, mapActions } from "vuex";
 import EntryDialogue from "./EntryDialogue";
 
 export default {
+  created() {
+    window.addEventListener("resize", this.myEventHandler);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.myEventHandler);
+  },
   mounted() {
     let index = this.dailyEntries.findIndex(
       element => element.date === this.today
@@ -90,7 +97,8 @@ export default {
       activeIndex: -1,
       showDialogue: false,
       moduleIndex: 1,
-      rules: [v => v.length <= 30 || "Max 30 characters"]
+      rules: [v => v.length <= 30 || "Max 30 characters"],
+      hide: false
     };
   },
   watch: {
@@ -139,10 +147,33 @@ export default {
       "setEntryTodayIndex",
       "addToRecipes",
       "setEditIndex"
-    ])
+    ]),
+    myEventHandler(e) {
+      if (window.innerWidth < 1000) {
+        this.hide = true;
+      } else {
+        this.hide = false;
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
+@media only screen and (max-width: 1000px) {
+  .v-progress-circular {
+    width: 75px !important;
+  }
+  .totalText {
+    width: 250px !important;
+    margin: auto;
+  }
+  .totalTextSize {
+    font-size: 0.85rem !important;
+    padding: 0 !important;
+  }
+  .totalButtons {
+    width: 40px !important;
+  }
+}
 </style>

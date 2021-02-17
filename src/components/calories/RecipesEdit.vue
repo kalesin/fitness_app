@@ -8,10 +8,10 @@
       <v-card outlined class="lime accent-1 rounded-lg">
         <div class="d-flex">
           <v-card-text
-            style="text-transform: capitalize; width: 65%; text-align: center; line-height: 100px; height: 100px"
-            class="text-h5 pa-0 justify-end align-end"
+            style="text-transform: capitalize; text-align: center; line-height: 100px; height: 100px"
+            class="text-h5 pa-0 justify-end align-end flex-grow-1 textWidth"
           >{{item.NAME}}</v-card-text>
-          <div class="d-flex flex-column pt-2 pr-2" style="width: 35%">
+          <div class="d-flex flex-column pt-2 pr-2" style="width: 125px">
             <div class="d-flex justify-end pr-0">
               <v-btn class="justify-end" large icon @click="startEdit(index)">
                 <v-icon v-if="activeIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
@@ -36,7 +36,8 @@
                   v-if="activeIndex!==index"
                   style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
                 >x {{item.QUANTITY*100}}g</v-card-text>
-                <div v-else class="d-flex justify-space-around">
+                <div v-else class="d-flex justify-space-around"
+                  >
                   <v-btn
                     class="mr-1"
                     icon
@@ -190,12 +191,20 @@ export default {
 </script>
 
 <style scoped>
+.textWidth {
+  width: calc(100% - 125px);
+}
 .itemCard {
   width: calc(100%/3);
 }
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1200px) {
   .itemCard {
     width: 50% !important;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .itemCard {
+    width: 100% !important;
   }
 }
 </style>

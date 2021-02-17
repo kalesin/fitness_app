@@ -5,7 +5,7 @@
         <div v-for="(item, index) in choiceArray" :key="index">
           <v-list-item
             class="rounded-lg pl-1 mb-2 light-green lighten-4 light-green--text"
-            style="width: 20%"
+            style="width: 250px"
             @click="setItemsIndex(index)"
           >
             <v-list-item-icon x-large>
