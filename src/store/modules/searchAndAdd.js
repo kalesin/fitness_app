@@ -88,16 +88,12 @@ const searchAndAdd = {
         },
         ADD_ITEM(state, moduleIndex) {
             if (moduleIndex == 1) {
-                if (state.itemsIndex == 4) {
-                    state.items.unsorted.push(state.itemToAdd)
-                } else if (state.itemsIndex == 0) {
-                    state.items.breakfast.push(state.itemToAdd)
-                } else if (state.itemsIndex == 1) {
-                    state.items.lunch.push(state.itemToAdd)
-                } else if (state.itemsIndex == 2) {
-                    state.items.dinner.push(state.itemToAdd)
-                } else if (state.itemsIndex == 3) {
-                    state.items.snack.push(state.itemToAdd)
+                switch (state.itemsIndex) {
+                    case 0: state.items.breakfast.push(state.itemToAdd); break;
+                    case 1: state.items.lunch.push(state.itemToAdd); break;
+                    case 2: state.items.dinner.push(state.itemToAdd); break;
+                    case 3: state.items.snack.push(state.itemToAdd); break;
+                    case 4: state.items.unsorted.push(state.itemToAdd); break;
                 }
             } else if (moduleIndex == 2) {
                 console.log("bbb")
@@ -105,23 +101,25 @@ const searchAndAdd = {
             }
         },
         ADD_ITEM_VALUE(state, payload) {
-            state.addedItems.push(payload);
+            switch (state.itemsIndex) {
+                case 0: state.items.breakfast.push(payload); break;
+                case 1: state.items.lunch.push(payload); break;
+                case 2: state.items.dinner.push(payload); break;
+                case 3: state.items.snack.push(payload); break;
+                case 4: state.items.unsorted.push(payload); break;
+            }
         },
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
         },
         REMOVE_ITEM(state, { index, moduleIndex }) {
             if (moduleIndex == 1) {
-                if (state.itemsIndex == 4) {
-                    state.items.unsorted.splice(index, 1);
-                } else if (state.itemsIndex == 0) {
-                    state.items.breakfast.splice(index, 1);
-                } else if (state.itemsIndex == 1) {
-                    state.items.lunch.splice(index, 1);
-                } else if (state.itemsIndex == 2) {
-                    state.items.dinner.splice(index, 1);
-                } else if (state.itemsIndex == 3) {
-                    state.items.snack.splice(index, 1);
+                switch (state.itemsIndex) {
+                    case 0: state.items.breakfast.splice(index, 1); break;
+                    case 1: state.items.lunch.splice(index, 1); break;
+                    case 2: state.items.dinner.splice(index, 1); break;
+                    case 3: state.items.snack.splice(index, 1); break;
+                    case 4: state.items.unsorted.splice(index, 1); break;
                 }
             } else if (moduleIndex == 2) {
                 state.addedItems.splice(index, 1);
@@ -194,7 +192,8 @@ const searchAndAdd = {
             commit("SET_QUANTITY", "")
         },
         addItemValue({ state, commit }, payload) {
-            let index = state.addedItems.findIndex(element => element.NAME === payload.NAME);
+            let items = state.items[state.itemsPropNames[state.itemsIndex]];
+            let index = items.findIndex(element => element.NAME === payload.NAME);
             if (index != -1) {
                 commit("SET_INDEX", index)
                 commit("INCREMENT_RESPONSE_COUNT")
@@ -250,7 +249,7 @@ const searchAndAdd = {
                         state.items[state.itemsPropNames[2]],
                     snack:
                         state.items[state.itemsPropNames[3]],
-                    
+
                 };
                 axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", todaysItems)
             } else if (moduleIndex == 2) {

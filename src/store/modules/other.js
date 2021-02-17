@@ -47,10 +47,11 @@ const other = {
                 PORTION_NUTRIENTS: totalForToday.map(
                     x => Math.round(x / state.recipePortions * 100) / 100
                 ),
-                INGREDIENTS: addedItems
+                INGREDIENTS: addedItems,
+                IS_FAVORITE: false
             })
         },
-        RESET_PORTIONS_AND_NAME(state){
+        RESET_PORTIONS_AND_NAME(state) {
             state.recipesName = "";
             state.recipesPortions = 0;
         },
@@ -187,6 +188,20 @@ const other = {
         },
         SET_EDIT_DATE(state, value) {
             state.editDate = value;
+        },
+        SET_FAVORITE(state, index) {
+            state.recipes[index].IS_FAVORITE = !state.recipes[index].IS_FAVORITE;
+
+            let array = JSON.parse(JSON.stringify(state.recipes));
+            console.log(array)
+            let array1 = array.filter(element => element.IS_FAVORITE == true)
+            console.log(array1)
+            let array2 = array.filter(element => element.IS_FAVORITE == false)
+            console.log(array2)
+
+            array = array1.concat(array2);
+            console.log(array)
+            state.recipes = JSON.parse(JSON.stringify(array))
         }
     },
     actions: {
@@ -198,15 +213,15 @@ const other = {
         setPortions({ state, commit }, value) {
             commit("ADD_RECIPE_PORTIONS", value)
         },
-        addToRecipes({ state, commit }, { totalForToday, addedItems, recipesName, recipesPortions, userID}) {
+        addToRecipes({ state, commit }, { totalForToday, addedItems, recipesName, recipesPortions, userID }) {
             commit("ADD_TO_RECIPES", { totalForToday, addedItems, recipesName, recipesPortions })
-            commit("searchAndAdd2/SET_ADDED_ITEMS", [], {root: true})
+            commit("searchAndAdd2/SET_ADDED_ITEMS", [], { root: true })
             commit("RESET_PORTIONS_AND_NAME")
-            
+
             const data = {
                 recipes: state.recipes
-              };
-              axios.patch(`${state.axios_url}`+ `${userID}` + ".json", data)
+            };
+            axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
 
         },
         openRecipes({ state, commit }) {
@@ -223,28 +238,28 @@ const other = {
         setRecipeQuantity({ state, commit }, value) {
             commit("SET_RECIPE_QUANTITY", value)
         },
-        addPortionOfRecipe({ state, commit }, index ) {
+        addPortionOfRecipe({ state, commit }, index) {
             commit("ADD_PORTION_OF_RECIPE", index)
         },
         createItemToAddObject({ state, commit }, object) {
             commit("searchAndAdd/ITEM_TO_ADD_OBJECT", { object }, { root: true })
         },
-        removeRecipe({ state, commit }, {index, userID}) {
+        removeRecipe({ state, commit }, { index, userID }) {
             commit("REMOVE_RECIPES", index)
             commit("RESET_EDIT_INDEX")
 
             const data = {
                 recipes: state.recipes
-              };
-              axios.patch(`${state.axios_url}`+ `${userID}` + ".json", data)
+            };
+            axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
         //progressbar
-        setMaintenanceCalories({ state, commit },{ savedCalories, userID}) {
+        setMaintenanceCalories({ state, commit }, { savedCalories, userID }) {
             commit("SET_MAINTENANCE_CALORIES", savedCalories);
             const userData = {
-                  maintenanceCalories: state.maintenanceCalories
-                }
-            axios.patch(`${state.axios_url}`+ `${userID}` + "/userData.json", userData)
+                maintenanceCalories: state.maintenanceCalories
+            }
+            axios.patch(`${state.axios_url}` + `${userID}` + "/userData.json", userData)
         },
         changeRecipeName({ state, commit }, payload) {
             commit("CHANGE_RECIPE_NAME", payload)
@@ -262,11 +277,11 @@ const other = {
             commit("REMOVE_INGREDIENT", index)
         },
         saveIngredients({ state, commit }, payload) {
-            commit("SAVE_INGREDIENTS", payload) 
+            commit("SAVE_INGREDIENTS", payload)
             const data = {
                 recipes: state.recipes
-              };
-              axios.patch(`${state.axios_url}`+ `${payload.userID}` + ".json", data)
+            };
+            axios.patch(`${state.axios_url}` + `${payload.userID}` + ".json", data)
         },
         addIngredient({ state, commit }, payload) {
             commit("ADD_INGREDIENT", payload)
@@ -284,10 +299,10 @@ const other = {
             commit("SORT_DAILY_ENTRIES")
             const userData = {
                 dailyEntries: state.dailyEntries
-              };
-              axios.patch(`${state.axios_url}`+ `${payload.userID}` + "/userData.json", userData)
+            };
+            axios.patch(`${state.axios_url}` + `${payload.userID}` + "/userData.json", userData)
         },
-        overwriteDailyEntry({ state, commit }, payload){
+        overwriteDailyEntry({ state, commit }, payload) {
             commit("OVERWRITE_ENTRY")
 
             commit("ADD_DAILY_ENTRY", payload)
@@ -295,33 +310,33 @@ const other = {
             commit("SORT_DAILY_ENTRIES")
             const userData = {
                 dailyEntries: state.dailyEntries
-              };
-              axios.patch(`${state.axios_url}`+ `${payload.userID}` + "/userData.json", userData)
+            };
+            axios.patch(`${state.axios_url}` + `${payload.userID}` + "/userData.json", userData)
         },
         setEntryEditIndex({ state, commit }, payload) {
             commit("SET_ENTRY_EDIT_INDEX", payload)
         },
-        deleteEntry({ state, commit }, {entryEditIndex, userID}) {
+        deleteEntry({ state, commit }, { entryEditIndex, userID }) {
             commit("DELETE_ENTRY", entryEditIndex)
             commit("SET_ENTRY_EDIT_INDEX", -1)
             const userData = {
                 dailyEntries: state.dailyEntries
-              };
-              axios.patch(`${state.axios_url}`+ `${userID}` + "/userData.json", userData)
+            };
+            axios.patch(`${state.axios_url}` + `${userID}` + "/userData.json", userData)
         },
         createAddedItemsTemp({ state, commit }, index) {
             commit("CREATE_ADDEDITEMS_TEMP", index)
         },
         saveAddedItems({ state, commit }, payload) {
             commit("SAVE_ADDEDITEMS", payload)
-            commit("searchAndAdd3/RESET_ADDED_ITEMS", [], {root: true})
+            commit("searchAndAdd3/RESET_ADDED_ITEMS", [], { root: true })
             commit("PUSH_TEMP_TO_ENTRIES")
             commit("SET_ENTRY_EDIT_INDEX", -1)
             commit("SORT_DAILY_ENTRIES")
             const userData = {
                 dailyEntries: state.dailyEntries
-              };
-              axios.patch(`${state.axios_url}`+ `${payload.userID}` + "/userData.json", userData)
+            };
+            axios.patch(`${state.axios_url}` + `${payload.userID}` + "/userData.json", userData)
         },
         //calendar
         setDailyEntryTemp({ state, commit }, payload) {
@@ -333,11 +348,19 @@ const other = {
         setEntryTodayIndex({ state, commit }, value) {
             commit("SET_ENTRY_TODAY_INDEX", value)
         },
-        setDeleteIndex({state, commit}, value){
+        setDeleteIndex({ state, commit }, value) {
             commit("SET_DELETE_INDEX", value)
         },
-        setEditDate({state, commit}, value){
+        setEditDate({ state, commit }, value) {
             commit("SET_EDIT_DATE", value)
+        },
+        setFavorite({ state, commit }, {index, userID}) {
+            commit("SET_FAVORITE", index)
+
+            const data = {
+                recipes: state.recipes
+            };
+            axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         }
 
 

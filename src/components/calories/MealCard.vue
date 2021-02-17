@@ -215,7 +215,7 @@ export default {
         this.quantity = "";
         this.activeIndex = index;
         setTimeout(() => {
-          if (this.$refs.inputAmount[0]) {
+          if (this.$refs.inputAmount) {
             this.$refs.inputAmount[0].focus();
           }
         }, 0);

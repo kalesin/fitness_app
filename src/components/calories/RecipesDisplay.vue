@@ -20,50 +20,65 @@
       <div v-for="(item, index) in recipes" :key="index" class="itemCard pa-2 pt-0">
         <v-card
           outlined
-          class="lime accent-1 rounded-lg"
+          class="red lighten-4 rounded-lg"
           :class="{'red lighten-4': editIndex == index}"
         >
-          <div class="d-flex">
+          <div class="d-flex mt-2">
             <v-card-text
               style="text-transform: capitalize; width: 65%;"
               class="text-h5 pa-2"
             >{{item.NAME}} (per portion)</v-card-text>
-            <div class="d-flex align-center justify-space-between" style="width: 35%">
-              <v-btn
-                icon
-                large
-                color="green"
-                @click="
+            <div class="d-flex flex-column align-center justify-space-between" style="width: 35%">
+              <div>
+                <v-btn
+                  icon
+                  large
+                  color="green"
+                  @click="
       addPortionOfRecipe(index);
       addItemValue(portionItem)
             updateAddedItems()"
-              >
-                <v-icon>mdi-plus-circle</v-icon>
-              </v-btn>
-              <v-btn
-                class="justify-end"
-                large
-                icon
-                @click="setAddedRecipe(recipes[index].INGREDIENTS)
+                >
+                  <v-icon x-large>mdi-plus-circle</v-icon>
+                </v-btn>
+                <v-btn
+                  class="justify-end"
+                  color="yellow"
+                  icon
+                  large
+                  @click="
+          setFavorite({index, userID})"
+                >
+                  <v-icon v-if="recipes[index].IS_FAVORITE==true" class="mr-2">mdi-star</v-icon>
+                  <v-icon v-else class="mr-2" color="black">mdi-star-outline</v-icon>
+                </v-btn>
+              </div>
+              <div>
+                <v-btn
+                  class="justify-end"
+                  large
+                  icon
+                  @click="setAddedRecipe(recipes[index].INGREDIENTS)
               startEdit(index)"
-              >
-                <v-icon v-if="editIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
-                <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
-              </v-btn>
-              <v-btn
-                class="justify-end"
-                icon
-                large
-                color="red"
-                @click="
+                >
+                  <v-icon v-if="editIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
+                  <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
+                </v-btn>
+                <v-btn
+                  class="justify-end"
+                  icon
+                  large
+                  color="red"
+                  @click="
             onRemoved({index, userID, moduleIndex})
             setDeleted(true)"
-              >
-                <v-icon class="mr-2" @click.stop="shownIndex=index">mdi-delete</v-icon>
-              </v-btn>
+                >
+                  <v-icon class="mr-2" @click.stop="shownIndex=index">mdi-delete</v-icon>
+                </v-btn>
+              </div>
             </div>
           </div>
-          <NutrientBox :nutrientArray="item.PORTION_NUTRIENTS" class="ma-2 mt-0"></NutrientBox>
+          <NutrientBox :nutrientArray="item.PORTION_NUTRIENTS" class="ma-2"></NutrientBox>
         </v-card>
       </div>
     </div>
@@ -92,6 +107,7 @@ export default {
   },
   computed: {
     ...mapState("other", ["recipes", "portionItem", "editIndex"]),
+    ...mapState("searchAndAdd", ["itemsPropNames", "items", "itemsIndex"]),
     ...mapState("firebase", ["userID"]),
     quantity: {
       get() {
@@ -106,7 +122,8 @@ export default {
     ...mapActions("other", [
       "addPortionOfRecipe",
       "setEditIndex",
-      "setDeleteIndex"
+      "setDeleteIndex",
+      "setFavorite"
     ]),
     ...mapActions("searchAndAdd", ["addItemValue", "setAddedItems"]),
     ...mapActions("searchAndAdd2", { setAddedRecipe: "setAddedItems" }),
@@ -124,12 +141,21 @@ export default {
     },
     updateAddedItems() {
       const data = {
-        todaysItems: this.$store.state.searchAndAdd.addedItems
+        todaysAddedItems: this.addedItems
       };
       this.$http.patch("data/" + `${this.userID}` + ".json", data);
-    },
-    log(value) {
-      console.log(value);
+
+      const todaysItems = {
+        breakfast: this.items[this.itemsPropNames[0]],
+        lunch: this.items[this.itemsPropNames[1]],
+        dinner: this.items[this.itemsPropNames[2]],
+        snack: this.items[this.itemsPropNames[3]],
+        unsorted: this.items[this.itemsPropNames[4]]
+      };
+      this.$http.patch(
+        "data/" + `${this.userID}` + "/todaysItems.json",
+        todaysItems
+      );
     }
   }
 };
@@ -138,5 +164,16 @@ export default {
 <style scoped>
 .addedFoods {
   height: calc(100% - 72px);
+}
+.v-icon.star {
+  color: black;
+  z-index: 0;
+}
+.v-icon.star2 {
+  color: yellow;
+  z-index: 1;
+  position: absolute;
+  top: 0.025em;
+  right: 8px
 }
 </style>
