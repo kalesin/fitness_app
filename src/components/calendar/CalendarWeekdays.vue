@@ -21,12 +21,13 @@ export default {
 <style scoped>
 
 .day-of-week {
+  height: 50px;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
 
 .day-of-week > * {
-  text-align: right;
-  padding-right: 5px;
+  margin-top: 10px;
+  text-align: center;
 }
 </style>

@@ -239,6 +239,11 @@ export default {
 .itemCard {
   width: calc(100% / 3) !important;
 }
+@media only screen and (min-width: 2500px) {
+  .itemCard {
+    width: 20% !important;
+  }
+}
 @media only screen and (max-width: 1600px) {
   .itemCard {
     width: 50% !important;

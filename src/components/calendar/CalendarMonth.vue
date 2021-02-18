@@ -264,6 +264,7 @@ export default {
 }
 
 .calendar-month-header {
+  height: 50px;
   display: flex;
   justify-content: center;
   background-color: #fff;

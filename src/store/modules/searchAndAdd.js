@@ -75,7 +75,7 @@ const searchAndAdd = {
         RESET_ADDED_ITEMS(state, userID) {
             state.addedItems = [];
             const data = {
-                todaysItems: state.addedItems
+                todaysAddedItems: state.addedItems
             };
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },

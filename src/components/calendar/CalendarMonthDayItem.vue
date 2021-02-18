@@ -8,14 +8,15 @@
     @click="selectDate(day)"
   >
     <span class="ma-1">{{ label }}</span>
-    <div v-if="day.entryExists" style="height: 100%; width: 100%" class="d-flex yellow lighten-4">
+    <div v-if="day.entryExists" style="height: 100%; width: 100%" class="d-flex yellow lighten-4 justify-space-around">
       <v-card-text
         class="d-flex pa-4 align-center text-h5 font-weight-bold" style="width: 50%"
       >{{this.day.entry.total[0]}} kcal</v-card-text>
       <v-progress-circular
-      class="d-flex my-auto"
+      style="width: 50%"
+      class="d-flex my-auto mr-2"
         :size="100"
-        :width="20"
+        :width="12"
         :rotate="90"
         :value="dailyProgress"
         color="green"
@@ -107,7 +108,7 @@ span {
 .calendar-day {
   display: flex;
   position: relative;
-  height: 124px;
+  height: calc((100vh - 100px - 2*12px - 5px)/4);
   font-size: 16px;
   background-color: #fff;
   color: var(--grey-800);
@@ -130,7 +131,6 @@ span {
 }
 
 .calendar-day--today {
-  padding-top: 4px;
   font-size: 20px;
   font-weight: 900;
   border: 2px solid orangered;

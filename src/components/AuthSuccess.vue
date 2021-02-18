@@ -52,6 +52,7 @@ export default {
 }
 .router {
   width: calc(100vw - 250px) !important;
+  height: 100vh !important;
 }
 @media only screen and (max-width: 1300px) {
   .header {
