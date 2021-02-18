@@ -110,7 +110,7 @@ export default {
       firebase.auth().signOut();
     },
     myEventHandler(e) {
-      if (window.innerWidth < 1200) {
+      if (window.innerWidth < 1300) {
         this.hide = true;
       } else {
         this.hide = false;
@@ -121,7 +121,7 @@ export default {
 </script>
 
 <style scoped>
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1300px) {
   .avatar {
     margin-left: 8px;
     margin-top: 4px;

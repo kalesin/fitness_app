@@ -5,8 +5,8 @@
       <Search class="mx-auto mt-5" style="height: 64px; width: 80%" :moduleIndex="moduleIndex"></Search>
       <AddedFoods class="addedFoods overflow-y-auto"></AddedFoods>
     </div>
-    <div class="d-flex" style="width: 390px">
-      <RecipesDisplay class="ml-3 display" @close="activeIndex=-1"></RecipesDisplay>
+    <div class="d-flex display" style="width: 390px">
+      <RecipesDisplay class="ml-3" @close="activeIndex=-1"></RecipesDisplay>
     </div>
     <Recipes v-if="editIndex != -1" @close="editIndex=-1" :index="editIndex"></Recipes>
   </v-container>
@@ -25,10 +25,10 @@ import Recipes from "./Recipes";
 import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
-  data(){
+  data() {
     return {
-moduleIndex: 1
-    }
+      moduleIndex: 1
+    };
   },
   components: {
     AddedFoods,
@@ -93,17 +93,21 @@ moduleIndex: 1
 
 <style scoped>
 .middle {
-  width: calc(100% - 390px)
+  width: calc(100% - 390px);
 }
 .addedFoods {
-  height: calc(100vh - 190px - 60px - 4*12px);
+  height: calc(100vh - 190px - 60px - 4 * 12px);
 }
 .display {
-  height: calc(100vh - 2*12px);
+  height: calc(100vh - 2 * 12px);
 }
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1300px) {
   .middle {
-    width: calc(100vw - 390px - 72px)
+    width: calc(100% - 350px);
+  }
+  .display {
+    height: calc(100vh - 2 * 12px);
+    width: 350px !important;
   }
 }
 </style>

@@ -53,12 +53,12 @@ export default {
 .router {
   width: calc(100vw - 250px) !important;
 }
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1300px) {
   .header {
-    width: 72px !important;
+    width: 58px !important;
   }
   .router {
-    width: calc(100vw - 72px) !important;
+    width: calc(100vw - 58px) !important;
   }
 }
 

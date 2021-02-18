@@ -14,10 +14,10 @@
       <v-card outlined class="lime accent-1 rounded-lg">
         <div class="d-flex">
           <v-card-text
-            style="text-transform: capitalize; width: 65%; text-align: center; line-height: 100px; height: 100px"
-            class="text-h5 pa-0 justify-end align-end"
+            style="text-transform: capitalize; text-align: center; line-height: 100px; height: 100px"
+            class="text-h5 pa-0 justify-end align-end flex-grow-1 textWidth"
           >{{item.NAME}}</v-card-text>
-          <div class="d-flex flex-column pt-2 pr-2" style="width: 35%">
+          <div class="d-flex flex-column pt-2 pr-2" style="width: 125px">
             <div class="d-flex justify-end pr-0">
               <v-btn class="justify-end" large icon @click="startEdit(index)">
                 <v-icon v-if="activeIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
@@ -233,15 +233,23 @@ export default {
   background-color: #eeeeee;
   opacity: 0.8;
 }
+.textWidth {
+  width: calc(100% - 125px);
+}
 .itemCard {
   width: calc(100% / 3) !important;
 }
-@media only screen and (max-width: 1400px) {
+@media only screen and (max-width: 1600px) {
   .itemCard {
     width: 50% !important;
   }
 }
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1050px) {
+  .itemCard {
+    width: 415px !important;
+  }
+}
+@media only screen and (max-width: 900px) {
   .itemCard {
     width: 100% !important;
   }

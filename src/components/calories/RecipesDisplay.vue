@@ -1,7 +1,7 @@
 <template>
   <v-card class="blue lighten-3 rounded-lg pa-0" tile flat>
     <div class="d-flex align-center mx-4">
-      <v-card-text class="text-h4">My Recipes:</v-card-text>
+      <v-card-text class="text-h4 textSize">My Recipes:</v-card-text>
       <v-btn
         v-if="editIndex!=-2"
         color="success"
@@ -24,10 +24,13 @@
           :class="{'red lighten-4': editIndex == index}"
         >
           <div class="d-flex mt-2">
-            <v-card-text
-              style="text-transform: capitalize; width: 65%;"
-              class="text-h5 pa-2"
-            >{{item.NAME}} (per portion)</v-card-text>
+            <div style="width: 65%" class="d-flex justify-center align-center">
+              <v-card-text
+                style="text-transform: capitalize; text-align: center;"
+                class="text-h5 pa-2"
+              >{{item.NAME}}</v-card-text>
+            </div>
+
             <div class="d-flex flex-column align-center justify-space-between" style="width: 35%">
               <div>
                 <v-btn
@@ -78,7 +81,7 @@
               </div>
             </div>
           </div>
-          <NutrientBox :nutrientArray="item.PORTION_NUTRIENTS" class="ma-2"></NutrientBox>
+          <NutrientBox :nutrientArray="item.PORTION_NUTRIENTS" class="ma-2 totalTextSize"></NutrientBox>
         </v-card>
       </div>
     </div>
@@ -165,15 +168,10 @@ export default {
 .addedFoods {
   height: calc(100% - 72px);
 }
-.v-icon.star {
-  color: black;
-  z-index: 0;
-}
-.v-icon.star2 {
-  color: yellow;
-  z-index: 1;
-  position: absolute;
-  top: 0.025em;
-  right: 8px
+
+@media only screen and (max-width: 1300px) {
+  .textSize {
+    font-size: 26px !important;
+  }
 }
 </style>

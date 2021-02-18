@@ -153,17 +153,4 @@ export default {
   background-color: #eeeeee;
   opacity: 0.8;
 }
-.itemCard {
-  width: calc(100% / 3);
-}
-@media only screen and (max-width: 1400px) {
-  .itemCard {
-    width: 50% !important;
-  }
-}
-@media only screen and (max-width: 1000px) {
-  .itemCard {
-    width: 100% !important;
-  }
-}
 </style>
