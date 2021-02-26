@@ -22,6 +22,7 @@ const other = {
         dailyEntries: [],
         entryEditIndex: -1,
         addedItemsTemp: [],
+        itemsTemp: [],
         //calendar
         dailyEntryTemp: {},
         entryTodayIndex: -1,
@@ -127,9 +128,9 @@ const other = {
             if (!(payload.recipesPortions === "")) {
                 state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
             }
-            state.recipes[payload.editIndex].INGREDIENTS = payload.addedRecipe;
-            state.recipes[payload.editIndex].NUTRIENTS = payload.totalRecipe;
-            state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.totalRecipe.map(
+            state.recipes[payload.editIndex].INGREDIENTS = payload.addedItems;
+            state.recipes[payload.editIndex].NUTRIENTS = payload.totalForToday;
+            state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.totalForToday.map(
                 x => Math.round(x / state.recipes[payload.editIndex].PORTIONS * 100) / 100);
         },
         ADD_INGREDIENT(state, payload) {
@@ -143,7 +144,7 @@ const other = {
             state.dailyEntries = value;
         },
         ADD_DAILY_ENTRY(state, payload) {
-            state.dailyEntries.push({ date: payload.today, unix: new Date(payload.today.split("-").join(".")).getTime() / 1000, items: payload.addedItems, total: payload.totalForToday })
+            state.dailyEntries.push({ date: payload.today, unix: new Date(payload.today.split("-").join(".")).getTime() / 1000, addedItems: payload.addedItems, items: payload.items, total: payload.totalForToday })
         },
         SET_RECIPES(state, value) {
             state.recipes = value;
@@ -154,21 +155,43 @@ const other = {
         DELETE_ENTRY(state, value) {
             state.dailyEntries.splice(value, 1);
         },
-        CREATE_ADDEDITEMS_TEMP(state, index) {
-            state.addedItemsTemp = JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].items));
+        ENTRY_CREATE_ITEMS_TEMP(state) {
+            state.dailyEntryTemp.itemsTemp = state.entryEditIndex != -2 ? JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].items)) : []
+            state.dailyEntryTemp.addedItemsTemp = state.entryEditIndex != -2 ? JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].addedItems)) : []
         },
         REMOVE_ADDEDITEM(state, index) {
             state.addedItemsTemp.splice(index, 1);
         },
         SAVE_ADDEDITEMS(state, payload) {
-            state.dailyEntryTemp.items = payload.addedItems;
-            state.dailyEntryTemp.total = payload.totalForToday;
+            state.dailyEntryTemp.items = JSON.parse(JSON.stringify(payload.items))
+            state.dailyEntryTemp.addedItems = JSON.parse(JSON.stringify(payload.addedItems))
+            state.dailyEntryTemp.total = JSON.parse(JSON.stringify(payload.totalForToday))
         },
         //calendar
         SET_DAILY_ENTRY_TEMP(state, payload) {
-            state.dailyEntryTemp = { date: payload.date, unix: payload.dateUnix, items: [], total: [0, 0, 0, 0, 0] };
+            debugger
+            if (state.entryEditIndex != -1) {
+                state.dailyEntryTemp = {
+                    date: payload.date,
+                    unix: payload.unix,
+                    items: state.entryEditIndex != -2 ? JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].items)) : [],
+                    addedItems: state.entryEditIndex != -2 ? JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].addedItems)) : [],
+                    total: [0, 0, 0, 0, 0],
+                };
+            }
+
+        },
+        CLEAR_DAILY_ENTRY_TEMP(state) {
+            state.dailyEntryTemp = {
+                date: null,
+                unix: null,
+                items: [],
+                addedItems: [],
+                total: [0, 0, 0, 0, 0],
+            };
         },
         PUSH_TEMP_TO_ENTRIES(state) {
+            state.dailyEntries.splice(state.entryEditIndex, 1)
             state.dailyEntries.push(state.dailyEntryTemp);
         },
         SET_COMPARE_CALENDAR(state, value) {
@@ -324,13 +347,17 @@ const other = {
             };
             axios.patch(`${state.axios_url}` + `${userID}` + "/userData.json", userData)
         },
-        createAddedItemsTemp({ state, commit }, index) {
-            commit("CREATE_ADDEDITEMS_TEMP", index)
+        createItemsTemp({ state, commit }, index) {
+            commit("ENTRY_CREATE_ITEMS_TEMP", index)
+            commit("searchAndAdd3/SET_ADDED_ITEMS", payload, { root: true })
         },
-        saveAddedItems({ state, commit }, payload) {
+        saveEntryChanges({ state, commit }, payload) {
             commit("SAVE_ADDEDITEMS", payload)
-            commit("searchAndAdd3/RESET_ADDED_ITEMS", [], { root: true })
+            commit("searchAndAdd3/RESET_ADDED_ITEMS", payload.userID, { root: true })
+
             commit("PUSH_TEMP_TO_ENTRIES")
+            commit("CLEAR_DAILY_ENTRY_TEMP")
+
             commit("SET_ENTRY_EDIT_INDEX", -1)
             commit("SORT_DAILY_ENTRIES")
             const userData = {
@@ -340,7 +367,12 @@ const other = {
         },
         //calendar
         setDailyEntryTemp({ state, commit }, payload) {
+
             commit("SET_DAILY_ENTRY_TEMP", payload)
+        },
+        setDailyEntryItems({ state, commit }, payload) {
+            commit("searchAndAdd3/SET_ADDED_ITEMS", payload.addedItems, { root: true })
+            commit("searchAndAdd3/SET_ITEMS", payload.items, { root: true })
         },
         setDaysUnix({ state, commit }, value) {
             commit("SET_DAYS_UNIX", value)
@@ -354,7 +386,7 @@ const other = {
         setEditDate({ state, commit }, value) {
             commit("SET_EDIT_DATE", value)
         },
-        setFavorite({ state, commit }, {index, userID}) {
+        setFavorite({ state, commit }, { index, userID }) {
             commit("SET_FAVORITE", index)
 
             const data = {

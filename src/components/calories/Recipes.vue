@@ -14,7 +14,7 @@
         </v-btn>
       </RecipeBox>
       <Search class="mx-auto mt-5" style="height: 64px; width: 80%" :moduleIndex="moduleIndex"></Search>
-      <RecipesEdit class="recipesEdit"></RecipesEdit>
+      <RecipesEdit class="recipesEdit" :moduleIndex="moduleIndex"></RecipesEdit>
     </v-card>
 
     <v-snackbar absolute top rounded="pill" shaped v-model="snackbar">

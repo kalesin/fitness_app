@@ -74,8 +74,16 @@ const searchAndAdd = {
         },
         RESET_ADDED_ITEMS(state, userID) {
             state.addedItems = [];
+            state.items = {
+                breakfast: [],
+                lunch: [],
+                dinner: [],
+                snack: [],
+                unsorted: []
+            };
             const data = {
-                todaysAddedItems: state.addedItems
+                todaysAddedItems: state.addedItems,
+                todaysItems: state.items
             };
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
@@ -137,6 +145,13 @@ const searchAndAdd = {
         SET_ADDED_ITEMS(state, payload) {
             state.addedItems = JSON.parse(JSON.stringify(payload));
         },
+        SET_ITEMS(state, payload) {
+            let items = JSON.parse(JSON.stringify(payload))
+            for (let i = 0; i < 4; i++) {
+                let prop = state.itemsPropNames[i];
+                state.items[prop] = items[prop] ? items[prop] : []
+            }
+        },
         SET_INDEX(state, value) {
             state.idx = value
         },
@@ -148,9 +163,6 @@ const searchAndAdd = {
             } else if (state.itemsIndex != value) {
                 state.itemsIndex = value
             }
-        },
-        SET_ITEMS(state, payload) {
-            state.items = JSON.parse(JSON.stringify(payload));
         }
     },
     actions: {
@@ -178,6 +190,7 @@ const searchAndAdd = {
                             commit("INCREMENT_RESPONSE_COUNT")
                             commit("SET_FOCUS", true)
                         } else {
+                            debugger
                             commit("CREATE_ITEM_TO_ADD", false)
                             commit("ADD_ITEM", moduleIndex)
                         }

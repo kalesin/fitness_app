@@ -4,14 +4,19 @@
       <v-list-item-group v-model="selectedItem">
         <div v-for="(item, index) in choiceArray" :key="index">
           <v-list-item
-            class="rounded-lg pl-1 mb-2 light-green lighten-4 light-green--text"
+            class="pl-1 mb-2 light-green lighten-4 light-green--text dropZone"
             style="width: 250px"
             @click="setItemsIndex(index)"
+            @dragenter="dropEnterClass(index)"
+            @dragleave="dropLeaveClass(index)"
+            @dragover.prevent
+            @drop="onDrop(index)"
           >
-            <v-list-item-icon x-large>
+            <v-list-item-icon class="noEvents" x-large>
               <v-icon class="mx-4 gray">mdi-plus-circle</v-icon>
             </v-list-item-icon>
-            <v-list-item-title class="text-h5">{{choiceArray[index]}}</v-list-item-title>
+            <v-list-item-title class="text-h5 noEvents">{{choiceArray[index]}}</v-list-item-title>
+            <div class="noEvents">
               <v-icon v-if="items[itemsPropNames[index]].length==0">mdi-numeric-0-circle</v-icon>
               <v-icon v-if="items[itemsPropNames[index]].length==1">mdi-numeric-1-circle</v-icon>
               <v-icon v-if="items[itemsPropNames[index]].length==2">mdi-numeric-2-circle</v-icon>
@@ -23,8 +28,14 @@
               <v-icon v-if="items[itemsPropNames[index]].length==8">mdi-numeric-8-circle</v-icon>
               <v-icon v-if="items[itemsPropNames[index]].length==9">mdi-numeric-9-circle</v-icon>
               <v-icon v-if="items[itemsPropNames[index]].length>9">mdi-numeric-9-plus-circle</v-icon>
+            </div>
           </v-list-item>
-          <MealCard v-if="itemsIndex==index" :itemsIndex="itemsIndex"></MealCard>
+          <MealCard
+            v-if="itemsIndex==index"
+            :itemsIndex="itemsIndex"
+            @dragStart="setDragging(true)"
+            @dragEnd="setDragging(false)"
+          ></MealCard>
         </div>
       </v-list-item-group>
     </v-list>
@@ -58,7 +69,8 @@ export default {
   data() {
     return {
       choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
-      selectedItem: -1
+      selectedItem: -1,
+      dragging: false,
     };
   },
   watch: {
@@ -142,6 +154,31 @@ export default {
         "data/" + `${this.userID}` + "/todaysItems.json",
         todaysItems
       );
+    },
+    onDrop(index) {
+      console.log("drop");
+      document
+        .getElementsByClassName("dropZone")
+        [index].classList.remove("dropHover");
+    },
+    dropEnterClass(index) {
+      console.log("enter");
+      console.log(index)
+      console.log(document.getElementsByClassName("dropZone")[index]);
+      document
+        .getElementsByClassName("dropZone")
+        [index].classList.add("dropHover");
+    },
+    dropLeaveClass(index) {
+      console.log("leave");
+      console.log(document.getElementsByClassName("dropZone")[index]);
+      document
+        .getElementsByClassName("dropZone")
+        [index].classList.remove("dropHover");
+    },
+    setDragging(value, index) {
+      this.dragging = value;
+      console.log(this.dragging);
     }
   }
 };
@@ -149,8 +186,19 @@ export default {
 
 
 <style scoped>
+.dropZone > [aria-selected="false"]{
+background-color: red !important;
+  color: red !important;
+}
 .hover {
   background-color: #eeeeee;
   opacity: 0.8;
+}
+.dropHover {
+  background-color: red !important;
+  color: red !important;
+}
+.noEvents {
+  pointer-events: none;
 }
 </style>

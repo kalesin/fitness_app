@@ -3,17 +3,12 @@
     <div class="d-flex align-center mx-4">
       <v-card-text class="text-h4 textSize">My Recipes:</v-card-text>
       <v-btn
-        v-if="editIndex!=-2"
         color="success"
         @click="
       setEditIndex(-2)
       startEdit(-2)"
       >
         <v-icon>mdi-plus-circle</v-icon>add new
-      </v-btn>
-      <v-btn class="align-center" v-else color="error" @click="
-      setEditIndex(-1)">
-        <v-icon>mdi-close-thick</v-icon>scrap
       </v-btn>
     </div>
     <div class="overflow-y-auto d-flex flex-column addedFoods">

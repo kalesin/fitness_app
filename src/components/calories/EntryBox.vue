@@ -141,7 +141,7 @@ export default {
       }
       return disabled;
     },
-    ...mapState("searchAndAdd3", ["addedItems"]),
+    ...mapState("searchAndAdd3", ["addedItems", "items"]),
     ...mapState("other", [
       "maintenanceCalories",
       "dailyEntries",
@@ -167,27 +167,26 @@ export default {
       "setEntryEditIndex",
       "setEntryTodayIndex",
       "addToRecipes",
-      "setEditIndex"
+      "setEditIndex",
+      "saveEntryChanges"
     ]),
     submitNewEntry() {
       this.addDailyEntry({
         today: this.editDate,
         addedItems: this.addedItems,
+        items: this.items,
         totalForToday: this.totalForToday,
         userID: this.userID
       });
       this.setEntryEditIndex(-1);
     },
     submitChangedEntry() {
-      this.saveIngredients({
-        editIndex: this.editIndex,
-        totalRecipe: this.totalRecipe,
-        addedRecipe: this.addedRecipe,
-        recipesName: this.recipesName,
-        recipesPortions: this.recipesPortions,
+      this.saveEntryChanges({
+        items: this.items,
+        addedItems: this.addedItems,
+        totalForToday: this.totalForToday,
         userID: this.userID
       });
-      this.setEditIndex(-1);
     }
   }
 };

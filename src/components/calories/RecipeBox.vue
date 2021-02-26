@@ -49,7 +49,7 @@
           @click="validate()
           submitNewRecipe()
             "
-          :disabled="!valid || addedRecipe.length == 0"
+          :disabled="!valid || addedItems.length == 0"
         >
           <v-icon>mdi-content-save</v-icon>
         </v-btn>
@@ -62,7 +62,7 @@
           @click="
           validate()
             submitChangedRecipe()"
-          :disabled="!valid || addedRecipe.length == 0"
+          :disabled="!valid || addedItems.length == 0 || !isSame"
         >
           <v-icon>mdi-content-save</v-icon>
         </v-btn>
@@ -168,8 +168,9 @@ export default {
     today() {
       return dayjs().format("YYYY-MM-DD");
     },
-    ...mapState("searchAndAdd2", { addedRecipe: "addedItems" }),
+    ...mapState("searchAndAdd2", ["addedItems"]),
     ...mapState("other", [
+      "recipes",
       "maintenanceCalories",
       "dailyEntries",
       "entryTodayIndex",
@@ -177,19 +178,23 @@ export default {
     ]),
     ...mapState("other", ["recipes"]),
     ...mapState("firebase", ["userID"]),
-    ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapGetters("searchAndAdd2", { totalRecipe: "totalForToday" }),
-    dailyProgress: {
+    ...mapGetters("searchAndAdd2", ["totalForToday"]),
+    recipeProgress: {
       get() {
         return (this.totalForToday[0] / this.maintenanceCalories) * 100;
       },
       set(value) {}
     },
-    recipeProgress: {
-      get() {
-        return (this.totalRecipe[0] / this.maintenanceCalories) * 100;
-      },
-      set(value) {}
+    isSame() {
+      let name = this.recipesName == this.recipes[this.editIndex].NAME;
+      let port = this.recipesPortions == this.recipes[this.editIndex].PORTIONS;
+      let items = JSON.stringify(this.recipes[this.editIndex].INGREDIENTS) == JSON.stringify(this.addedItems);
+      
+      if (port && name && items) {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
   methods: {
@@ -208,8 +213,8 @@ export default {
       console.log(this.valid);
       if (this.valid) {
         this.addToRecipes({
-          totalForToday: this.totalRecipe,
-          addedItems: this.addedRecipe,
+          totalForToday: this.totalForToday,
+          addedItems: this.addedItems,
           recipesName: this.recipesName,
           recipesPortions: this.recipesPortions,
           userID: this.userID
@@ -221,8 +226,8 @@ export default {
       if (this.valid) {
         this.saveIngredients({
           editIndex: this.editIndex,
-          totalRecipe: this.totalRecipe,
-          addedRecipe: this.addedRecipe,
+          totalForToday: this.totalForToday,
+          addedItems: this.addedItems,
           recipesName: this.recipesName,
           recipesPortions: this.recipesPortions,
           userID: this.userID

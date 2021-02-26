@@ -44,7 +44,7 @@
           v-if="entryTodayIndex==-1"
           color="success"
           @click="
-            addDailyEntry({today, addedItems, totalForToday, userID})"
+            addDailyEntry({today, addedItems, items, totalForToday, userID})"
           :disabled="isDisabled"
         >
           <v-icon>mdi-content-save</v-icon>
@@ -123,7 +123,7 @@ export default {
       }
       return disabled;
     },
-    ...mapState("searchAndAdd", ["addedItems"]),
+    ...mapState("searchAndAdd", ["addedItems", "items"]),
     ...mapState("other", [
       "maintenanceCalories",
       "dailyEntries",

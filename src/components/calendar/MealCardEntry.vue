@@ -1,9 +1,14 @@
 <template>
-  <v-card flat tile class="light-green lighten-3 overflow-y-auto d-flex flex-wrap align-content-start rounded-lg pl-2">
+  <v-card
+    flat
+    tile
+    class="light-green lighten-3 d-flex flex-wrap rounded-lg pb-2"
+    style="width: 100%"
+  >
     <div
-      v-for="(item, index) in addedItems"
+      v-for="(item, index) in items[itemsPropNames[itemsIndex]]"
       :key="index"
-      class="itemCard pa-2 pb-0 pl-0"
+      class="itemCard pa-2 pb-0 pl-0" 
     >
       <v-card outlined class="lime accent-1 rounded-lg">
         <div class="d-flex">
@@ -23,7 +28,8 @@
                 large
                 color="red"
                 @click="
-            onRemoved({index, userID, moduleIndex})"
+            onRemoved({index, userID, moduleIndex})
+            setNoFocus(true)"
               >
                 <v-icon class="mr-2">mdi-delete</v-icon>
               </v-btn>
@@ -35,15 +41,15 @@
                   v-if="activeIndex!==index"
                   style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
                 >x {{item.QUANTITY*100}}g</v-card-text>
-                <div v-else class="d-flex justify-space-around"
-                  >
+                <div v-else class="d-flex justify-space-around">
                   <v-btn
                     class="mr-1"
                     icon
                     large
                     color="green"
                     @click="
-              onChanged({item, index, userID, moduleIndex, quantity})"
+              onChanged({item, index, userID, moduleIndex, quantity})
+              setNoFocus(true)"
                     :disabled="parseFloat(quantity)<=0 || quantity === ''"
                   >
                     <v-icon>mdi-check-bold</v-icon>
@@ -59,7 +65,7 @@
                     @blur="setFocus(false)"
                     @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
-              resetEdit()"
+              setNoFocus(true)"
                   ></v-text-field>
                 </div>
               </div>
@@ -67,7 +73,7 @@
                 <v-card-text
                   @click="startEdit(index)"
                   v-if="activeIndex!==index"
-                  style="padding-top: 10px; font-size:40px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                  style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
                 >
                   <div v-if="item.QUANTITY==1">x 1 por.</div>
                   <div v-else>x {{item.QUANTITY}} por.</div>
@@ -79,7 +85,8 @@
                     large
                     color="green"
                     @click="
-              onChanged({item, index, userID, moduleIndex, quantity})"
+              onChanged({item, index, userID, moduleIndex, quantity})
+              setNoFocus(true)"
                     :disabled="parseFloat(quantity)<=0 || quantity === ''"
                   >
                     <v-icon>mdi-check-bold</v-icon>
@@ -95,47 +102,68 @@
                     @blur="setFocus(false)"
                     @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
-              resetEdit()"
+              setNoFocus(true)"
                   ></v-text-field>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" type="box" class="ma-2 mt-0"></NutrientBox>
+        <NutrientBox :nutrientArray="item.CALCULATED_NUTRIENTS" class="ma-2 mt-0"></NutrientBox>
       </v-card>
     </div>
   </v-card>
-</template>
+</template> 
 
-<script>
-import NutrientBox from "./NutrientBox.vue";
+    <script>
+import NutrientBox from "../calories/NutrientBox";
+import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
-  props: ["moduleIndex"],
+  props: ["itemsIndex"],
+  mounted() {
+    let index = this.dailyEntries.findIndex(element => {
+      element.date === this.today;
+    });
+    if (index != -1) {
+      this.setEntryTodayIndex(index);
+    } else {
+      this.setEntryTodayIndex(-1);
+    }
+  },
   components: {
     NutrientBox
   },
   data() {
     return {
-      activeIndex: -1
+      activeIndex: -1,
+      moduleIndex: 1,
+      noFocus: false,
+      inputIndex: -1,
+      choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
+      selectedItem: -1
     };
   },
   watch: {
-    addedItems: {
+    items: {
       handler() {
-        if (this.deleted) {
+        if (this.noFocus) {
           this.activeIndex = -1;
+          this.setNoFocus(false);
         } else {
-          this.startEdit(this.addedItems.length - 1);
+          this.startEdit(
+            this.items[this.itemsPropNames[this.itemsIndex]].length - 1
+          );
         }
+
         for (let i = 0; i < this.dailyEntries.length; i++) {
           if (this.dailyEntries[i].date === this.today) {
             this.setEntryTodayIndex(i);
           }
         }
-      }
+      },
+      deep: true
     },
     responseCount: {
       handler() {
@@ -146,31 +174,38 @@ export default {
     }
   },
   computed: {
-    ...mapGetters("searchAndAdd2", ["totalForToday"]),
-    ...mapState("searchAndAdd2", [
+    ...mapGetters("searchAndAdd3", ["totalForToday"]),
+    ...mapState("searchAndAdd3", [
       "addedItems",
       "idx",
       "responseCount",
-      "focus"
+      "focus",
+      "items",
+      "itemsPropNames"
     ]),
-    ...mapState("other", ["dailyEntries", "entryTodayIndex"]),
+    ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
+    today() {
+      return dayjs().format("YYYY-MM-DD");
+    },
     quantity: {
       get() {
-        return this.$store.state.searchAndAdd2.quantity;
+        return this.$store.state.searchAndAdd3.quantity;
       },
       set(value) {
-        this.$store.dispatch("searchAndAdd2/setQuantity", value);
+        this.$store.dispatch("searchAndAdd3/setQuantity", value);
       }
     }
   },
   methods: {
-    ...mapActions("searchAndAdd2", ["onChanged", "onRemoved", "setFocus"]),
-    ...mapActions("other", [
-      "setMaintenanceCalories",
-      "addDailyEntry",
-      "setEntryTodayIndex"
+    ...mapActions("searchAndAdd3", [
+      "onChanged",
+      "onRemoved",
+      "setFocus",
+      "setItemsIndex",
+      "setAddedItems"
     ]),
+    ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
       if (this.activeIndex == index && !this.focus) {
         this.activeIndex = -1;
@@ -183,24 +218,41 @@ export default {
           }
         }, 0);
       }
+    },
+    setNoFocus(value) {
+      this.noFocus = value;
     }
   }
 };
 </script>
 
 <style scoped>
+.hover {
+  background-color: #eeeeee;
+  opacity: 0.8;
+}
 .textWidth {
   width: calc(100% - 125px);
 }
 .itemCard {
-  width: calc(100%/3);
+  width: calc(100% / 3) !important;
 }
-@media only screen and (max-width: 1200px) {
+@media only screen and (min-width: 2500px) {
+  .itemCard {
+    width: 20% !important;
+  }
+}
+@media only screen and (max-width: 1600px) {
   .itemCard {
     width: 50% !important;
   }
 }
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1050px) {
+  .itemCard {
+    width: 415px !important;
+  }
+}
+@media only screen and (max-width: 900px) {
   .itemCard {
     width: 100% !important;
   }

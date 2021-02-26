@@ -63,6 +63,7 @@ export default {
   computed: {
     ...mapState("other", [
       "dailyEntries",
+      "dailyEntryTemp",
       "maintenanceCalories",
       "entryEditIndex",
       "editEntries",
@@ -188,6 +189,7 @@ export default {
     ...mapActions("other", [
       "setEntryEditIndex",
       "setDailyEntryTemp",
+      "setDailyEntryItems",
       "setDaysUnix",
       "setEditDate"
     ]),
@@ -208,6 +210,8 @@ export default {
         this.setEntryEditIndex(-2);
       } else {
         this.setEntryEditIndex(index);
+        this.setDailyEntryTemp(this.dailyEntries[index]);
+        this.setDailyEntryItems(this.dailyEntryTemp);
       }
     }
   }

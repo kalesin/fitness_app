@@ -5,7 +5,7 @@
         <v-btn
           class="totalButtons mb-2"
           width="52"
-          height="52"
+          height="52" 
           icon
           color="error"
           @click.stop="show=false"
@@ -13,8 +13,8 @@
           <v-icon x-large>mdi-close-circle</v-icon>
         </v-btn>
       </EntryBox>
-      <Search class="mx-auto mt-5" style="height: 64px; width: 80%"></Search>
-      <EntryEdit class="recipesEdit"></EntryEdit>
+      <Search class="mx-auto mt-5" style="height: 64px; width: 80%" :moduleIndex="moduleIndex"></Search>
+      <EntryEdit class="recipesEdit overflow-y-auto"></EntryEdit>
     </v-card>
 
     <v-snackbar absolute top rounded="pill" shaped v-model="snackbar">
@@ -38,7 +38,8 @@ export default {
   data() {
     return {
       snackbar: false,
-      text: `Can't submit a recipe with no items, add some items!`
+      text: `Can't submit a recipe with no items, add some items!`,
+      moduleIndex: 1
     };
   },
   props: {

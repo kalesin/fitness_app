@@ -35,7 +35,7 @@
         solo
         v-model="query3"
         @keyup.enter="
-                searchEntry();
+                searchEntry(moduleIndex);
                 "
       ></v-text-field>
     </div>
