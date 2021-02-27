@@ -1,44 +1,37 @@
 <template>
   <v-card flat tile class="light-green lighten-3 d-flex rounded-lg pl-2 pt-2 flex-column">
-    <v-list rounded class="light-green lighten-3 pb-0 mb-0">
-      <v-list-item-group v-model="selectedItem">
-        <div v-for="(item, index) in choiceArray" :key="index">
-          <v-list-item
-            class="pl-1 mb-2 light-green lighten-4 light-green--text dropZone"
-            style="width: 250px"
-            @click="setItemsIndex(index)"
-            @dragenter="dropEnterClass(index)"
-            @dragleave="dropLeaveClass(index)"
-            @dragover.prevent
-            @drop="onDrop(index)"
-          >
-            <v-list-item-icon class="noEvents" x-large>
-              <v-icon class="mx-4 gray">mdi-plus-circle</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title class="text-h5 noEvents">{{choiceArray[index]}}</v-list-item-title>
-            <div class="noEvents">
-              <v-icon v-if="items[itemsPropNames[index]].length==0">mdi-numeric-0-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==1">mdi-numeric-1-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==2">mdi-numeric-2-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==3">mdi-numeric-3-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==4">mdi-numeric-4-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==5">mdi-numeric-5-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==6">mdi-numeric-6-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==7">mdi-numeric-7-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==8">mdi-numeric-8-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length==9">mdi-numeric-9-circle</v-icon>
-              <v-icon v-if="items[itemsPropNames[index]].length>9">mdi-numeric-9-plus-circle</v-icon>
-            </div>
-          </v-list-item>
-          <MealCard
-            v-if="itemsIndex==index"
-            :itemsIndex="itemsIndex"
-            @dragStart="setDragging(true)"
-            @dragEnd="setDragging(false)"
-          ></MealCard>
-        </div>
-      </v-list-item-group>
-    </v-list>
+    <div v-for="(item, index) in choiceArray" :key="index" class="mb-2 d-flex flex-column">
+      <div
+        class="d-flex justify-space-between rounded-xl normalColor dropZone"
+        style="width: 300px;"
+        @click="setItemsIndex(index)"
+        @dragenter="dropEnterClass(index)"
+        @dragleave="dropLeaveClass(index)"
+        @dragover.prevent
+        @drop="onDrop(index)"
+        v-ripple
+        :class="{activeColor: itemsIndex==index}"
+      >
+        <v-btn icon :class="{activeBtn: itemsIndex==index}" large class="mx-4 my-3 noEvents btn1">
+          <v-icon>mdi-plus-circle</v-icon>
+        </v-btn>
+        <p class="text-h5 my-4 noEvents">{{choiceArray[index]}}</p>
+        <v-btn class="mx-4 mt-3 noEvents btn2" :class="{activeBtn: itemsIndex==index}" icon large>
+          <v-icon v-if="items[itemsPropNames[index]].length==0">mdi-numeric-0-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==1">mdi-numeric-1-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==2">mdi-numeric-2-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==3">mdi-numeric-3-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==4">mdi-numeric-4-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==5">mdi-numeric-5-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==6">mdi-numeric-6-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==7">mdi-numeric-7-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==8">mdi-numeric-8-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length==9">mdi-numeric-9-circle</v-icon>
+          <v-icon v-if="items[itemsPropNames[index]].length>9">mdi-numeric-9-plus-circle</v-icon>
+        </v-btn>
+      </div>
+      <MealCard v-if="itemsIndex==index" :itemsIndex="itemsIndex"></MealCard>
+    </div>
     <v-divider class="ml-n2 my-2 pr-2"></v-divider>
     <MealCard :itemsIndex="4"></MealCard>
   </v-card>
@@ -69,8 +62,7 @@ export default {
   data() {
     return {
       choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
-      selectedItem: -1,
-      dragging: false,
+      removedActive: -1
     };
   },
   watch: {
@@ -157,28 +149,83 @@ export default {
     },
     onDrop(index) {
       console.log("drop");
+      if (this.itemsIndex != index) {
+        this.setItemsIndex(index);
+      }
+
       document
         .getElementsByClassName("dropZone")
-        [index].classList.remove("dropHover");
+        [index].classList.remove("hoverColor");
+      document
+        .getElementsByClassName("btn1")
+        [index].classList.remove("hoverBtn");
+      document
+        .getElementsByClassName("btn2")
+        [index].classList.remove("hoverBtn");
+
+      document
+        .getElementsByClassName("dropZone")
+        [index].classList.add("activeColor");
+      document.getElementsByClassName("btn1")[index].classList.add("activeBtn");
+      document.getElementsByClassName("btn2")[index].classList.add("activeBtn");
     },
     dropEnterClass(index) {
       console.log("enter");
-      console.log(index)
-      console.log(document.getElementsByClassName("dropZone")[index]);
       document
         .getElementsByClassName("dropZone")
-        [index].classList.add("dropHover");
+        [index].classList.add("hoverColor");
+      document.getElementsByClassName("btn1")[index].classList.add("hoverBtn");
+      document.getElementsByClassName("btn2")[index].classList.add("hoverBtn");
+
+      if (document.getElementsByClassName("activeColor")[index]) {
+        this.removedActive = index;
+        document
+          .getElementsByClassName("dropZone")
+          [index].classList.remove("activeColor");
+        document;
+        document
+          .getElementsByClassName("btn1")
+          [index].classList.remove("activeBtn");
+        document
+          .getElementsByClassName("btn2")
+          [index].classList.remove("activeBtn");
+      }
     },
     dropLeaveClass(index) {
       console.log("leave");
-      console.log(document.getElementsByClassName("dropZone")[index]);
       document
         .getElementsByClassName("dropZone")
-        [index].classList.remove("dropHover");
+        [index].classList.remove("hoverColor");
+      document
+        .getElementsByClassName("btn1")
+        [index].classList.remove("hoverBtn");
+      document
+        .getElementsByClassName("btn2")
+        [index].classList.remove("hoverBtn");
+
+      if (index == this.removedActive) {
+        document
+          .getElementsByClassName("dropZone")
+          [index].classList.add("activeColor");
+        document
+          .getElementsByClassName("btn1")
+          [index].classList.add("activeBtn");
+        document
+          .getElementsByClassName("btn2")
+          [index].classList.add("activeBtn");
+      }
     },
-    setDragging(value, index) {
-      this.dragging = value;
-      console.log(this.dragging);
+    addActiveColor(){
+
+    },
+    addHoverColor(){
+
+    },
+    removeActiveColor(){
+
+    },
+    removeHoverColor(){
+      
     }
   }
 };
@@ -186,9 +233,25 @@ export default {
 
 
 <style scoped>
-.dropZone > [aria-selected="false"]{
-background-color: red !important;
-  color: red !important;
+.normalColor {
+  background-color: #dcedc8;
+}
+.activeColor {
+  background-color: #7cbe30;
+  color: #8ed141 !important;
+}
+.hoverColor {
+  background-color: rgb(195, 22, 22) !important;
+  color: rgb(255, 100, 100) !important;
+}
+
+.activeBtn {
+  background-color: #7cbe30;
+  color: #8ed141 !important;
+}
+.hoverBtn {
+  background-color: rgb(195, 22, 22) !important;
+  color: rgb(255, 100, 100) !important;
 }
 .hover {
   background-color: #eeeeee;
