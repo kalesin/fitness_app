@@ -84,29 +84,6 @@ export default {
     ...mapActions("searchAndAdd", ["searchFood"]),
     ...mapActions("searchAndAdd2", { searchRecipe: "searchFood" }),
     ...mapActions("searchAndAdd3", { searchEntry: "searchFood" }),
-   /*  updateAddedItems() {
-      console.log(this.items);
-
-      const data = {
-        todaysAddedItems: this.addedItems
-      };
-      this.$http.patch("data/" + `${this.userID}` + ".json", data);
-
-      const todaysItems = {
-        breakfast: this.items[this.itemsPropNames[0]],
-        lunch: this.items[this.itemsPropNames[1]],
-        dinner: this.items[this.itemsPropNames[2]],
-        snack: this.items[this.itemsPropNames[3]],
-        unsorted: this.items[this.itemsPropNames[4]]
-      };
-      this.$http.patch(
-        "data/" + `${this.userID}` + "/todaysItems.json",
-        todaysItems
-      );
-    }, */
-    allInOne() {
-      this.searchFood(this.moduleIndex).then(this.updateAddedItems);
-    }
   }
 };
 </script>

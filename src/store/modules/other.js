@@ -169,7 +169,6 @@ const other = {
         },
         //calendar
         SET_DAILY_ENTRY_TEMP(state, payload) {
-            debugger
             if (state.entryEditIndex != -1) {
                 state.dailyEntryTemp = {
                     date: payload.date,
@@ -393,7 +392,7 @@ const other = {
                 recipes: state.recipes
             };
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
-        }
+        },
 
 
     },

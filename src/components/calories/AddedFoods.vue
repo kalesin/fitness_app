@@ -8,7 +8,7 @@
         @dragenter="dropEnterClass(index)"
         @dragleave="dropLeaveClass(index)"
         @dragover.prevent
-        @drop="onDrop(index)"
+        @drop="onDrop({dropIndex: index, dragIndex, userID, moduleIndex})"
         v-ripple
         :class="{activeColor: itemsIndex==index}"
       >
@@ -62,7 +62,8 @@ export default {
   data() {
     return {
       choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
-      removedActive: -1
+      removedActive: -1,
+      moduleIndex: 3
     };
   },
   watch: {
@@ -103,7 +104,8 @@ export default {
       "focus",
       "itemsIndex",
       "items",
-      "itemsPropNames"
+      "itemsPropNames",
+      "dragIndex"
     ]),
     ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
@@ -126,7 +128,8 @@ export default {
       "setFocus",
       "setItemsIndex",
       "setAddedItems",
-      "addItem"
+      "addItem",
+      "createAndAddRemovedItem"
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     updateAddedItems() {
@@ -134,7 +137,7 @@ export default {
         todaysAddedItems: this.addedItems
       };
       this.$http.patch("data/" + `${this.userID}` + ".json", data);
-
+      
       const todaysItems = {
         breakfast: this.items[this.itemsPropNames[0]],
         lunch: this.items[this.itemsPropNames[1]],
@@ -142,57 +145,70 @@ export default {
         snack: this.items[this.itemsPropNames[3]],
         unsorted: this.items[this.itemsPropNames[4]]
       };
+      //tuki ne spremeni
       this.$http.patch(
         "data/" + `${this.userID}` + "/todaysItems.json",
         todaysItems
       );
     },
-    onDrop(index) {
+    //drag and drop events
+    onDrop({ dropIndex, userID, moduleIndex, dragIndex}) {
       console.log("drop");
-      if (this.itemsIndex != index) {
-        this.setItemsIndex(index);
+      //data
+
+      if (this.itemsIndex != dropIndex) {
+        this.onRemoved({ index: dragIndex, userID, moduleIndex });
+        this.setItemsIndex(dropIndex);
+        this.addItem(moduleIndex);
       }
 
-      document
-        .getElementsByClassName("dropZone")
-        [index].classList.remove("hoverColor");
-      document
-        .getElementsByClassName("btn1")
-        [index].classList.remove("hoverBtn");
-      document
-        .getElementsByClassName("btn2")
-        [index].classList.remove("hoverBtn");
-
+      //css
+      this.removeHoverColor(dropIndex);
+      this.addActiveColor(dropIndex);
+    },
+    dropEnterClass(index) {
+      console.log("enter");
+      this.addHoverColor(index);
+      if (document.getElementsByClassName("activeColor")[index]) {
+        this.removedActive = index;
+        this.removeActiveColor(index);
+      }
+    },
+    dropLeaveClass(index) {
+      console.log("leave");
+      this.removeHoverColor(index);
+      if (index == this.removedActive) {
+        this.addActiveColor(index);
+      }
+    },
+    //remove or add CSS
+    addActiveColor(index) {
       document
         .getElementsByClassName("dropZone")
         [index].classList.add("activeColor");
       document.getElementsByClassName("btn1")[index].classList.add("activeBtn");
       document.getElementsByClassName("btn2")[index].classList.add("activeBtn");
     },
-    dropEnterClass(index) {
-      console.log("enter");
+    addHoverColor(index) {
       document
         .getElementsByClassName("dropZone")
         [index].classList.add("hoverColor");
       document.getElementsByClassName("btn1")[index].classList.add("hoverBtn");
       document.getElementsByClassName("btn2")[index].classList.add("hoverBtn");
-
-      if (document.getElementsByClassName("activeColor")[index]) {
-        this.removedActive = index;
-        document
-          .getElementsByClassName("dropZone")
-          [index].classList.remove("activeColor");
-        document;
-        document
-          .getElementsByClassName("btn1")
-          [index].classList.remove("activeBtn");
-        document
-          .getElementsByClassName("btn2")
-          [index].classList.remove("activeBtn");
-      }
     },
-    dropLeaveClass(index) {
-      console.log("leave");
+    removeActiveColor(index) {
+      document
+        .getElementsByClassName("dropZone")
+        [index].classList.remove("activeColor");
+      document;
+      document
+        .getElementsByClassName("btn1")
+        [index].classList.remove("activeBtn");
+      document
+        .getElementsByClassName("btn2")
+        [index].classList.remove("activeBtn");
+    },
+    removeHoverColor(index) {
       document
         .getElementsByClassName("dropZone")
         [index].classList.remove("hoverColor");
@@ -202,30 +218,6 @@ export default {
       document
         .getElementsByClassName("btn2")
         [index].classList.remove("hoverBtn");
-
-      if (index == this.removedActive) {
-        document
-          .getElementsByClassName("dropZone")
-          [index].classList.add("activeColor");
-        document
-          .getElementsByClassName("btn1")
-          [index].classList.add("activeBtn");
-        document
-          .getElementsByClassName("btn2")
-          [index].classList.add("activeBtn");
-      }
-    },
-    addActiveColor(){
-
-    },
-    addHoverColor(){
-
-    },
-    removeActiveColor(){
-
-    },
-    removeHoverColor(){
-      
     }
   }
 };

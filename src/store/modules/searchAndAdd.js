@@ -26,7 +26,7 @@ const searchAndAdd = {
         itemsIndex: 4,
         itemToAdd: [],
         idx: -1,
-        deletedFlag: false,
+        dragIndex: -1,
         responseCount: 0,
         focus: true,
     }),
@@ -67,7 +67,7 @@ const searchAndAdd = {
             }
         },
         ITEM_TO_ADD(state, value) {
-            state.itemToAdd = value;
+            state.itemToAdd = JSON.parse(JSON.stringify(value));
         },
         RESET_RESPONSE(state, value) {
             state.responseData = value;
@@ -95,16 +95,51 @@ const searchAndAdd = {
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
         ADD_ITEM(state, moduleIndex) {
-            if (moduleIndex == 1) {
+            if (moduleIndex == 1 || 3) {
+                debugger
                 switch (state.itemsIndex) {
-                    case 0: state.items.breakfast.push(state.itemToAdd); break;
-                    case 1: state.items.lunch.push(state.itemToAdd); break;
-                    case 2: state.items.dinner.push(state.itemToAdd); break;
-                    case 3: state.items.snack.push(state.itemToAdd); break;
-                    case 4: state.items.unsorted.push(state.itemToAdd); break;
+
+                    case 0: let index0 = state.items.breakfast.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                        console.log(index0)
+                        if (index0 != -1) {
+                            state.items.breakfast[index0].QUANTITY += state.itemToAdd.QUANTITY
+                            state.items.breakfast[index0].CALCULATED_NUTRIENTS = state.items.breakfast[index0].NUTRIENTS.map(
+                                x => Math.round(x * state.items.breakfast[index0].QUANTITY * 100) / 100)
+                        } else { state.items.breakfast.push(state.itemToAdd) }
+                        break;
+                    case 1: let index1 = state.items.lunch.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                        if (index1 != -1) {
+                            state.items.lunch[index1].QUANTITY += state.itemToAdd.QUANTITY
+                            state.items.lunch[index1].CALCULATED_NUTRIENTS = state.items.lunch[index1].NUTRIENTS.map(
+                                x => Math.round(x * state.items.lunch[index1].QUANTITY * 100) / 100)
+                        } else {
+                            state.items.lunch.push(state.itemToAdd)
+                        }
+                        break;
+                    case 2: let index2 = state.items.dinner.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                        if (index2 != -1) {
+                            state.items.dinner[index2].QUANTITY += state.itemToAdd.QUANTITY
+                            state.items.dinner[index2].CALCULATED_NUTRIENTS = state.items.dinner[index2].NUTRIENTS.map(
+                                x => Math.round(x * state.items.dinner[index2].QUANTITY * 100) / 100)
+                        } else { state.items.dinner.push(state.itemToAdd) }
+                        break;
+                    case 3:
+                        let index3 = state.items.snack.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                        if (index3 != -1) {
+                            state.items.snack[index3].QUANTITY += state.itemToAdd.QUANTITY
+                            state.items.snack[index3].CALCULATED_NUTRIENTS = state.items.snack[index3].NUTRIENTS.map(
+                                x => Math.round(x * state.items.snack[index3].QUANTITY * 100) / 100)
+                        } else { state.items.snack.push(state.itemToAdd) }
+                        break;
+                    case 4: let index4 = state.items.unsorted.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                        if (index4 != -1) {
+                            state.items.unsorted[index4].QUANTITY += state.itemToAdd.QUANTITY
+                            state.items.unsorted[index4].CALCULATED_NUTRIENTS = state.items.unsorted[index4].NUTRIENTS.map(
+                                x => Math.round(x * state.items.unsorted[index4].QUANTITY * 100) / 100)
+                        } else { state.items.unsorted.push(state.itemToAdd) }
+                        break;
                 }
             } else if (moduleIndex == 2) {
-                console.log("bbb")
                 state.addedItems.push(state.itemToAdd)
             }
         },
@@ -121,7 +156,7 @@ const searchAndAdd = {
             state.addedItems[index] = item;
         },
         REMOVE_ITEM(state, { index, moduleIndex }) {
-            if (moduleIndex == 1) {
+            if (moduleIndex == 1 || 3) {
                 switch (state.itemsIndex) {
                     case 0: state.items.breakfast.splice(index, 1); break;
                     case 1: state.items.lunch.splice(index, 1); break;
@@ -163,7 +198,10 @@ const searchAndAdd = {
             } else if (state.itemsIndex != value) {
                 state.itemsIndex = value
             }
-        }
+        },
+        SET_DRAG_INDEX(state, value) {
+            state.dragIndex = value;
+        },
     },
     actions: {
         async searchFood({ state, getters, commit }, moduleIndex) {
@@ -190,7 +228,6 @@ const searchAndAdd = {
                             commit("INCREMENT_RESPONSE_COUNT")
                             commit("SET_FOCUS", true)
                         } else {
-                            debugger
                             commit("CREATE_ITEM_TO_ADD", false)
                             commit("ADD_ITEM", moduleIndex)
                         }
@@ -284,15 +321,11 @@ const searchAndAdd = {
             commit("SET_ADDED_ITEMS", payload)
             commit("other/RESET_PORTIONS_AND_NAME", 0, { root: true })
         },
-        setFocus({ state, commit }, value) {
-            commit("SET_FOCUS", value)
-        },
-        setItemsIndex({ state, commit }, value) {
-            commit("SET_ITEMS_INDEX", value)
-        },
-        setItems({ state, commit }, payload) {
-            commit("SET_ITEMS", payload)
+        dragAndDropItem({ state, commit }, payload) {
+            commit("ITEM_TO_ADD", payload.item)
+            commit("SET_DRAG_INDEX", payload.index)
         }
+
     },
     getters: {
         totalForToday(state) {

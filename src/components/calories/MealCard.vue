@@ -17,8 +17,8 @@
           outlined
           class="lime accent-1 rounded-lg"
           draggable="true"
-          @dragstart="dragStart($event, item)"
-          @dragend="dragEnd($event, item)"
+          @dragstart="dragStart(index)"
+          @dragend="dragEnd(index)"
         >
           <div class="d-flex">
             <v-card-text
@@ -190,7 +190,7 @@ export default {
       "responseCount",
       "focus",
       "items",
-      "itemsPropNames"
+      "itemsPropNames",
     ]),
     ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
@@ -212,7 +212,8 @@ export default {
       "onRemoved",
       "setFocus",
       "setItemsIndex",
-      "setAddedItems"
+      "setAddedItems",
+      "dragAndDropItem"
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
@@ -231,11 +232,13 @@ export default {
     setNoFocus(value) {
       this.noFocus = value;
     },
-    dragStart($event, item) {
+    dragStart(index) {
       this.$emit("dragStart", true);
+      this.dragAndDropItem({item: this.items[this.itemsPropNames[this.itemsIndex]][index], index})
+
       console.log("start");
     },
-    dragEnd($event, item) {
+    dragEnd(index) {
       this.$emit("dragEnd", false);
       console.log("end");
     }
