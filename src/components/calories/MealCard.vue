@@ -18,7 +18,6 @@
           class="lime accent-1 rounded-lg"
           draggable="true"
           @dragstart="dragStart(index)"
-          @dragend="dragEnd(index)"
         >
           <div class="d-flex">
             <v-card-text
@@ -239,10 +238,6 @@ export default {
 
       console.log("start");
     },
-    dragEnd(index) {
-      this.$emit("dragEnd", false);
-      console.log("end");
-    }
   }
 };
 </script>

@@ -10,24 +10,15 @@
         @dragover.prevent
         @drop="onDrop({dropIndex: index, dragIndex, userID, moduleIndex})"
         v-ripple
-        :class="{activeColor: itemsIndex==index}"
+        :class="{ 'activeColor': itemsIndex==index, 'hoverColor': itemsIndex !== index && hoverIndex === index }"
       >
-        <v-btn icon :class="{activeBtn: itemsIndex==index}" large class="mx-4 my-3 noEvents btn1">
+        <v-btn icon large class="mx-4 my-3 noEvents btn1">
           <v-icon>mdi-plus-circle</v-icon>
         </v-btn>
         <p class="text-h5 my-4 noEvents">{{choiceArray[index]}}</p>
-        <v-btn class="mx-4 mt-3 noEvents btn2" :class="{activeBtn: itemsIndex==index}" icon large>
-          <v-icon v-if="items[itemsPropNames[index]].length==0">mdi-numeric-0-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==1">mdi-numeric-1-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==2">mdi-numeric-2-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==3">mdi-numeric-3-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==4">mdi-numeric-4-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==5">mdi-numeric-5-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==6">mdi-numeric-6-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==7">mdi-numeric-7-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==8">mdi-numeric-8-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length==9">mdi-numeric-9-circle</v-icon>
-          <v-icon v-if="items[itemsPropNames[index]].length>9">mdi-numeric-9-plus-circle</v-icon>
+        <v-btn class="mx-4 mt-3 noEvents btn2" icon large>
+          <v-icon v-if="items[itemsPropNames[index]].length > 9">mdi-numeric-9-plus-circle</v-icon>
+          <v-icon v-else>{{ `mdi-numeric-${items[itemsPropNames[index]].length}-circle` }}</v-icon>
         </v-btn>
       </div>
       <MealCard v-if="itemsIndex==index" :itemsIndex="itemsIndex"></MealCard>
@@ -53,6 +44,16 @@ export default {
     } else {
       this.setEntryTodayIndex(-1);
     }
+
+    this.dragEndListener = document.addEventListener('dragend', ev => {
+      this.hoverIndex = -1
+    })
+  },
+  destroyed() {
+    if (this.dragEndListener) {
+      document.removeEventListener('dragend', this.dragEndListener)
+      this.dragEndListener = null
+    }
   },
   components: {
     MealCard
@@ -60,8 +61,10 @@ export default {
   data() {
     return {
       choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
-      removedActive: -1,
-      moduleIndex: 3
+      removedIndex: -1,
+      moduleIndex: 3,
+      hoverIndex: -1,
+      activeIndex: -1,
     };
   },
   watch: {
@@ -150,62 +153,21 @@ export default {
       }
 
       //css
-      this.removeHoverColor(dropIndex);
-      this.addActiveColor(dropIndex);
+      this.hoverIndex = - 1
+      this.activeIndex = dropIndex
     },
     dropEnterClass(index) {
       console.log("enter");
-      this.addHoverColor(index);
+      this.hoverIndex = index
       if (document.getElementsByClassName("activeColor")[index]) {
-        this.removedActive = index;
-        this.removeActiveColor(index);
+        this.removedIndex = index;
+        this.activeIndex = -1
       }
     },
     dropLeaveClass(index) {
       console.log("leave");
-      this.removeHoverColor(index);
-      if (index == this.removedActive) {
-        this.addActiveColor(index);
-      }
+      this.hoverIndex = - 1
     },
-    //remove or add CSS
-    addActiveColor(index) {
-      document
-        .getElementsByClassName("dropZone")
-        [index].classList.add("activeColor");
-      document.getElementsByClassName("btn1")[index].classList.add("activeBtn");
-      document.getElementsByClassName("btn2")[index].classList.add("activeBtn");
-    },
-    addHoverColor(index) {
-      document
-        .getElementsByClassName("dropZone")
-        [index].classList.add("hoverColor");
-      document.getElementsByClassName("btn1")[index].classList.add("hoverBtn");
-      document.getElementsByClassName("btn2")[index].classList.add("hoverBtn");
-    },
-    removeActiveColor(index) {
-      document
-        .getElementsByClassName("dropZone")
-        [index].classList.remove("activeColor");
-      document;
-      document
-        .getElementsByClassName("btn1")
-        [index].classList.remove("activeBtn");
-      document
-        .getElementsByClassName("btn2")
-        [index].classList.remove("activeBtn");
-    },
-    removeHoverColor(index) {
-      document
-        .getElementsByClassName("dropZone")
-        [index].classList.remove("hoverColor");
-      document
-        .getElementsByClassName("btn1")
-        [index].classList.remove("hoverBtn");
-      document
-        .getElementsByClassName("btn2")
-        [index].classList.remove("hoverBtn");
-    }
   }
 };
 </script>
@@ -217,20 +179,16 @@ export default {
 }
 .activeColor {
   background-color: #7cbe30;
-  color: #8ed141 !important;
 }
 .hoverColor {
   background-color: rgb(195, 22, 22) !important;
-  color: rgb(255, 100, 100) !important;
 }
 
 .activeBtn {
   background-color: #7cbe30;
-  color: #8ed141 !important;
 }
 .hoverBtn {
   background-color: rgb(195, 22, 22) !important;
-  color: rgb(255, 100, 100) !important;
 }
 .hover {
   background-color: #eeeeee;
@@ -242,5 +200,14 @@ export default {
 }
 .noEvents {
   pointer-events: none;
+}
+
+.dropZone.hoverBtn > .btn1 {
+}
+.dropZone.hoverBtn > .btn2 {
+}
+.dropZone.activeBtn > .btn1 {
+}
+.dropZone.activeBtn > .btn2 {
 }
 </style>

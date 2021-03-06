@@ -6,5 +6,6 @@ module.exports = {
     rules: {
       // override/add rules settings here, such as:
       'no-debugger': 'off',
+      'vue/attributes-order': 'off',
     }
 }

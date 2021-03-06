@@ -37,20 +37,17 @@ const firebase = {
                     if (data) {
                         const currentRecipeItems = data.currentRecipeItems ? data.currentRecipeItems : [];
                         const todaysAddedItems = data.todaysAddedItems ? data.todaysAddedItems : [];
-                        const todaysItems = data.todaysItems ? {
-                            breakfast: data.todaysItems["breakfast"] ? data.todaysItems["breakfast"] : [],
-                            lunch: data.todaysItems["lunch"] ? data.todaysItems["lunch"] : [],
-                            dinner: data.todaysItems["dinner"] ? data.todaysItems["dinner"] : [],
-                            snack: data.todaysItems["snack"] ? data.todaysItems["snack"] : [],
-                            unsorted: data.todaysItems["unsorted"] ? data.todaysItems["unsorted"] : [],
-
-                        } : {
-                                breakfast: [],
-                                lunch: [],
-                                dinner: [],
-                                snack: [],
-                                unsorted: [],
+                        const todaysItems = {
+                            breakfast: [],
+                            lunch: [],
+                            dinner: [],
+                            snack: [],
+                        }
+                        for (const key of ['breakfast', 'lunch', 'dinner', 'snack']) {
+                            if (data.todaysItems[key]) {
+                                todaysItems[key] = data.todaysItems[key]
                             }
+                        }
                         const recipes = data.recipes ? data.recipes : [];
                         const mainCalories = data.userData.maintenanceCalories ? data.userData.maintenanceCalories : 2000;
                         const dailyEntries = data.userData.dailyEntries ? data.userData.dailyEntries : [];

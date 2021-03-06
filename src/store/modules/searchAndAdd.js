@@ -2,6 +2,18 @@
 import axios from 'axios';
 import Vue from 'vue';
 
+function getMealAtIndex(state, index) {
+    if (state.itemsIndex === 0) {
+        return state.items.breakfast
+    } else if (state.itemsIndex === 1) {
+        return state.items.lunch
+    } else if (state.itemsIndex === 2) {
+        return state.items.dinner
+    } else if (state.itemsIndex === 3 || state.itemsIndex === -1) {
+        return state.items.snack
+    }
+}
+
 const searchAndAdd = {
     namespaced: true,
     state: () => ({
@@ -85,61 +97,21 @@ const searchAndAdd = {
             };
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
-        ADD_ITEM(state, moduleIndex) {
+        ADD_ITEM(state, { moduleIndex, todaysMeal }) {
             if (moduleIndex == 1 || moduleIndex == 3) {
-                switch (state.itemsIndex) {
-                    case 0: let index0 = state.items.breakfast.findIndex(element => element.NAME == state.itemToAdd.NAME)
-                        console.log(index0)
-                        if (index0 != -1) {
-                            state.items.breakfast[index0].QUANTITY += state.itemToAdd.QUANTITY
-                            state.items.breakfast[index0].CALCULATED_NUTRIENTS = state.items.breakfast[index0].NUTRIENTS.map(
-                                x => Math.round(x * state.items.breakfast[index0].QUANTITY * 100) / 100)
-                        } else { state.items.breakfast.push(state.itemToAdd) }
-                        break;
-                    case 1: let index1 = state.items.lunch.findIndex(element => element.NAME == state.itemToAdd.NAME)
-                        if (index1 != -1) {
-                            state.items.lunch[index1].QUANTITY += state.itemToAdd.QUANTITY
-                            state.items.lunch[index1].CALCULATED_NUTRIENTS = state.items.lunch[index1].NUTRIENTS.map(
-                                x => Math.round(x * state.items.lunch[index1].QUANTITY * 100) / 100)
-                        } else {
-                            state.items.lunch.push(state.itemToAdd)
-                        }
-                        break;
-                    case 2: let index2 = state.items.dinner.findIndex(element => element.NAME == state.itemToAdd.NAME)
-                        if (index2 != -1) {
-                            state.items.dinner[index2].QUANTITY += state.itemToAdd.QUANTITY
-                            state.items.dinner[index2].CALCULATED_NUTRIENTS = state.items.dinner[index2].NUTRIENTS.map(
-                                x => Math.round(x * state.items.dinner[index2].QUANTITY * 100) / 100)
-                        } else { state.items.dinner.push(state.itemToAdd) }
-                        break;
-                    case 3:
-                        let index3 = state.items.snack.findIndex(element => element.NAME == state.itemToAdd.NAME)
-                        if (index3 != -1) {
-                            state.items.snack[index3].QUANTITY += state.itemToAdd.QUANTITY
-                            state.items.snack[index3].CALCULATED_NUTRIENTS = state.items.snack[index3].NUTRIENTS.map(
-                                x => Math.round(x * state.items.snack[index3].QUANTITY * 100) / 100)
-                        } else { state.items.snack.push(state.itemToAdd) }
-                        break;
-                    case -1: let index4 = state.items.snack.findIndex(element => element.NAME == state.itemToAdd.NAME)
-                        if (index4 != -1) {
-                            state.items.snack[index4].QUANTITY += state.itemToAdd.QUANTITY
-                            state.items.snack[index4].CALCULATED_NUTRIENTS = state.items.snack[index4].NUTRIENTS.map(
-                                x => Math.round(x * state.items.snack[index4].QUANTITY * 100) / 100)
-                        } else { state.items.snack.push(state.itemToAdd) }
-                        break;
-                }
+                let index = todaysMeal.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                console.log(index)
+                if (index != -1) {
+                    todaysMeal[index].QUANTITY += state.itemToAdd.QUANTITY
+                    todaysMeal[index].CALCULATED_NUTRIENTS = todaysMeal[index].NUTRIENTS.map(
+                        x => Math.round(x * todaysMeal[index].QUANTITY * 100) / 100)
+                } else { todaysMeal.push(state.itemToAdd) }
             } else if (moduleIndex == 2) {
                 state.addedItems.push(state.itemToAdd)
             }
         },
         ADD_ITEM_VALUE(state, payload) {
-            switch (state.itemsIndex) {
-                case 0: state.items.breakfast.push(payload); break;
-                case 1: state.items.lunch.push(payload); break;
-                case 2: state.items.dinner.push(payload); break;
-                case 3: state.items.snack.push(payload); break;
-                case -1: state.items.snack.push(payload); break;
-            }
+            getMealAtIndex(state, state.itemsIndex).push(payload)
         },
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
@@ -222,19 +194,18 @@ const searchAndAdd = {
                         if (index != -1) {
                             commit("SET_INDEX", index)
                             commit("INCREMENT_RESPONSE_COUNT")
-                            commit("SET_FOCUS", true)
                         } else {
                             commit("CREATE_ITEM_TO_ADD", false)
-                            commit("ADD_ITEM", moduleIndex)
-                            commit("SET_FOCUS", true)
+                            commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
                         }
+                        commit("SET_FOCUS", true)
                     }
                 ).catch(function (error) {
                     console.log(error);
                 })
         },
-        addItem({ state, commit }, moduleIndex) {
-            commit("ADD_ITEM", moduleIndex)
+        addItem({ state, getters, commit }, moduleIndex) {
+            commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
             commit("SET_QUANTITY", "")
         },
         addItemValue({ state, commit }, payload) {
@@ -243,14 +214,12 @@ const searchAndAdd = {
             if (index != -1) {
                 commit("SET_INDEX", index)
                 commit("INCREMENT_RESPONSE_COUNT")
-                commit("SET_FOCUS", true)
             } else {
                 commit("ADD_ITEM_VALUE", payload)
-                commit("SET_FOCUS", true)
             }
+            commit("SET_FOCUS", true)
         },
-        onChanged({ state, commit }, { item, index, userID, moduleIndex, quantity }) {
-
+        onChanged({ state, getters, commit }, { item, index, userID, moduleIndex, quantity }) {
             if (parseFloat(quantity) > 0 && quantity != '') {
                 item.QUANTITY = parseFloat(quantity);
                 commit("SET_QUANTITY", "")
@@ -261,18 +230,7 @@ const searchAndAdd = {
             }
 
             if (moduleIndex == 1) {
-                const todaysItems = {
-                    breakfast:
-                        state.items[state.itemsPropNames[0]],
-                    lunch:
-                        state.items[state.itemsPropNames[1]],
-                    dinner:
-                        state.items[state.itemsPropNames[2]],
-                    snack:
-                        state.items[state.itemsPropNames[3]],
-
-                };
-                axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", todaysItems)
+                axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", getters.todaysItems)
             } else if (moduleIndex == 2) {
                 const data = {
                     currentRecipeItems: state.addedItems
@@ -280,21 +238,11 @@ const searchAndAdd = {
                 axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
             }
         },
-        onRemoved({ state, commit }, { index, userID, moduleIndex }) {
+        onRemoved({ state, getters, commit }, { index, userID, moduleIndex }) {
             commit("REMOVE_ITEM", { index, moduleIndex })
             if (moduleIndex == 1) {
-                const todaysItems = {
-                    breakfast:
-                        state.items[state.itemsPropNames[0]],
-                    lunch:
-                        state.items[state.itemsPropNames[1]],
-                    dinner:
-                        state.items[state.itemsPropNames[2]],
-                    snack:
-                        state.items[state.itemsPropNames[3]],
-
-                };
-                axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", todaysItems)
+                
+                axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", getters.todaysItems)
             } else if (moduleIndex == 2) {
                 const data = {
                     currentRecipeItems: state.addedItems
@@ -323,11 +271,11 @@ const searchAndAdd = {
         setItemsIndex({ state, commit }, value) {
             commit("SET_ITEMS_INDEX", value)
         },
-        dragAndDropItem({ state, commit }, payload) {
+        dragAndDropItem({ commit }, payload) {
             commit("ITEM_TO_ADD", payload.item)
             commit("SET_DRAG_INDEX", payload.index)
         },
-        checkItemsIndex({state, commit}) {
+        checkItemsIndex({ commit }) {
             commit("CHECK_ITEMS_INDEX")
         }
 
@@ -344,6 +292,25 @@ const searchAndAdd = {
             }
             return totalNutrient;
         },
+        todaysItems(state) {
+            return {
+                breakfast: state.items[state.itemsPropNames[0]],
+                lunch: state.items[state.itemsPropNames[1]],
+                dinner: state.items[state.itemsPropNames[2]],
+                snack: state.items[state.itemsPropNames[3]],
+            }
+        },
+        todaysMeal(state) {
+            if (state.itemsIndex === 0) {
+                return state.items.breakfast
+            } else if (state.itemsIndex === 1) {
+                return state.items.lunch
+            } else if (state.itemsIndex === 2) {
+                return state.items.dinner
+            } else if (state.itemsIndex === 3 || state.itemsIndex === -1) {
+                return state.items.snack
+            }
+        }
     }
 }
 
