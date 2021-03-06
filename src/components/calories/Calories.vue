@@ -54,14 +54,6 @@ export default {
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
     ...mapState("other", ["recipes"]),
-    quantity: {
-      get() {
-        return this.$store.state.searchAndAdd.quantity;
-      },
-      set(value) {
-        this.$store.dispatch("searchAndAdd/setQuantity", value);
-      }
-    },
     editIndex: {
       get() {
         return this.$store.state.other.editIndex;

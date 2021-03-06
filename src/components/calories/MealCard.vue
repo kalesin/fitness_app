@@ -2,7 +2,7 @@
   <v-card
     flat
     tile
-    class="light-green lighten-3 d-flex flex-wrap rounded-lg pb-2"
+    class="light-green lighten-3 d-flex flex-wrap rounded-lg"
     :class="{'': itemsIndex==4}"
     style="width: 100%"
   >
@@ -177,6 +177,9 @@ export default {
     responseCount: {
       handler() {
         if (this.idx > -1) {
+          console.log("start edit")
+
+                debugger
           this.startEdit(this.idx);
         }
       }
@@ -211,8 +214,6 @@ export default {
       "onChanged",
       "onRemoved",
       "setFocus",
-      "setItemsIndex",
-      "setAddedItems",
       "dragAndDropItem"
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),

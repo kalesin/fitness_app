@@ -16,25 +16,18 @@ const other = {
         //editing recipes
         portionItem: {},
         editIndex: -1,
-        ingrEditIndex: -1,
-        showRecipe: false,
-        ingredientsTemp: [],
         dailyEntries: [],
         entryEditIndex: -1,
         addedItemsTemp: [],
-        itemsTemp: [],
         //calendar
         dailyEntryTemp: {},
         entryTodayIndex: -1,
-        replaceDialogue: false,
-        editEntries: false,
         daysUnix: [],
         compareCalendar: [],
         editDate: ""
 
     }),
     mutations: {
-
         //recipes
         ADD_TO_RECIPES(state, { totalForToday, addedItems, recipesName, recipesPortions }) {
 
@@ -62,15 +55,6 @@ const other = {
         ADD_RECIPE_PORTIONS(state, value) {
             state.recipesPortions = value
         },
-        SWITCH_RECIPE_MODE(state) {
-            state.addingRecipe = !state.addingRecipe;
-        },
-        SET_SHOW_RECIPE(state, value) {
-            state.showRecipe = value;
-        },
-        SET_RECIPE_MODE(state, value) {
-            state.addingRecipe = value;
-        },
         SET_RECIPE_QUANTITY(state, value) {
             state.recipeQuantity = value;
         },
@@ -97,29 +81,6 @@ const other = {
         RESET_EDIT_INDEX(state) {
             state.editIndex = -1;
         },
-        CHANGE_RECIPE_NAME(state, payload) {
-            state.recipes[payload.editIndex].NAME = payload.recipesName;
-        },
-        CHANGE_RECIPE_PORTIONS(state, payload) {
-            state.recipes[payload.editIndex].PORTIONS = payload.recipesPortions;
-        },
-        CREATE_INGREDIENTS_TEMP(state, index) {
-            state.ingredientsTemp = JSON.parse(JSON.stringify(state.recipes[index].INGREDIENTS));
-        },
-        CHANGE_RECIPE_INGREDIENT(state, payload) {
-
-            payload.item.QUANTITY = parseFloat(payload.item.CHANGED_QUANTITY);
-            payload.item.CHANGED_QUANTITY = 0;
-
-            payload.item.CALCULATED_NUTRIENTS = payload.item.NUTRIENTS.map(
-                x => Math.round(x * payload.item.QUANTITY * 100) / 100
-            );
-
-            state.ingredientsTemp[payload.index] = payload.item;
-        },
-        REMOVE_INGREDIENT(state, index) {
-            state.ingredientsTemp.splice(index, 1);
-        },
         SAVE_INGREDIENTS(state, payload) {
             console.log("neki")
             if (!(payload.recipesName === "")) {
@@ -132,9 +93,6 @@ const other = {
             state.recipes[payload.editIndex].NUTRIENTS = payload.totalForToday;
             state.recipes[payload.editIndex].PORTION_NUTRIENTS = payload.totalForToday.map(
                 x => Math.round(x / state.recipes[payload.editIndex].PORTIONS * 100) / 100);
-        },
-        ADD_INGREDIENT(state, payload) {
-            state.ingredientsTemp.push(payload.itemToAdd)
         },
         //daily entry list
         SORT_DAILY_ENTRIES(state) {
@@ -154,13 +112,6 @@ const other = {
         },
         DELETE_ENTRY(state, value) {
             state.dailyEntries.splice(value, 1);
-        },
-        ENTRY_CREATE_ITEMS_TEMP(state) {
-            state.dailyEntryTemp.itemsTemp = state.entryEditIndex != -2 ? JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].items)) : []
-            state.dailyEntryTemp.addedItemsTemp = state.entryEditIndex != -2 ? JSON.parse(JSON.stringify(state.dailyEntries[state.entryEditIndex].addedItems)) : []
-        },
-        REMOVE_ADDEDITEM(state, index) {
-            state.addedItemsTemp.splice(index, 1);
         },
         SAVE_ADDEDITEMS(state, payload) {
             state.dailyEntryTemp.items = JSON.parse(JSON.stringify(payload.items))
@@ -205,9 +156,6 @@ const other = {
         OVERWRITE_ENTRY(state) {
             state.dailyEntries.splice(state.entryTodayIndex, 1);
         },
-        SET_DELETE_INDEX(state, value) {
-            state.deleteIndex = value;
-        },
         SET_EDIT_DATE(state, value) {
             state.editDate = value;
         },
@@ -246,25 +194,11 @@ const other = {
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
 
         },
-        openRecipes({ state, commit }) {
-            commit("searchAndAdd/RESET_RESPONSE", 0, { root: true })
-            commit("SWITCH_RECIPE_MODE")
-        },
-        showRecipes({ state, commit }, value) {
-            /* commit("searchAndAdd2/RESET_RESPONSE", 0, { root: true }) */
-            commit("SET_SHOW_RECIPE", value)
-        },
-        addPortion({ state, commit }, index) {
-            commit("ADD_PORTION_ITEM", index)
-        },
         setRecipeQuantity({ state, commit }, value) {
             commit("SET_RECIPE_QUANTITY", value)
         },
         addPortionOfRecipe({ state, commit }, index) {
             commit("ADD_PORTION_OF_RECIPE", index)
-        },
-        createItemToAddObject({ state, commit }, object) {
-            commit("searchAndAdd/ITEM_TO_ADD_OBJECT", { object }, { root: true })
         },
         removeRecipe({ state, commit }, { index, userID }) {
             commit("REMOVE_RECIPES", index)
@@ -283,21 +217,6 @@ const other = {
             }
             axios.patch(`${state.axios_url}` + `${userID}` + "/userData.json", userData)
         },
-        changeRecipeName({ state, commit }, payload) {
-            commit("CHANGE_RECIPE_NAME", payload)
-        },
-        changeRecipePortions({ state, commit }, payload) {
-            commit("CHANGE_RECIPE_PORTIONS", payload)
-        },
-        createIngredientsTemp({ state, commit }, index) {
-            commit("CREATE_INGREDIENTS_TEMP", index)
-        },
-        changeRecipeIngredient({ state, commit }, payload) {
-            commit("CHANGE_RECIPE_INGREDIENT", payload)
-        },
-        removeIngredient({ state, commit }, index) {
-            commit("REMOVE_INGREDIENT", index)
-        },
         saveIngredients({ state, commit }, payload) {
             commit("SAVE_INGREDIENTS", payload)
             const data = {
@@ -305,14 +224,8 @@ const other = {
             };
             axios.patch(`${state.axios_url}` + `${payload.userID}` + ".json", data)
         },
-        addIngredient({ state, commit }, payload) {
-            commit("ADD_INGREDIENT", payload)
-        },
         setEditIndex({ state, commit }, index) {
             commit("SET_EDIT_INDEX", index)
-        },
-        resetEditIndex({ state, commit }, index) {
-            commit("RESET_EDIT_INDEX", index)
         },
         //entries
         addDailyEntry({ state, commit }, payload) {
@@ -346,10 +259,6 @@ const other = {
             };
             axios.patch(`${state.axios_url}` + `${userID}` + "/userData.json", userData)
         },
-        createItemsTemp({ state, commit }, index) {
-            commit("ENTRY_CREATE_ITEMS_TEMP", index)
-            commit("searchAndAdd3/SET_ADDED_ITEMS", payload, { root: true })
-        },
         saveEntryChanges({ state, commit }, payload) {
             commit("SAVE_ADDEDITEMS", payload)
             commit("searchAndAdd3/RESET_ADDED_ITEMS", payload.userID, { root: true })
@@ -366,7 +275,6 @@ const other = {
         },
         //calendar
         setDailyEntryTemp({ state, commit }, payload) {
-
             commit("SET_DAILY_ENTRY_TEMP", payload)
         },
         setDailyEntryItems({ state, commit }, payload) {
@@ -378,9 +286,6 @@ const other = {
         },
         setEntryTodayIndex({ state, commit }, value) {
             commit("SET_ENTRY_TODAY_INDEX", value)
-        },
-        setDeleteIndex({ state, commit }, value) {
-            commit("SET_DELETE_INDEX", value)
         },
         setEditDate({ state, commit }, value) {
             commit("SET_EDIT_DATE", value)
@@ -397,17 +302,6 @@ const other = {
 
     },
     getters: {
-        ingredientsTotal(state) {
-            let ingredientTotal = [];
-            for (let j = 0; j < 5; j++) {
-                ingredientTotal[j] = 0;
-                for (let i = 0; i < state.ingredientsTemp.length; i++) {
-                    ingredientTotal[j] += state.ingredientsTemp[i].CALCULATED_NUTRIENTS[j];
-                }
-                ingredientTotal[j] = Math.round(ingredientTotal[j] * 100) / 100;
-            }
-            return ingredientTotal;
-        },
         compareCalendar(state) {
             let same = state.daysUnix;
             for (let i = 0; i < same.length; i++) {

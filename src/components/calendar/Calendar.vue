@@ -40,8 +40,6 @@ export default {
     ...mapActions("firebase", ["getData"]),
     ...mapActions("other", [
       "setEntryEditIndex",
-      "setDailyEntryTemp",
-      "setDaysUnix"
     ]),
   }
 };

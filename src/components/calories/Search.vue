@@ -9,6 +9,7 @@
         solo
         v-model="query"
         @keyup.enter="
+        checkItemsIndex()
                 searchFood(moduleIndex);
                 "
       ></v-text-field>
@@ -81,9 +82,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["searchFood"]),
+    ...mapActions("searchAndAdd", ["searchFood", "checkItemsIndex"]),
     ...mapActions("searchAndAdd2", { searchRecipe: "searchFood" }),
-    ...mapActions("searchAndAdd3", { searchEntry: "searchFood" }),
+    ...mapActions("searchAndAdd3", { searchEntry: "searchFood" })
   }
 };
 </script>

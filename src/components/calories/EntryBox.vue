@@ -160,14 +160,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd3", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
-      "saveIngredients",
       "addDailyEntry",
       "setEntryEditIndex",
       "setEntryTodayIndex",
       "addToRecipes",
-      "setEditIndex",
       "saveEntryChanges"
     ]),
     submitNewEntry() {

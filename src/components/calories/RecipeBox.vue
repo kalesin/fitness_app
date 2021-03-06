@@ -198,7 +198,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
       "saveIngredients",
       "addDailyEntry",

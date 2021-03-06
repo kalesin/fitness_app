@@ -20,10 +20,9 @@ const searchAndAdd = {
             lunch: [],
             dinner: [],
             snack: [],
-            unsorted: []
         },
-        itemsPropNames: ["breakfast", "lunch", "dinner", "snack", "unsorted"],
-        itemsIndex: 4,
+        itemsPropNames: ["breakfast", "lunch", "dinner", "snack"],
+        itemsIndex: -1,
         itemToAdd: [],
         idx: -1,
         dragIndex: -1,
@@ -79,7 +78,6 @@ const searchAndAdd = {
                 lunch: [],
                 dinner: [],
                 snack: [],
-                unsorted: []
             };
             const data = {
                 todaysAddedItems: state.addedItems,
@@ -87,18 +85,9 @@ const searchAndAdd = {
             };
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
-        RESET_ADDED_ITEMS_RECIPES(state, userID) {
-            state.addedItems = [];
-            const data = {
-                currentRecipeItems: state.addedItems
-            };
-            axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
-        },
         ADD_ITEM(state, moduleIndex) {
-            if (moduleIndex == 1 || 3) {
-                debugger
+            if (moduleIndex == 1 || moduleIndex == 3) {
                 switch (state.itemsIndex) {
-
                     case 0: let index0 = state.items.breakfast.findIndex(element => element.NAME == state.itemToAdd.NAME)
                         console.log(index0)
                         if (index0 != -1) {
@@ -131,12 +120,12 @@ const searchAndAdd = {
                                 x => Math.round(x * state.items.snack[index3].QUANTITY * 100) / 100)
                         } else { state.items.snack.push(state.itemToAdd) }
                         break;
-                    case 4: let index4 = state.items.unsorted.findIndex(element => element.NAME == state.itemToAdd.NAME)
+                    case -1: let index4 = state.items.snack.findIndex(element => element.NAME == state.itemToAdd.NAME)
                         if (index4 != -1) {
-                            state.items.unsorted[index4].QUANTITY += state.itemToAdd.QUANTITY
-                            state.items.unsorted[index4].CALCULATED_NUTRIENTS = state.items.unsorted[index4].NUTRIENTS.map(
-                                x => Math.round(x * state.items.unsorted[index4].QUANTITY * 100) / 100)
-                        } else { state.items.unsorted.push(state.itemToAdd) }
+                            state.items.snack[index4].QUANTITY += state.itemToAdd.QUANTITY
+                            state.items.snack[index4].CALCULATED_NUTRIENTS = state.items.snack[index4].NUTRIENTS.map(
+                                x => Math.round(x * state.items.snack[index4].QUANTITY * 100) / 100)
+                        } else { state.items.snack.push(state.itemToAdd) }
                         break;
                 }
             } else if (moduleIndex == 2) {
@@ -149,20 +138,19 @@ const searchAndAdd = {
                 case 1: state.items.lunch.push(payload); break;
                 case 2: state.items.dinner.push(payload); break;
                 case 3: state.items.snack.push(payload); break;
-                case 4: state.items.unsorted.push(payload); break;
+                case -1: state.items.snack.push(payload); break;
             }
         },
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
         },
         REMOVE_ITEM(state, { index, moduleIndex }) {
-            if (moduleIndex == 1 || 3) {
+            if (moduleIndex == 1 || moduleIndex == 3) {
                 switch (state.itemsIndex) {
                     case 0: state.items.breakfast.splice(index, 1); break;
                     case 1: state.items.lunch.splice(index, 1); break;
                     case 2: state.items.dinner.splice(index, 1); break;
                     case 3: state.items.snack.splice(index, 1); break;
-                    case 4: state.items.unsorted.splice(index, 1); break;
                 }
             } else if (moduleIndex == 2) {
                 state.addedItems.splice(index, 1);
@@ -170,9 +158,6 @@ const searchAndAdd = {
         },
         SET_QUERY(state, value) {
             state.query = value;
-        },
-        SET_RECIPE_QUERY(state, value) {
-            state.queryRecipe = value;
         },
         SET_QUANTITY(state, value) {
             state.quantity = value;
@@ -191,10 +176,10 @@ const searchAndAdd = {
             state.idx = value
         },
         SET_ITEMS_INDEX(state, value) {
-            if (state.itemsIndex == 4) {
+            if (state.itemsIndex == -1) {
                 state.itemsIndex = value
             } else if (state.itemsIndex == value) {
-                state.itemsIndex = 4
+                state.itemsIndex = -1
             } else if (state.itemsIndex != value) {
                 state.itemsIndex = value
             }
@@ -202,6 +187,11 @@ const searchAndAdd = {
         SET_DRAG_INDEX(state, value) {
             state.dragIndex = value;
         },
+        CHECK_ITEMS_INDEX(state) {
+            if (state.itemsIndex == -1) {
+                state.itemsIndex = 3
+            }
+        }
     },
     actions: {
         async searchFood({ state, getters, commit }, moduleIndex) {
@@ -214,7 +204,13 @@ const searchAndAdd = {
                         commit("SET_SEARCH_RESPONSE", response)
 
                         let index = -1; //kateri item je
-                        let items = state.items[state.itemsPropNames[state.itemsIndex]];
+                        let items = [];
+
+                        if (moduleIndex == 2) {
+                            items = state.addedItems
+                        } else {
+                            items = state.items[state.itemsPropNames[state.itemsIndex]]
+                        }
 
                         if (items) {
                             for (let i = 0; i < items.length; i++) {
@@ -230,8 +226,8 @@ const searchAndAdd = {
                         } else {
                             commit("CREATE_ITEM_TO_ADD", false)
                             commit("ADD_ITEM", moduleIndex)
+                            commit("SET_FOCUS", true)
                         }
-
                     }
                 ).catch(function (error) {
                     console.log(error);
@@ -242,7 +238,7 @@ const searchAndAdd = {
             commit("SET_QUANTITY", "")
         },
         addItemValue({ state, commit }, payload) {
-            let items = state.items[state.itemsPropNames[state.itemsIndex]];
+            let items = state.itemsIndex == -1 ? state.items[state.itemsPropNames[3]] : state.items[state.itemsPropNames[state.itemsIndex]];
             let index = items.findIndex(element => element.NAME === payload.NAME);
             if (index != -1) {
                 commit("SET_INDEX", index)
@@ -265,8 +261,6 @@ const searchAndAdd = {
 
             if (moduleIndex == 1) {
                 const todaysItems = {
-                    unsorted:
-                        state.items[state.itemsPropNames[4]],
                     breakfast:
                         state.items[state.itemsPropNames[0]],
                     lunch:
@@ -289,8 +283,6 @@ const searchAndAdd = {
             commit("REMOVE_ITEM", { index, moduleIndex })
             if (moduleIndex == 1) {
                 const todaysItems = {
-                    unsorted:
-                        state.items[state.itemsPropNames[4]],
                     breakfast:
                         state.items[state.itemsPropNames[0]],
                     lunch:
@@ -321,9 +313,21 @@ const searchAndAdd = {
             commit("SET_ADDED_ITEMS", payload)
             commit("other/RESET_PORTIONS_AND_NAME", 0, { root: true })
         },
+        setItems({ state, commit }, payload) {
+            commit("SET_ITEMS", payload)
+        },
+        setFocus({ state, commit }, value) {
+            commit("SET_FOCUS", value)
+        },
+        setItemsIndex({ state, commit }, value) {
+            commit("SET_ITEMS_INDEX", value)
+        },
         dragAndDropItem({ state, commit }, payload) {
             commit("ITEM_TO_ADD", payload.item)
             commit("SET_DRAG_INDEX", payload.index)
+        },
+        checkItemsIndex({state, commit}) {
+            commit("CHECK_ITEMS_INDEX")
         }
 
     },

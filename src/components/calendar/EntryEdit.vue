@@ -104,20 +104,9 @@ export default {
     today() {
       return dayjs().format("YYYY-MM-DD");
     },
-    quantity: {
-      get() {
-        return this.$store.state.searchAndAdd3.quantity;
-      },
-      set(value) {
-        this.$store.dispatch("searchAndAdd3/setQuantity", value);
-      }
-    }
   },
   methods: {
     ...mapActions("searchAndAdd3", [
-      "onChanged",
-      "onRemoved",
-      "setFocus",
       "setItemsIndex",
       "setAddedItems",
       "addItem"

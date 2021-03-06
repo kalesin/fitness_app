@@ -43,13 +43,9 @@ export default {
     ...mapGetters("searchAndAdd", ["totalForToday"])
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
-      "saveIngredients",
       "addDailyEntry",
-      "setEntryTodayIndex",
       "addToRecipes",
-      "setEditIndex"
     ])
   }
 };

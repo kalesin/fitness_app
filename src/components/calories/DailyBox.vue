@@ -140,13 +140,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("searchAndAdd", ["onChanged", "onRemoved", "setFocus"]),
     ...mapActions("other", [
-      "saveIngredients",
       "addDailyEntry",
       "setEntryTodayIndex",
       "addToRecipes",
-      "setEditIndex"
+      
     ]),
     myEventHandler(e) {
       if (window.innerWidth < 1000) {

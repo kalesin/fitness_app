@@ -68,8 +68,7 @@
                   large
                   color="red"
                   @click="
-            onRemoved({index, userID, moduleIndex})
-            setDeleted(true)"
+            onRemoved({index, userID, moduleIndex})"
                 >
                   <v-icon class="mr-2" @click.stop="shownIndex=index">mdi-delete</v-icon>
                 </v-btn>
@@ -120,10 +119,9 @@ export default {
     ...mapActions("other", [
       "addPortionOfRecipe",
       "setEditIndex",
-      "setDeleteIndex",
       "setFavorite"
     ]),
-    ...mapActions("searchAndAdd", ["addItemValue", "setAddedItems"]),
+    ...mapActions("searchAndAdd", ["addItemValue", "onRemoved"]),
     ...mapActions("searchAndAdd2", { setAddedRecipe: "setAddedItems" }),
     startEdit(index) {
       if (this.editIndex == index && this.editIndex != -2) {
@@ -148,7 +146,6 @@ export default {
         lunch: this.items[this.itemsPropNames[1]],
         dinner: this.items[this.itemsPropNames[2]],
         snack: this.items[this.itemsPropNames[3]],
-        unsorted: this.items[this.itemsPropNames[4]]
       };
       this.$http.patch(
         "data/" + `${this.userID}` + "/todaysItems.json",

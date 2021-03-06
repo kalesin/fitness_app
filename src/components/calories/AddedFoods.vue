@@ -32,8 +32,6 @@
       </div>
       <MealCard v-if="itemsIndex==index" :itemsIndex="itemsIndex"></MealCard>
     </div>
-    <v-divider class="ml-n2 my-2 pr-2"></v-divider>
-    <MealCard :itemsIndex="4"></MealCard>
   </v-card>
 </template>
 
@@ -71,7 +69,7 @@ export default {
       handler() {
         this.setAddedItems([]);
         let array = [];
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < 4; j++) {
           let itemArray = JSON.parse(
             JSON.stringify(this.items[this.itemsPropNames[j]])
           );
@@ -112,24 +110,14 @@ export default {
     today() {
       return dayjs().format("YYYY-MM-DD");
     },
-    quantity: {
-      get() {
-        return this.$store.state.searchAndAdd.quantity;
-      },
-      set(value) {
-        this.$store.dispatch("searchAndAdd/setQuantity", value);
-      }
-    }
   },
   methods: {
     ...mapActions("searchAndAdd", [
-      "onChanged",
-      "onRemoved",
-      "setFocus",
       "setItemsIndex",
       "setAddedItems",
       "addItem",
-      "createAndAddRemovedItem"
+      "createAndAddRemovedItem",
+      "onRemoved"
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     updateAddedItems() {
@@ -143,7 +131,6 @@ export default {
         lunch: this.items[this.itemsPropNames[1]],
         dinner: this.items[this.itemsPropNames[2]],
         snack: this.items[this.itemsPropNames[3]],
-        unsorted: this.items[this.itemsPropNames[4]]
       };
       //tuki ne spremeni
       this.$http.patch(

@@ -201,9 +201,7 @@ export default {
     ...mapActions("searchAndAdd3", [
       "onChanged",
       "onRemoved",
-      "setFocus",
-      "setItemsIndex",
-      "setAddedItems"
+      "setFocus"
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
