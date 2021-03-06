@@ -246,6 +246,7 @@ const searchAndAdd = {
                 commit("SET_FOCUS", true)
             } else {
                 commit("ADD_ITEM_VALUE", payload)
+                commit("SET_FOCUS", true)
             }
         },
         onChanged({ state, commit }, { item, index, userID, moduleIndex, quantity }) {

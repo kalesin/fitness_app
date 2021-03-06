@@ -2,12 +2,9 @@
   <v-card class="blue lighten-3 rounded-lg pa-0" tile flat>
     <div class="d-flex align-center mx-4">
       <v-card-text class="text-h4 textSize">My Recipes:</v-card-text>
-      <v-btn
-        color="success"
-        @click="
+      <v-btn color="success" @click="
       setEditIndex(-2)
-      startEdit(-2)"
-      >
+      startEdit(-2)">
         <v-icon>mdi-plus-circle</v-icon>add new
       </v-btn>
     </div>
@@ -33,6 +30,7 @@
                   large
                   color="green"
                   @click="
+                  checkItemsIndex()
       addPortionOfRecipe(index);
       addItemValue(portionItem)
             updateAddedItems()"
@@ -121,7 +119,7 @@ export default {
       "setEditIndex",
       "setFavorite"
     ]),
-    ...mapActions("searchAndAdd", ["addItemValue", "onRemoved"]),
+    ...mapActions("searchAndAdd", ["addItemValue", "onRemoved", "checkItemsIndex"]),
     ...mapActions("searchAndAdd2", { setAddedRecipe: "setAddedItems" }),
     startEdit(index) {
       if (this.editIndex == index && this.editIndex != -2) {
@@ -145,7 +143,7 @@ export default {
         breakfast: this.items[this.itemsPropNames[0]],
         lunch: this.items[this.itemsPropNames[1]],
         dinner: this.items[this.itemsPropNames[2]],
-        snack: this.items[this.itemsPropNames[3]],
+        snack: this.items[this.itemsPropNames[3]]
       };
       this.$http.patch(
         "data/" + `${this.userID}` + "/todaysItems.json",
