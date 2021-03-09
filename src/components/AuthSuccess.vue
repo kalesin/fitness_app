@@ -23,9 +23,7 @@ export default {
   },
   created() {
     var user = firebase.auth().currentUser;
-    console.log(firebase.auth(), "authsuccess");
     if (user) {
-      console.log("set user");
       this.user = user;
     }
   },

@@ -209,7 +209,6 @@ export default {
       this.$refs.form.validate();
     },
     submitNewRecipe() {
-      console.log(this.valid);
       if (this.valid) {
         this.addToRecipes({
           totalForToday: this.totalForToday,

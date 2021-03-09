@@ -41,7 +41,6 @@ export default {
     editIndex: {
       handler() {
         if (this.editIndex != -1 && this.editIndex != -2) {
-          console.log(this.recipes[0]);
           this.recipesName = this.recipes[this.editIndex].NAME;
           this.recipesPortions = this.recipes[this.editIndex].PORTIONS;
         } else if (this.editIndex != -1 && this.editIndex == -2) {

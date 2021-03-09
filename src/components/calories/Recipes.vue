@@ -38,7 +38,6 @@ export default {
     if (!this.addedRecipe) {
       /* alert("Can't submit a recipe with no items, add some items!") */
       this.snackbar = true;
-      console.log(snackbar);
     }
   },
   data() {

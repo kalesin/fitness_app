@@ -70,7 +70,6 @@ export default {
       this.setPassword(this.password);
       this.setEmail(this.email);
       firebase.auth.signInWithEmailAndPassword(this.email, this.password).then(cred => {
-        console.log(cred.user);
         this.setLoggedIn(true);
         this.setUserID(cred.user.uid);
       });

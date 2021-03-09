@@ -11,7 +11,7 @@
       :key="index"
       class="itemCard pa-2 pb-0 pl-0"
     >
-      <div class="rounded-lg" @click="startEdit(index)" v-ripple>
+      <div class="rounded-lg clickbox" @click="startEdit(index)" v-ripple>
         <v-card
           style="width: 100%"
           outlined
@@ -27,7 +27,7 @@
             <div class="d-flex flex-column pt-2 pr-2" style="width: 125px">
               <div class="d-flex justify-end pr-0">
                 <v-btn class="justify-end" large icon>
-                  <v-icon v-if="activeIndex!==index" class="mr-2">mdi-pencil-outline</v-icon>
+                  <v-icon v-if="activeIndex!=index" class="mr-2">mdi-pencil-outline</v-icon>
                   <v-icon v-else class="mr-2">mdi-pencil-off-outline</v-icon>
                 </v-btn>
                 <v-btn
@@ -37,6 +37,7 @@
                   color="red"
                   @click="
             onRemoved({index, userID, moduleIndex})
+            setDeleted(true)
             setNoFocus(true)"
                 >
                   <v-icon class="mr-2">mdi-delete</v-icon>
@@ -45,9 +46,9 @@
               <div style="height: 50px">
                 <div v-if="item.IS_PORTION === false">
                   <v-card-text
-                    v-if="activeIndex!==index"
+                    v-if="activeIndex!=index"
                     style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
-                  >x {{item.QUANTITY*100}}g</v-card-text>
+                  >x {{item.QUANTITY}}g</v-card-text>
                   <div v-else class="d-flex justify-space-around">
                     <v-btn
                       class="mr-1"
@@ -67,9 +68,8 @@
                       ref="inputAmount"
                       type="number"
                       step="0.5"
-                      :placeholder="`x ${item.QUANTITY*100}g`"
+                      :placeholder="`x ${item.QUANTITY}g`"
                       v-model="quantity"
-                      @blur="setFocus(false)"
                       @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
               setNoFocus(true)"
@@ -78,11 +78,11 @@
                 </div>
                 <div v-else>
                   <v-card-text
-                    v-if="activeIndex!==index"
+                    v-if="activeIndex!=index"
                     style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
                   >
-                    <div v-if="item.QUANTITY==1">x 1 por.</div>
-                    <div v-else>x {{item.QUANTITY}} por.</div>
+                    <div v-if="item.QUANTITY==100">x 1 por.</div>
+                    <div v-else>x {{item.QUANTITY/100}} por.</div>
                   </v-card-text>
                   <div v-else class="d-flex justify-space-around">
                     <v-btn
@@ -103,9 +103,8 @@
                       ref="inputAmount"
                       type="number"
                       step="0.5"
-                      :placeholder="`x ${item.QUANTITY} por.`"
+                      :placeholder="`x ${item.QUANTITY/100} por.`"
                       v-model="quantity"
-                      @blur="setFocus(false)"
                       @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
               setNoFocus(true)"
@@ -139,6 +138,8 @@ export default {
     } else {
       this.setEntryTodayIndex(-1);
     }
+    //za resetirat editanje ko zunaj klikneš
+    window.addEventListener("click", this.myEventHandler);
   },
   components: {
     NutrientBox
@@ -148,18 +149,18 @@ export default {
       activeIndex: -1,
       moduleIndex: 1,
       noFocus: false,
-      inputIndex: -1,
-      choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
-      selectedItem: -1
+      deleted: false,
+      choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"]
     };
   },
   watch: {
     items: {
       handler() {
-        if (this.noFocus) {
+        if (this.noFocus || this.deleted) {
           this.activeIndex = -1;
           this.setNoFocus(false);
         } else {
+          console.log(this.items[this.itemsPropNames[this.itemsIndex]].length - 1)
           this.startEdit(
             this.items[this.itemsPropNames[this.itemsIndex]].length - 1
           );
@@ -176,9 +177,6 @@ export default {
     responseCount: {
       handler() {
         if (this.idx > -1) {
-          console.log("start edit")
-
-                debugger
           this.startEdit(this.idx);
         }
       }
@@ -192,7 +190,7 @@ export default {
       "responseCount",
       "focus",
       "items",
-      "itemsPropNames",
+      "itemsPropNames"
     ]),
     ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
@@ -217,8 +215,9 @@ export default {
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
-      if (this.activeIndex == index && !this.focus) {
+      if (this.activeIndex == index && !this.noFocus || this.deleted) {
         this.activeIndex = -1;
+        this.setDeleted(false);
       } else {
         this.quantity = "";
         this.activeIndex = index;
@@ -232,12 +231,31 @@ export default {
     setNoFocus(value) {
       this.noFocus = value;
     },
+    setDeleted(value) {
+      this.deleted = value;
+    },
+    setActiveIndex(value) {
+      this.activeIndex = value;
+    },
     dragStart(index) {
       this.$emit("dragStart", true);
-      this.dragAndDropItem({item: this.items[this.itemsPropNames[this.itemsIndex]][index], index})
-
-      console.log("start");
+      this.dragAndDropItem({
+        item: this.items[this.itemsPropNames[this.itemsIndex]][index],
+        index
+      });
     },
+    myEventHandler(e) {
+      if (this.activeIndex != -1) {
+        if (
+          document
+            .getElementsByClassName("clickbox")
+            [this.activeIndex].contains(e.target)
+        ) {
+        } else {
+          this.setActiveIndex(-1);
+        }
+      }
+    }
   }
 };
 </script>

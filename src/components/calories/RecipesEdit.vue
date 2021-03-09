@@ -29,12 +29,12 @@
               </v-btn>
             </div>
             <div style="height: 50px">
-              <div v-if="item.IS_PORTION === false">
+              <div>
                 <v-card-text
                   @click="startEdit(index)"
                   v-if="activeIndex!==index"
                   style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
-                >x {{item.QUANTITY*100}}g</v-card-text>
+                >x {{item.QUANTITY}}g</v-card-text>
                 <div v-else class="d-flex justify-space-around"
                   >
                   <v-btn
@@ -43,7 +43,8 @@
                     large
                     color="green"
                     @click="
-              onChanged({item, index, userID, moduleIndex, quantity})"
+              onChanged({item, index, userID, moduleIndex, quantity})
+              setFocus(false)"
                     :disabled="parseFloat(quantity)<=0 || quantity === ''"
                   >
                     <v-icon>mdi-check-bold</v-icon>
@@ -54,48 +55,12 @@
                     ref="inputAmount"
                     type="number"
                     step="0.5"
-                    :placeholder="`x ${item.QUANTITY*100}g`"
+                    :placeholder="`x ${item.QUANTITY}g`"
                     v-model="quantity"
                     @blur="setFocus(false)"
                     @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
-              resetEdit()"
-                  ></v-text-field>
-                </div>
-              </div>
-              <div v-else>
-                <v-card-text
-                  @click="startEdit(index)"
-                  v-if="activeIndex!==index"
-                  style="padding-top: 10px; font-size:40px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
-                >
-                  <div v-if="item.QUANTITY==1">x 1 por.</div>
-                  <div v-else>x {{item.QUANTITY}} por.</div>
-                </v-card-text>
-                <div v-else class="d-flex justify-space-around">
-                  <v-btn
-                    class="mr-1"
-                    icon
-                    large
-                    color="green"
-                    @click="
-              onChanged({item, index, userID, moduleIndex, quantity})"
-                    :disabled="parseFloat(quantity)<=0 || quantity === ''"
-                  >
-                    <v-icon>mdi-check-bold</v-icon>
-                  </v-btn>
-                  <v-text-field
-                    class="mt-2 mr-1"
-                    dense
-                    ref="inputAmount"
-                    type="number"
-                    step="0.5"
-                    :placeholder="`x ${item.QUANTITY} por.`"
-                    v-model="quantity"
-                    @blur="setFocus(false)"
-                    @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})
-              resetEdit()"
+              setFocus(false)"
                   ></v-text-field>
                 </div>
               </div>
@@ -125,7 +90,7 @@ export default {
   watch: {
     addedItems: {
       handler() {
-        if (this.deleted) {
+        if (!this.focus) {
           this.activeIndex = -1;
         } else {
           this.startEdit(this.addedItems.length - 1);

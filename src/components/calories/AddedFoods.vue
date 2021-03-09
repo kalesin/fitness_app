@@ -5,8 +5,8 @@
         class="d-flex justify-space-between rounded-xl normalColor dropZone"
         style="width: 300px;"
         @click="setItemsIndex(index)"
-        @dragenter="dropEnterClass(index)"
-        @dragleave="dropLeaveClass(index)"
+        @dragenter="dragEnterClass(index)"
+        @dragleave="dragLeaveClass(index)"
         @dragover.prevent
         @drop="onDrop({dropIndex: index, dragIndex, userID, moduleIndex})"
         v-ripple
@@ -62,7 +62,7 @@ export default {
     return {
       choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"],
       removedIndex: -1,
-      moduleIndex: 3,
+      moduleIndex: 1,
       hoverIndex: -1,
       activeIndex: -1,
     };
@@ -83,7 +83,7 @@ export default {
             if (same != -1) {
               array[same].QUANTITY += itemArray[i].QUANTITY;
               array[same].CALCULATED_NUTRIENTS = array[same].NUTRIENTS.map(
-                x => Math.round(x * array[same].QUANTITY * 100) / 100
+                x => Math.round(x * array[same].QUANTITY) / 100
               );
             } else if (same == -1) {
               array.push(itemArray[i]);
@@ -143,7 +143,6 @@ export default {
     },
     //drag and drop events
     onDrop({ dropIndex, userID, moduleIndex, dragIndex}) {
-      console.log("drop");
       //data
 
       if (this.itemsIndex != dropIndex) {
@@ -156,16 +155,14 @@ export default {
       this.hoverIndex = - 1
       this.activeIndex = dropIndex
     },
-    dropEnterClass(index) {
-      console.log("enter");
+    dragEnterClass(index) {
       this.hoverIndex = index
       if (document.getElementsByClassName("activeColor")[index]) {
         this.removedIndex = index;
         this.activeIndex = -1
       }
     },
-    dropLeaveClass(index) {
-      console.log("leave");
+    dragLeaveClass(index) {
       this.hoverIndex = - 1
     },
   }

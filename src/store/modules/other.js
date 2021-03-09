@@ -62,7 +62,7 @@ const other = {
             state.portionItem = {
                 NAME: state.recipes[index].NAME,
                 NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS,
-                QUANTITY: 1,
+                QUANTITY: 100,
                 CALCULATED_NUTRIENTS: state.recipes[index].PORTION_NUTRIENTS.map(
                     x => Math.round(x * 100) / 100
                 ),
@@ -82,7 +82,6 @@ const other = {
             state.editIndex = -1;
         },
         SAVE_INGREDIENTS(state, payload) {
-            console.log("neki")
             if (!(payload.recipesName === "")) {
                 state.recipes[payload.editIndex].NAME = payload.recipesName.toLowerCase().replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
             }
@@ -163,14 +162,10 @@ const other = {
             state.recipes[index].IS_FAVORITE = !state.recipes[index].IS_FAVORITE;
 
             let array = JSON.parse(JSON.stringify(state.recipes));
-            console.log(array)
             let array1 = array.filter(element => element.IS_FAVORITE == true)
-            console.log(array1)
             let array2 = array.filter(element => element.IS_FAVORITE == false)
-            console.log(array2)
 
             array = array1.concat(array2);
-            console.log(array)
             state.recipes = JSON.parse(JSON.stringify(array))
         }
     },

@@ -70,9 +70,9 @@ const searchAndAdd = {
             state.itemToAdd = {
                 NAME: state.nutrients.NAME,
                 NUTRIENTS: state.nutrientsArray,
-                QUANTITY: 1,
+                QUANTITY: 100,
                 CALCULATED_NUTRIENTS: state.nutrientsArray.map(
-                    x => Math.round(x * 1 * 100) / 100
+                    x => Math.round(x * 100) / 100
                 ),
                 IS_PORTION: value
             }
@@ -98,13 +98,13 @@ const searchAndAdd = {
             axios.patch(`${state.axios_url}` + `${userID}` + ".json", data)
         },
         ADD_ITEM(state, { moduleIndex, todaysMeal }) {
-            if (moduleIndex == 1 || moduleIndex == 3) {
+            if (moduleIndex == 1) {
                 let index = todaysMeal.findIndex(element => element.NAME == state.itemToAdd.NAME)
                 console.log(index)
                 if (index != -1) {
                     todaysMeal[index].QUANTITY += state.itemToAdd.QUANTITY
                     todaysMeal[index].CALCULATED_NUTRIENTS = todaysMeal[index].NUTRIENTS.map(
-                        x => Math.round(x * todaysMeal[index].QUANTITY * 100) / 100)
+                        x => Math.round(x * todaysMeal[index].QUANTITY) / 100)
                 } else { todaysMeal.push(state.itemToAdd) }
             } else if (moduleIndex == 2) {
                 state.addedItems.push(state.itemToAdd)
@@ -117,7 +117,7 @@ const searchAndAdd = {
             state.addedItems[index] = item;
         },
         REMOVE_ITEM(state, { index, moduleIndex }) {
-            if (moduleIndex == 1 || moduleIndex == 3) {
+            if (moduleIndex == 1) {
                 switch (state.itemsIndex) {
                     case 0: state.items.breakfast.splice(index, 1); break;
                     case 1: state.items.lunch.splice(index, 1); break;
@@ -220,13 +220,25 @@ const searchAndAdd = {
             commit("SET_FOCUS", true)
         },
         onChanged({ state, getters, commit }, { item, index, userID, moduleIndex, quantity }) {
-            if (parseFloat(quantity) > 0 && quantity != '') {
-                item.QUANTITY = parseFloat(quantity);
-                commit("SET_QUANTITY", "")
-                item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
-                    x => Math.round(x * item.QUANTITY * 100) / 100
-                );
-                commit("CHANGE_ITEM", { item, index }) //še tole dopolni
+            if (item.IS_PORTION) {
+                if (parseFloat(quantity) > 0 && quantity != '') {
+                    item.QUANTITY = parseFloat(quantity*100);
+                    debugger
+                    commit("SET_QUANTITY", "")
+                    item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
+                        x => Math.round(x * item.QUANTITY) / 100
+                    );
+                    commit("CHANGE_ITEM", { item, index }) //še tole dopolni
+                }
+            } else {
+                if (parseFloat(quantity) > 0 && quantity != '') {
+                    item.QUANTITY = parseFloat(quantity);
+                    commit("SET_QUANTITY", "")
+                    item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
+                        x => Math.round(x * item.QUANTITY) / 100
+                    );
+                    commit("CHANGE_ITEM", { item, index }) //še tole dopolni
+                }
             }
 
             if (moduleIndex == 1) {
@@ -241,7 +253,7 @@ const searchAndAdd = {
         onRemoved({ state, getters, commit }, { index, userID, moduleIndex }) {
             commit("REMOVE_ITEM", { index, moduleIndex })
             if (moduleIndex == 1) {
-                
+
                 axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", getters.todaysItems)
             } else if (moduleIndex == 2) {
                 const data = {
@@ -288,7 +300,7 @@ const searchAndAdd = {
                 for (let i = 0; i < state.addedItems.length; i++) {
                     totalNutrient[j] += state.addedItems[i].CALCULATED_NUTRIENTS[j];
                 }
-                totalNutrient[j] = Math.round(totalNutrient[j] * 100) / 100;
+                totalNutrient[j] = Math.round(totalNutrient[j]);
             }
             return totalNutrient;
         },

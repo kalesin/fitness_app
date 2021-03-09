@@ -204,7 +204,6 @@ export default {
       let index = this.dailyEntries.findIndex(
         element => element.date === day.date
       );
-      console.log(index);
       if (index == -1) {
         this.setDailyEntryTemp(day);
         this.setEntryEditIndex(-2);
