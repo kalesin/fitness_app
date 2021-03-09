@@ -105,13 +105,17 @@ const searchAndAdd = {
                     todaysMeal[index].QUANTITY += state.itemToAdd.QUANTITY
                     todaysMeal[index].CALCULATED_NUTRIENTS = todaysMeal[index].NUTRIENTS.map(
                         x => Math.round(x * todaysMeal[index].QUANTITY) / 100)
-                } else { todaysMeal.push(state.itemToAdd) }
+                } else {
+                    debugger
+                    todaysMeal.push(state.itemToAdd)
+                }
             } else if (moduleIndex == 2) {
                 state.addedItems.push(state.itemToAdd)
             }
         },
         ADD_ITEM_VALUE(state, payload) {
-            getMealAtIndex(state, state.itemsIndex).push(payload)
+            state.itemToAdd = JSON.parse(JSON.stringify(payload));
+            /* getMealAtIndex(state, state.itemsIndex).push(payload) */
         },
         CHANGE_ITEM(state, { item, index }) {
             state.addedItems[index] = item;
@@ -206,23 +210,24 @@ const searchAndAdd = {
         },
         addItem({ state, getters, commit }, moduleIndex) {
             commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
-            commit("SET_QUANTITY", "")
         },
-        addItemValue({ state, commit }, payload) {
+        addItemValue({ state, getters, commit }, {payload, moduleIndex}) {
             let items = state.itemsIndex == -1 ? state.items[state.itemsPropNames[3]] : state.items[state.itemsPropNames[state.itemsIndex]];
             let index = items.findIndex(element => element.NAME === payload.NAME);
             if (index != -1) {
                 commit("SET_INDEX", index)
                 commit("INCREMENT_RESPONSE_COUNT")
             } else {
+                debugger
                 commit("ADD_ITEM_VALUE", payload)
+                commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
             }
             commit("SET_FOCUS", true)
         },
         onChanged({ state, getters, commit }, { item, index, userID, moduleIndex, quantity }) {
             if (item.IS_PORTION) {
                 if (parseFloat(quantity) > 0 && quantity != '') {
-                    item.QUANTITY = parseFloat(quantity*100);
+                    item.QUANTITY = parseFloat(quantity * 100);
                     debugger
                     commit("SET_QUANTITY", "")
                     item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
@@ -267,8 +272,6 @@ const searchAndAdd = {
         },
         setQuantity({ state, commit }, value) {
             commit("SET_QUANTITY", value)
-
-            commit("CREATE_ITEM_TO_ADD", false)
         },
         setAddedItems({ state, commit }, payload) {
             commit("SET_ADDED_ITEMS", payload)

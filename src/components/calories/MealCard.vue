@@ -44,72 +44,37 @@
                 </v-btn>
               </div>
               <div style="height: 50px">
-                <div v-if="item.IS_PORTION === false">
-                  <v-card-text
-                    v-if="activeIndex!=index"
-                    style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
-                  >x {{item.QUANTITY}}g</v-card-text>
-                  <div v-else class="d-flex justify-space-around">
-                    <v-btn
-                      class="mr-1"
-                      icon
-                      large
-                      color="green"
-                      @click="
+                <v-card-text
+                  v-if="activeIndex!=index"
+                  style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                >
+                  <div v-if="item.IS_PORTION === false">x {{item.QUANTITY}}g</div>
+                  <div v-else>x {{item.QUANTITY/100}} por.</div>
+                </v-card-text>
+                <div v-else class="d-flex justify-space-around">
+                  <v-btn
+                    class="mr-1"
+                    icon
+                    large
+                    color="green"
+                    @click="
               onChanged({item, index, userID, moduleIndex, quantity})
               setNoFocus(true)"
-                      :disabled="parseFloat(quantity)<=0 || quantity === ''"
-                    >
-                      <v-icon>mdi-check-bold</v-icon>
-                    </v-btn>
-                    <v-text-field
-                      class="mt-2 mr-1"
-                      dense
-                      ref="inputAmount"
-                      type="number"
-                      step="0.5"
-                      :placeholder="`x ${item.QUANTITY}g`"
-                      v-model="quantity"
-                      @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})
-              setNoFocus(true)"
-                    ></v-text-field>
-                  </div>
-                </div>
-                <div v-else>
-                  <v-card-text
-                    v-if="activeIndex!=index"
-                    style="padding-top: 10px; font: inherit; font-size:16px; padding-left: 48px; font-weight: 400; letter-spacing: 0em"
+                    :disabled="parseFloat(quantity)<=0 || quantity === ''"
                   >
-                    <div v-if="item.QUANTITY==100">x 1 por.</div>
-                    <div v-else>x {{item.QUANTITY/100}} por.</div>
-                  </v-card-text>
-                  <div v-else class="d-flex justify-space-around">
-                    <v-btn
-                      class="mr-1"
-                      icon
-                      large
-                      color="green"
-                      @click="
+                    <v-icon>mdi-check-bold</v-icon>
+                  </v-btn>
+                  <v-text-field
+                    class="mt-2 mr-1"
+                    dense
+                    ref="inputAmount"
+                    type="number"
+                    step="0.5"
+                    v-model="quantity"
+                    @keyup.enter="
               onChanged({item, index, userID, moduleIndex, quantity})
               setNoFocus(true)"
-                      :disabled="parseFloat(quantity)<=0 || quantity === ''"
-                    >
-                      <v-icon>mdi-check-bold</v-icon>
-                    </v-btn>
-                    <v-text-field
-                      class="mt-2 mr-1"
-                      dense
-                      ref="inputAmount"
-                      type="number"
-                      step="0.5"
-                      :placeholder="`x ${item.QUANTITY/100} por.`"
-                      v-model="quantity"
-                      @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})
-              setNoFocus(true)"
-                    ></v-text-field>
-                  </div>
+                  ></v-text-field>
                 </div>
               </div>
             </div>
@@ -160,7 +125,10 @@ export default {
           this.activeIndex = -1;
           this.setNoFocus(false);
         } else {
-          console.log(this.items[this.itemsPropNames[this.itemsIndex]].length - 1)
+          console.log(
+            this.items[this.itemsPropNames[this.itemsIndex]].length - 1
+          );
+          debugger
           this.startEdit(
             this.items[this.itemsPropNames[this.itemsIndex]].length - 1
           );
@@ -215,14 +183,15 @@ export default {
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
     startEdit(index) {
-      if (this.activeIndex == index && !this.noFocus || this.deleted) {
+      if ((this.activeIndex == index && !this.noFocus) || this.deleted) {
         this.activeIndex = -1;
         this.setDeleted(false);
       } else {
         this.quantity = "";
         this.activeIndex = index;
+        console.log(this.$refs.inputAmount)
         setTimeout(() => {
-          if (this.$refs.inputAmount) {
+          if (this.$refs.inputAmount[0]) {
             this.$refs.inputAmount[0].focus();
           }
         }, 0);

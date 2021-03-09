@@ -30,9 +30,9 @@
                   large
                   color="green"
                   @click="
-                  checkItemsIndex()
+                  checkItemsIndex();
       addPortionOfRecipe(index);
-      addItemValue(portionItem)
+      addItemValue({payload: portionItem, moduleIndex});
             updateAddedItems()"
                 >
                   <v-icon x-large>mdi-plus-circle</v-icon>
@@ -97,7 +97,8 @@ export default {
   },
   data() {
     return {
-      shownIndex: -1
+      shownIndex: -1,
+      moduleIndex: 1
     };
   },
   computed: {
@@ -119,7 +120,11 @@ export default {
       "setEditIndex",
       "setFavorite"
     ]),
-    ...mapActions("searchAndAdd", ["addItemValue", "onRemoved", "checkItemsIndex"]),
+    ...mapActions("searchAndAdd", [
+      "addItemValue",
+      "onRemoved",
+      "checkItemsIndex"
+    ]),
     ...mapActions("searchAndAdd2", { setAddedRecipe: "setAddedItems" }),
     startEdit(index) {
       if (this.editIndex == index && this.editIndex != -2) {
