@@ -191,7 +191,7 @@ export default {
         this.activeIndex = index;
         console.log(this.$refs.inputAmount)
         setTimeout(() => {
-          if (this.$refs.inputAmount[0]) {
+          if (this.$refs.inputAmount) {
             this.$refs.inputAmount[0].focus();
           }
         }, 0);
