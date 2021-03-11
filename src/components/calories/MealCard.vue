@@ -1,5 +1,5 @@
 <template>
-  <v-card
+  <div
     flat
     tile
     class="light-green lighten-3 d-flex flex-wrap rounded-lg"
@@ -11,7 +11,7 @@
       :key="index"
       class="itemCard pa-2 pb-0 pl-0"
     >
-      <div class="rounded-lg clickbox" @click="startEdit(index)" v-ripple>
+      <div class="rounded-lg clickbox" @click="setActiveIndex(index)" v-ripple>
         <v-card
           style="width: 100%"
           outlined
@@ -36,9 +36,7 @@
                   large
                   color="red"
                   @click="
-            onRemoved({index, userID, moduleIndex})
-            setDeleted(true)
-            setNoFocus(true)"
+            onRemoved({index, userID, moduleIndex})"
                 >
                   <v-icon class="mr-2">mdi-delete</v-icon>
                 </v-btn>
@@ -58,8 +56,7 @@
                     large
                     color="green"
                     @click="
-              onChanged({item, index, userID, moduleIndex, quantity})
-              setNoFocus(true)"
+              onChanged({item, index, userID, moduleIndex, quantity})"
                     :disabled="parseFloat(quantity)<=0 || quantity === ''"
                   >
                     <v-icon>mdi-check-bold</v-icon>
@@ -72,8 +69,7 @@
                     step="0.5"
                     v-model="quantity"
                     @keyup.enter="
-              onChanged({item, index, userID, moduleIndex, quantity})
-              setNoFocus(true)"
+              onChanged({item, index, userID, moduleIndex, quantity})"
                   ></v-text-field>
                 </div>
               </div>
@@ -83,9 +79,10 @@
         </v-card>
       </div>
     </div>
-  </v-card>
+  </div>
 </template> 
-    <script>
+
+<script>
 import NutrientBox from "./NutrientBox";
 import dayjs from "dayjs";
 import { mapGetters, mapState, mapActions } from "vuex";
@@ -103,63 +100,33 @@ export default {
     } else {
       this.setEntryTodayIndex(-1);
     }
-    //za resetirat editanje ko zunaj klikneš
-    window.addEventListener("click", this.myEventHandler);
+    window.addEventListener("mouseup", this.clickIndexHandler);
   },
   components: {
     NutrientBox
   },
   data() {
     return {
-      activeIndex: -1,
       moduleIndex: 1,
-      noFocus: false,
-      deleted: false,
       choiceArray: ["Breakfast", "Lunch", "Dinner", "Snack"]
     };
   },
   watch: {
-    items: {
+    activeIndex: {
       handler() {
-        if (this.noFocus || this.deleted) {
-          this.activeIndex = -1;
-          this.setNoFocus(false);
-        } else {
-          console.log(
-            this.items[this.itemsPropNames[this.itemsIndex]].length - 1
-          );
-          debugger
-          this.startEdit(
-            this.items[this.itemsPropNames[this.itemsIndex]].length - 1
-          );
-        }
-
-        for (let i = 0; i < this.dailyEntries.length; i++) {
-          if (this.dailyEntries[i].date === this.today) {
-            this.setEntryTodayIndex(i);
-          }
-        }
-      },
-      deep: true
-    },
-    responseCount: {
-      handler() {
-        if (this.idx > -1) {
-          this.startEdit(this.idx);
+        if (this.activeIndex != -1) {
+          setTimeout(() => {
+            if (this.$refs.inputAmount) {
+              this.$refs.inputAmount[0].focus();
+            }
+          }, 0);
         }
       }
     }
   },
   computed: {
     ...mapGetters("searchAndAdd", ["totalForToday"]),
-    ...mapState("searchAndAdd", [
-      "addedItems",
-      "idx",
-      "responseCount",
-      "focus",
-      "items",
-      "itemsPropNames"
-    ]),
+    ...mapState("searchAndAdd", ["addedItems", "items", "itemsPropNames"]),
     ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
     today() {
@@ -172,40 +139,24 @@ export default {
       set(value) {
         this.$store.dispatch("searchAndAdd/setQuantity", value);
       }
+    },
+    activeIndex: {
+      get() {
+        return this.$store.state.searchAndAdd.activeIndex;
+      },
+      set(value) {
+        this.$store.dispatch("searchAndAdd/setActiveIndex", value);
+      }
     }
   },
   methods: {
     ...mapActions("searchAndAdd", [
       "onChanged",
       "onRemoved",
-      "setFocus",
-      "dragAndDropItem"
+      "dragAndDropItem",
+      "setActiveIndex"
     ]),
     ...mapActions("other", ["setEntryTodayIndex"]),
-    startEdit(index) {
-      if ((this.activeIndex == index && !this.noFocus) || this.deleted) {
-        this.activeIndex = -1;
-        this.setDeleted(false);
-      } else {
-        this.quantity = "";
-        this.activeIndex = index;
-        console.log(this.$refs.inputAmount)
-        setTimeout(() => {
-          if (this.$refs.inputAmount) {
-            this.$refs.inputAmount[0].focus();
-          }
-        }, 0);
-      }
-    },
-    setNoFocus(value) {
-      this.noFocus = value;
-    },
-    setDeleted(value) {
-      this.deleted = value;
-    },
-    setActiveIndex(value) {
-      this.activeIndex = value;
-    },
     dragStart(index) {
       this.$emit("dragStart", true);
       this.dragAndDropItem({
@@ -213,7 +164,7 @@ export default {
         index
       });
     },
-    myEventHandler(e) {
+    clickIndexHandler(e) {
       if (this.activeIndex != -1) {
         if (
           document

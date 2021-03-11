@@ -186,7 +186,7 @@ export default {
     ...mapState("other", ["dailyEntries"]),
     ...mapState("firebase", ["userID"]),
     today() {
-      return dayjs().format("YYYY-MM-DD");
+      return dayjs().format("YYYY-MM-DD"); 
     },
     quantity: {
       get() {

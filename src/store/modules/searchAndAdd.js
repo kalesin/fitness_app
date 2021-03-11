@@ -36,10 +36,10 @@ const searchAndAdd = {
         itemsPropNames: ["breakfast", "lunch", "dinner", "snack"],
         itemsIndex: -1,
         itemToAdd: [],
-        idx: -1,
         dragIndex: -1,
-        responseCount: 0,
-        focus: true,
+        activeIndex: -1,
+        deleted: true
+
     }),
     mutations: {
         SET_SEARCH_RESPONSE(state, payload) {
@@ -59,12 +59,6 @@ const searchAndAdd = {
                 state.nutrients.FAT,
                 state.nutrients.FIBER
             ];
-        },
-        INCREMENT_RESPONSE_COUNT(state) {
-            state.responseCount++;
-        },
-        SET_FOCUS(state, value) {
-            state.focus = value;
         },
         CREATE_ITEM_TO_ADD(state, value) {
             state.itemToAdd = {
@@ -100,13 +94,11 @@ const searchAndAdd = {
         ADD_ITEM(state, { moduleIndex, todaysMeal }) {
             if (moduleIndex == 1) {
                 let index = todaysMeal.findIndex(element => element.NAME == state.itemToAdd.NAME)
-                console.log(index)
                 if (index != -1) {
                     todaysMeal[index].QUANTITY += state.itemToAdd.QUANTITY
                     todaysMeal[index].CALCULATED_NUTRIENTS = todaysMeal[index].NUTRIENTS.map(
                         x => Math.round(x * todaysMeal[index].QUANTITY) / 100)
                 } else {
-                    debugger
                     todaysMeal.push(state.itemToAdd)
                 }
             } else if (moduleIndex == 2) {
@@ -148,9 +140,6 @@ const searchAndAdd = {
                 state.items[prop] = items[prop] ? items[prop] : []
             }
         },
-        SET_INDEX(state, value) {
-            state.idx = value
-        },
         SET_ITEMS_INDEX(state, value) {
             if (state.itemsIndex == -1) {
                 state.itemsIndex = value
@@ -167,6 +156,12 @@ const searchAndAdd = {
             if (state.itemsIndex == -1) {
                 state.itemsIndex = 3
             }
+        },
+        SET_ACTIVE_INDEX(state, value) {
+            state.activeIndex = value;
+        },
+        SET_DELETED(state, value) {
+            state.deleted = value;
         }
     },
     actions: {
@@ -196,13 +191,12 @@ const searchAndAdd = {
                             }
                         }
                         if (index != -1) {
-                            commit("SET_INDEX", index)
-                            commit("INCREMENT_RESPONSE_COUNT")
+                            commit("SET_ACTIVE_INDEX", index)
                         } else {
                             commit("CREATE_ITEM_TO_ADD", false)
                             commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
+                            commit("SET_ACTIVE_INDEX", items.length - 1)
                         }
-                        commit("SET_FOCUS", true)
                     }
                 ).catch(function (error) {
                     console.log(error);
@@ -211,40 +205,31 @@ const searchAndAdd = {
         addItem({ state, getters, commit }, moduleIndex) {
             commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
         },
-        addItemValue({ state, getters, commit }, {payload, moduleIndex}) {
+        addItemValue({ state, getters, commit }, { payload, moduleIndex }) {
             let items = state.itemsIndex == -1 ? state.items[state.itemsPropNames[3]] : state.items[state.itemsPropNames[state.itemsIndex]];
             let index = items.findIndex(element => element.NAME === payload.NAME);
             if (index != -1) {
-                commit("SET_INDEX", index)
-                commit("INCREMENT_RESPONSE_COUNT")
+                commit("SET_ACTIVE_INDEX", index)
             } else {
-                debugger
                 commit("ADD_ITEM_VALUE", payload)
                 commit("ADD_ITEM", { moduleIndex, todaysMeal: getters.todaysMeal })
+                commit("SET_ACTIVE_INDEX", items.length - 1)
             }
-            commit("SET_FOCUS", true)
         },
         onChanged({ state, getters, commit }, { item, index, userID, moduleIndex, quantity }) {
-            if (item.IS_PORTION) {
-                if (parseFloat(quantity) > 0 && quantity != '') {
+            if (parseFloat(quantity) > 0 && quantity != '') {
+                if (item.IS_PORTION) {
                     item.QUANTITY = parseFloat(quantity * 100);
-                    debugger
-                    commit("SET_QUANTITY", "")
-                    item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
-                        x => Math.round(x * item.QUANTITY) / 100
-                    );
-                    commit("CHANGE_ITEM", { item, index }) //še tole dopolni
-                }
-            } else {
-                if (parseFloat(quantity) > 0 && quantity != '') {
+                } else {
                     item.QUANTITY = parseFloat(quantity);
-                    commit("SET_QUANTITY", "")
-                    item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
-                        x => Math.round(x * item.QUANTITY) / 100
-                    );
-                    commit("CHANGE_ITEM", { item, index }) //še tole dopolni
                 }
+                commit("SET_QUANTITY", "")
+                item.CALCULATED_NUTRIENTS = item.NUTRIENTS.map(
+                    x => Math.round(x * item.QUANTITY) / 100
+                );
+                commit("CHANGE_ITEM", { item, index }) //še tole dopolni
             }
+            commit("SET_ACTIVE_INDEX", -1)
 
             if (moduleIndex == 1) {
                 axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", getters.todaysItems)
@@ -257,8 +242,9 @@ const searchAndAdd = {
         },
         onRemoved({ state, getters, commit }, { index, userID, moduleIndex }) {
             commit("REMOVE_ITEM", { index, moduleIndex })
+            commit("SET_DELETED", true)
+            commit("SET_ACTIVE_INDEX", -1)
             if (moduleIndex == 1) {
-
                 axios.patch(`${state.axios_url}` + `${userID}` + "/todaysItems.json", getters.todaysItems)
             } else if (moduleIndex == 2) {
                 const data = {
@@ -280,9 +266,6 @@ const searchAndAdd = {
         setItems({ state, commit }, payload) {
             commit("SET_ITEMS", payload)
         },
-        setFocus({ state, commit }, value) {
-            commit("SET_FOCUS", value)
-        },
         setItemsIndex({ state, commit }, value) {
             commit("SET_ITEMS_INDEX", value)
         },
@@ -292,6 +275,15 @@ const searchAndAdd = {
         },
         checkItemsIndex({ commit }) {
             commit("CHECK_ITEMS_INDEX")
+        },
+        setActiveIndex({ state, commit }, value) {
+            if (state.activeIndex != -1 || state.deleted) {
+                commit("SET_QUANTITY", "")
+                commit("SET_ACTIVE_INDEX", -1)
+                commit("SET_DELETED", false)
+            } else {
+                commit("SET_ACTIVE_INDEX", value)
+            }
         }
 
     },

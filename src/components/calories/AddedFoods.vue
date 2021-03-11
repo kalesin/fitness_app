@@ -115,7 +115,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("searchAndAdd", [
+    ...mapActions("searchAndAdd", [ 
       "setItemsIndex",
       "setAddedItems",
       "addItem",
@@ -199,12 +199,4 @@ export default {
   pointer-events: none;
 }
 
-.dropZone.hoverBtn > .btn1 {
-}
-.dropZone.hoverBtn > .btn2 {
-}
-.dropZone.activeBtn > .btn1 {
-}
-.dropZone.activeBtn > .btn2 {
-}
 </style>

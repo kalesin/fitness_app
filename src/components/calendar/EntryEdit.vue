@@ -9,7 +9,7 @@
             @click="setItemsIndex(index)"
           >
             <v-list-item-icon x-large> 
-              <v-icon class="mx-4 gray">mdi-plus-circle</v-icon>
+              <v-icon class="mx-4 gray">mdi-plus-circle</v-icon> 
             </v-list-item-icon>
             <v-list-item-title class="text-h5">{{choiceArray[index]}}</v-list-item-title>
             <v-icon v-if="items[itemsPropNames[index]].length==0">mdi-numeric-0-circle</v-icon>
